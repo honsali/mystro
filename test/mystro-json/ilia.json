@@ -1,0 +1,110 @@
+{
+  "name" : "ilia",
+  "birth" : {
+    "birthDate" : "14/07/1975",
+    "birthTime" : "22:55",
+    "latitude" : 50.60600755996812,
+    "longitude" : 3.0333769552426793,
+    "utcOffset" : "+01:00",
+    "language" : "fr",
+    "houseSystem" : "Whole Sign",
+    "zodiac" : "Tropical",
+    "terms" : "Egyptian"
+  },
+  "planetaryHour" : {
+    "mode" : "Night",
+    "hourNumber" : 3,
+    "dayRuler" : "Moon",
+    "hourRuler" : "Moon"
+  },
+  "syzygy" : {
+    "phase" : "New Moon",
+    "dateTime" : "1975-07-09T05:10:07+01:00"
+  },
+  "lots" : {
+    "Fortune" : {
+      "name" : "Fortune",
+      "lotSign" : "Sagittarius",
+      "lotDegrees" : 28.074654175715636,
+      "lotHouse" : 10,
+      "ruler" : "Jupiter",
+      "rulerSign" : "Aries",
+      "rulerDegrees" : 23.18065408305032,
+      "rulerHouse" : 2,
+      "lotToRuler" : "5th",
+      "fortuneToRuler" : "—"
+    },
+    "Spirit" : {
+      "name" : "Spirit",
+      "lotSign" : "Gemini",
+      "lotDegrees" : 4.141688977577701,
+      "lotHouse" : 4,
+      "ruler" : "Mercury",
+      "rulerSign" : "Cancer",
+      "rulerDegrees" : 3.9486660265330897,
+      "rulerHouse" : 5,
+      "lotToRuler" : "A",
+      "fortuneToRuler" : "A"
+    },
+    "Eros" : {
+      "name" : "Eros",
+      "lotSign" : "Sagittarius",
+      "lotDegrees" : 16.50183123839855,
+      "lotHouse" : 10,
+      "ruler" : "Jupiter",
+      "rulerSign" : "Aries",
+      "rulerDegrees" : 23.18065408305032,
+      "rulerHouse" : 2,
+      "lotToRuler" : "5th",
+      "fortuneToRuler" : "5th"
+    },
+    "Victory" : {
+      "name" : "Victory",
+      "lotSign" : "Aries",
+      "lotDegrees" : 27.069206471174027,
+      "lotHouse" : 2,
+      "ruler" : "Mars",
+      "rulerSign" : "Taurus",
+      "rulerDegrees" : 9.6516623185693,
+      "rulerHouse" : 3,
+      "lotToRuler" : "A",
+      "fortuneToRuler" : "A"
+    },
+    "Necessity" : {
+      "name" : "Necessity",
+      "lotSign" : "Virgo",
+      "lotDegrees" : 21.982183427464122,
+      "lotHouse" : 7,
+      "ruler" : "Mercury",
+      "rulerSign" : "Cancer",
+      "rulerDegrees" : 3.9486660265330897,
+      "rulerHouse" : 5,
+      "lotToRuler" : "11th",
+      "fortuneToRuler" : "A"
+    },
+    "Courage" : {
+      "name" : "Courage",
+      "lotSign" : "Cancer",
+      "lotDegrees" : 27.685179719500354,
+      "lotHouse" : 5,
+      "ruler" : "Moon",
+      "rulerSign" : "Libra",
+      "rulerDegrees" : 9.866551628686807,
+      "rulerHouse" : 8,
+      "lotToRuler" : "4th",
+      "fortuneToRuler" : "11th"
+    },
+    "Nemesis" : {
+      "name" : "Nemesis",
+      "lotSign" : "Libra",
+      "lotDegrees" : 10.445396486078721,
+      "lotHouse" : 8,
+      "ruler" : "Venus",
+      "rulerSign" : "Virgo",
+      "rulerDegrees" : 3.7480293158258178,
+      "rulerHouse" : 7,
+      "lotToRuler" : "A",
+      "fortuneToRuler" : "10th"
+    }
+  }
+}

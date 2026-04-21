@@ -1,0 +1,101 @@
+[
+  {
+    "name": "marwa",
+    "birth_date": "11/12/2001",
+    "birth_time": "23:29",
+    "latitude": 48.820888627997434,
+    "longitude": 2.2039397974782617,
+    "utc_offset": "+01:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "yousra",
+    "birth_date": "25/12/2005",
+    "birth_time": "02:15",
+    "latitude": 33.98933080913651,
+    "longitude": -6.8488985194432965,
+    "utc_offset": "+00:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "alae",
+    "birth_date": "19/05/2011",
+    "birth_time": "19:55",
+    "latitude": 34.01677691958565,
+    "longitude": -6.828129125587166,
+    "utc_offset": "+01:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "reda",
+    "birth_date": "04/10/2017",
+    "birth_time": "14:50",
+    "latitude": 33.97745055629173,
+    "longitude": -6.869656880226875,
+    "utc_offset": "+01:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "salim",
+    "birth_date": "04/10/2017",
+    "birth_time": "15:00",
+    "latitude": 33.97745055629173,
+    "longitude": -6.869656880226875,
+    "utc_offset": "+01:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "brahim",
+    "birth_date": "14/07/2023",
+    "birth_time": "08:40",
+    "latitude": 33.96183161341293,
+    "longitude": -6.822744959566244,
+    "utc_offset": "+01:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "ayat",
+    "birth_date": "09/11/1982",
+    "birth_time": "17:00",
+    "latitude": 33.98720690051016,
+    "longitude": -6.85401550263493,
+    "utc_offset": "+00:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "sanaa",
+    "birth_date": "20/06/1979",
+    "birth_time": "13:00",
+    "latitude": 33.574841957788294,
+    "longitude": -7.620470639516876,
+    "utc_offset": "+00:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  },
+  {
+    "name": "ilia",
+    "birth_date": "14/07/1975",
+    "birth_time": "22:55",
+    "latitude": 50.60600755996812,
+    "longitude": 3.0333769552426793,
+    "utc_offset": "+01:00",
+    "house_system": "Whole Sign",
+    "zodiac": "Tropical",
+    "terms": "Egyptian"
+  }
+]

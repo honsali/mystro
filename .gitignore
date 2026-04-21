@@ -1,0 +1,21 @@
+# Build output
+/target/
+*.class
+
+# Generated runtime output
+/output/
+
+# Local agent state
+/.cp
+/.cp_runtime
+/.pi/todos/
+
+# IDE / editor settings
+/.settings/
+/.idea/
+/.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

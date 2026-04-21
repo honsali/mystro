@@ -1,0 +1,110 @@
+{
+  "name" : "marwa",
+  "birth" : {
+    "birthDate" : "11/12/2001",
+    "birthTime" : "23:29",
+    "latitude" : 48.820888627997434,
+    "longitude" : 2.2039397974782617,
+    "utcOffset" : "+01:00",
+    "language" : "fr",
+    "houseSystem" : "Whole Sign",
+    "zodiac" : "Tropical",
+    "terms" : "Egyptian"
+  },
+  "planetaryHour" : {
+    "mode" : "Night",
+    "hourNumber" : 6,
+    "dayRuler" : "Mars",
+    "hourRuler" : "Mercury"
+  },
+  "syzygy" : {
+    "phase" : "New Moon",
+    "dateTime" : "2001-11-15T07:39:59+01:00"
+  },
+  "lots" : {
+    "Fortune" : {
+      "name" : "Fortune",
+      "lotSign" : "Libra",
+      "lotDegrees" : 14.769977677857355,
+      "lotHouse" : 2,
+      "ruler" : "Venus",
+      "rulerSign" : "Sagittarius",
+      "rulerDegrees" : 11.911677310118279,
+      "rulerHouse" : 4,
+      "lotToRuler" : "3rd",
+      "fortuneToRuler" : "—"
+    },
+    "Spirit" : {
+      "name" : "Spirit",
+      "lotSign" : "Leo",
+      "lotDegrees" : 1.821661026701804,
+      "lotHouse" : 12,
+      "ruler" : "Sun",
+      "rulerSign" : "Sagittarius",
+      "rulerDegrees" : 19.953624444618242,
+      "rulerHouse" : 4,
+      "lotToRuler" : "5th",
+      "fortuneToRuler" : "3rd"
+    },
+    "Eros" : {
+      "name" : "Eros",
+      "lotSign" : "Aries",
+      "lotDegrees" : 28.205803068863105,
+      "lotHouse" : 8,
+      "ruler" : "Mars",
+      "rulerSign" : "Pisces",
+      "rulerDegrees" : 2.2047607723326337,
+      "rulerHouse" : 7,
+      "lotToRuler" : "A",
+      "fortuneToRuler" : "A"
+    },
+    "Victory" : {
+      "name" : "Victory",
+      "lotSign" : "Virgo",
+      "lotDegrees" : 26.868938431919474,
+      "lotHouse" : 1,
+      "ruler" : "Mercury",
+      "rulerSign" : "Sagittarius",
+      "rulerDegrees" : 23.861482069048577,
+      "rulerHouse" : 4,
+      "lotToRuler" : "4th",
+      "fortuneToRuler" : "3rd"
+    },
+    "Necessity" : {
+      "name" : "Necessity",
+      "lotSign" : "Scorpio",
+      "lotDegrees" : 17.3873237434708,
+      "lotHouse" : 3,
+      "ruler" : "Mars",
+      "rulerSign" : "Pisces",
+      "rulerDegrees" : 2.2047607723326337,
+      "rulerHouse" : 7,
+      "lotToRuler" : "5th",
+      "fortuneToRuler" : "A"
+    },
+    "Courage" : {
+      "name" : "Courage",
+      "lotSign" : "Capricorn",
+      "lotDegrees" : 25.730602446754858,
+      "lotHouse" : 5,
+      "ruler" : "Saturn",
+      "rulerSign" : "Gemini",
+      "rulerDegrees" : 10.799045553714194,
+      "rulerHouse" : 10,
+      "lotToRuler" : "A",
+      "fortuneToRuler" : "9th"
+    },
+    "Nemesis" : {
+      "name" : "Nemesis",
+      "lotSign" : "Taurus",
+      "lotDegrees" : 4.324887228136419,
+      "lotHouse" : 9,
+      "ruler" : "Venus",
+      "rulerSign" : "Sagittarius",
+      "rulerDegrees" : 11.911677310118279,
+      "rulerHouse" : 4,
+      "lotToRuler" : "A",
+      "fortuneToRuler" : "3rd"
+    }
+  }
+}

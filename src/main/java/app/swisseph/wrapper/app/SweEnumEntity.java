@@ -1,0 +1,93 @@
+/*
+ * Copyright (C) By the Author
+ * Author    Yura Krymlov
+ * Created   2020-12
+ */
+package app.swisseph.wrapper.app;
+
+import app.swisseph.wrapper.api.ISweEnum;
+import app.swisseph.wrapper.api.ISweEnumEntity;
+
+import java.util.Objects;
+
+import static app.swisseph.wrapper.api.ISweConstants.CH_VS;
+import static app.swisseph.wrapper.api.ISweConstants.STR_EY;
+import static app.swisseph.wrapper.utils.IDegreeUtils.toDMSms;
+
+/**
+ * @author Yura Krymlov
+ * @version 1.0, 2020-12
+ */
+public class SweEnumEntity<E extends ISweEnum> implements ISweEnumEntity<E> {
+    private static final long serialVersionUID = -4015176768486717512L;
+
+    protected final double julianDay;
+    protected final double longitude;
+    protected final E entityEnum;
+
+    protected SweEnumEntity(final double longitude, final E entityEnum, final double julianDay) {
+        this.entityEnum = entityEnum;
+        this.julianDay = julianDay;
+        this.longitude = longitude;
+    }
+
+    @Override
+    public E entityEnum() {
+        return entityEnum;
+    }
+
+    @Override
+    public double longitude() {
+        return longitude;
+    }
+
+    @Override
+    public double julianDay() {
+        return julianDay;
+    }
+
+    @Override
+    public boolean equals(Object another) {
+        if (this == another) return true;
+        if (!(another instanceof SweEnumEntity)) return false;
+        final SweEnumEntity<?> that = (SweEnumEntity<?>) another;
+        return Double.compare(that.julianDay, julianDay) == 0 &&
+                Double.compare(that.longitude, longitude) == 0 &&
+                Objects.equals(entityEnum, that.entityEnum);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(julianDay, longitude, entityEnum);
+    }
+
+    @Override
+    public String toString() {
+        return toBuilder(STR_EY).toString();
+    }
+
+    protected String printCode() {
+        return entityEnum.code();
+    }
+
+    protected String printLongitude() {
+        return toDMSms(longitude).toString();
+    }
+
+    protected String printJulianDay() {
+        return new app.swisseph.core.SweDate(julianDay).toStringShort();
+    }
+
+    protected StringBuilder toBuilder(CharSequence firstElement) {
+        final StringBuilder builder = new StringBuilder(64);
+
+        if (firstElement.length() > 0) {
+            builder.append(firstElement);
+            builder.append(CH_VS);
+        }
+
+        return builder.append(printCode()).append(CH_VS)
+                .append(printLongitude()).append(CH_VS)
+                .append(printJulianDay());
+    }
+}
