@@ -5,6 +5,9 @@
 # Generated runtime output
 /output/
 
+# Local input data
+/input/
+
 # Local agent state
 /.cp
 /.cp_runtime
