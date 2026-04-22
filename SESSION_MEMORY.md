@@ -15,6 +15,7 @@ Source: refreshed from current codebase, compile/run validation, and existing pr
 ### Project scaffold decisions
 - `mystro` is a **Java Maven project**.
 - The authoritative project version is the top-level `<version>` in `pom.xml`; validation reports should read and print that exact value and write to `validation/validation-report-v<version>.md`.
+- The `/version` workflow now treats the current `pom.xml` version as the release version, then bumps the next iteration by incrementing the middle number and resetting the last number to zero (for example `0.2.0 -> 0.3.0`).
 - Main entry point: `src/main/java/app/App.java`
 - Main orchestration classes are now `app.mystro.MystroService`, `app.astroseek.AstroSeekService`, and `app.validator.ValidatorService`.
 - Shared normalized runtime model used by both Mystro and Astro-Seek branches is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.

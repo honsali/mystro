@@ -80,6 +80,7 @@ Shared constants live in `app.common.Config`, and shared runtime error collectio
 
 - The authoritative app version is the top-level `<version>` in `pom.xml`.
 - Validation reports should include that exact project version and be written to `validation/validation-report-v<version>.md`.
+- The `/version` workflow releases the current `pom.xml` version, then bumps the next iteration by incrementing the middle number and resetting the last number to zero (for example `0.2.0 -> 0.3.0`).
 - Ephemeris files are expected in `ephe/` under the project root.
 - The runtime no longer depends on a native JNI `swisseph` library.
 - The app is now English-only and JSON-only; markdown output, i18n resources, and `src/test` were removed.
