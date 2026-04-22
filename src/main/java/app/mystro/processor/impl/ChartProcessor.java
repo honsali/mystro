@@ -60,6 +60,7 @@ public final class ChartProcessor extends MystroProcessor {
         addPlanet(points, "Pluto", SweConst.SE_PLUTO, jd);
         addPlanet(points, "North Node", SweConst.SE_MEAN_NODE, jd);
         addPlanet(points, "Lilith", SweConst.SE_MEAN_APOG, jd);
+        addPlanet(points, "Chiron", SweConst.SE_CHIRON, jd);
         addChironFallback(points, builder);
 
         ChartPoint northNode = points.get("North Node");
@@ -132,6 +133,7 @@ public final class ChartProcessor extends MystroProcessor {
             double lon = Config.SIGNS.indexOf(sign) * 30.0 + signLon;
             int house = signHouse(ascSign, sign);
             points.put("Chiron", new ChartPoint("Chiron", sign, signLon, lon, house, 0.0, true));
+            app.common.Logger.getInstance().error("CHIRON_HTML_FALLBACK", builder.name(), "Chiron was populated from Astro-Seek HTML fallback");
         } catch (IOException ignored) {
         }
     }

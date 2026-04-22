@@ -14,11 +14,12 @@ The project is a standalone Java astrology application centered on Swiss Ephemer
 ## Project layout
 
 ```text
-astro/
+mystro/
   input/
     astroseek/
     native-list.json
   output/
+  validation/
   pom.xml
   ephe/
   src/main/java/app/
@@ -29,7 +30,6 @@ astro/
 Build the Java project:
 
 ```bash
-cd astro
 mvn compile
 ```
 
@@ -46,7 +46,7 @@ Runtime JSON writing currently works; `JsonFileSupport` registers Jackson Java T
 ## Java project layout
 
 ```text
-astro/
+mystro/
   src/main/java/app/
     App.java
     astroseek/
@@ -66,8 +66,8 @@ The Java app currently focuses on JSON generation and comparison:
 - main aspects and other aspects
 - Fortune and the 7 Hermetic Lots
 - planetary hour at birth
+- Lord of the Orb (`mod84` and `mod12`) in normalized JSON output
 - derived chart sections: `dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`
-- Lord of the Orb support logic
 - normalized JSON generation for Mystro and Astro-Seek
 - JSON comparison with tolerance-based validation
 
@@ -78,11 +78,15 @@ Shared constants live in `app.common.Config`, and shared runtime error collectio
 
 ## Notes
 
+- The authoritative app version is the top-level `<version>` in `pom.xml`.
+- Validation reports should include that exact project version and be written to `validation/validation-report-v<version>.md`.
 - Ephemeris files are expected in `ephe/` under the project root.
 - The runtime no longer depends on a native JNI `swisseph` library.
 - The app is now English-only and JSON-only; markdown output, i18n resources, and `src/test` were removed.
 - Validation is compile-first (`mvn compile`) and runtime-second (`mvn exec:java ...`).
-- Current representative validation target is `ilia`; the current comparison run for `ilia` matches.
+- The validation agent writes versioned reports under `validation/`, for example `validation/validation-report-v0.2.0.md`.
+- Chiron now attempts direct Swiss Ephemeris calculation first; if that fails, the runtime falls back to the saved Astro-Seek HTML and logs `CHIRON_HTML_FALLBACK`.
+- Lord of the Orb is now emitted in both Mystro and Astro-Seek normalized JSON so it can be compared on overlapping visible years.
 
 ## Next suggested steps
 

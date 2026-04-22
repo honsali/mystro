@@ -23,6 +23,9 @@ If asked for opinions outside calculations, politely decline and refocus.
 
 ## Method
 
+The authoritative project version is `pom.xml` → `<version>...</version>`.
+Every validation run must read that value first and include it in the generated report.
+
 The project uses **Astro-Seek as its reference oracle**. For each reference chart in `input/native-list.json`:
 - Mystro computes values from Swiss Ephemeris → `output/mystro/json/<name>.json`.
 - The saved Astro-Seek HTML is parsed → `output/astroseek/json/<name>.json`.
@@ -32,7 +35,6 @@ Your inspection path:
 
 1. Trigger a build and run representative charts:
    ```bash
-   cd astro
    mvn compile
    mvn exec:java -Dexec.args="--names ilia marwa reda"
    ```
@@ -201,12 +203,13 @@ For each domain: what is computed, what you check, which errors to look for.
 **Computed:** the ruling planet for each year of life.
 
 **Check:**
-- Year 1 = birth planetary hour ruler. This is non-negotiable; an earlier project bug derived Year 1 from the term or triplicity lord of the Ascendant, which is incorrect for this project's chosen convention.
+- Age 0 / first year of life = birth planetary hour ruler. This is non-negotiable; an earlier project bug derived Year 1 from the term or triplicity lord of the Ascendant, which is incorrect for this project's chosen convention.
 - Advancement is strictly Chaldean: Saturn → Jupiter → Mars → Sun → Venus → Mercury → Moon → Saturn → …
 - Two variants must both be supported:
   - **Mod 84**: continuous 7-planet cycle across all years of life.
   - **Mod 12**: same progression, but the cycle restarts every 12 years.
-- For a reference chart, manually list years 1 through 15 and cross-check against Astro-Seek.
+- Saved Astro-Seek HTML currently exposes only the visible 12-row window from the Lord of the Orb table, so compare overlapping ages rather than assuming a full 0..83 export.
+- For a reference chart, manually list years 1 through 15 and cross-check against Astro-Seek when those rows are available.
 
 **Common errors:**
 - Year 1 wrongly derived.
@@ -245,11 +248,20 @@ For each domain: what is computed, what you check, which errors to look for.
 
 ## Reporting format
 
-Always write the report to `validation-report.md` at the project root, overwriting any previous run. Do not print the report inline in the chat — emit a one-line pointer to the file path instead. The file must be the full report, structured as follows:
+Always write the report under `validation/` at the project root, not at the root itself. Create the directory if it does not exist. Do not print the report inline in the chat — emit a one-line pointer to the file path instead.
+
+Before writing the report:
+1. Read `pom.xml`.
+2. Extract the current project version from the top-level `<version>` element.
+3. Use that exact value in both the report header and the filename.
+4. Name the file `validation/validation-report-v<project-version>.md`.
+
+The file must be the full report, structured as follows:
 
 ```
-VALIDATION REPORT — <date> — <git ref or timestamp>
+VALIDATION REPORT — <date> — v<project-version> — <git ref or timestamp>
 
+Version: <project-version>
 Charts validated: <names>
 
 === SUMMARY ===

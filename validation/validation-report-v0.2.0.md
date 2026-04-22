@@ -1,5 +1,6 @@
-VALIDATION REPORT — 2026-04-21 — mvn exec run at 2026-04-21T15:41
+VALIDATION REPORT — 2026-04-21 — v0.2.0 — e74016b
 
+Version: 0.2.0
 Charts validated: ilia (nocturnal, Lille 1975-07-14), marwa (nocturnal, Paris 2001-12-11), reda (diurnal, Rabat 2017-10-04)
 
 === SUMMARY ===

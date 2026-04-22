@@ -14,8 +14,8 @@
 
 ## Common commands
 ```bash
-cd astro
 mvn compile
+mvn exec:java -Dexec.args="--names ilia marwa reda"
 run.bat
 ```
 
@@ -37,12 +37,14 @@ run.bat
 - Main orchestration classes are `app.mystro.MystroService`, `app.astroseek.AstroSeekService`, and `app.validator.ValidatorService`.
 - Astro-Seek HTML parsing lives under `src/main/java/app/astroseek/`.
 - Astro-Seek parsing is modular and currently uses the `app.astroseek.parser.AstroSeekParser` interface plus parser implementations under `app.astroseek.parser.impl`, orchestrated by `app.astroseek.AstroSeekService`.
-- Current Astro-Seek parser modules cover birth data, planet positions, houses, main aspects, other aspects, planetary hour, syzygy, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- Current Astro-Seek parser modules cover birth data, planet positions, houses, main aspects, other aspects, planetary hour, Lord of the Orb, syzygy, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
 - `app.mystro.MystroService` orchestrates JSON report assembly through computation processors plus `app.common.NativeReportBuilder`.
-- Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
-- Shared normalized runtime model is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
-- `NativeReport` currently emits `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia` in addition to birth / planetary hour / syzygy / lots.
-- `ChartProcessor` now also includes a pragmatic Chiron fallback sourced from the saved Astro-Seek HTML when direct Swiss Ephemeris output is unavailable, so current comparison runs can still normalize the section.
+- Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `LordOfOrbProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
+- Shared normalized runtime model is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
+- `NativeReport` currently emits `lordOfOrb`, `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia` in addition to birth / planetary hour / syzygy / lots.
+- `HermeticLotsProcessor` now applies explicit sect-conditional formulas for all seven lots.
+- `PlanetPositionsProcessor` now resolves the Syzygy point by phase/sect instead of always forcing the Sun.
+- `ChartProcessor` now attempts direct Swiss Ephemeris Chiron calculation first and logs `CHIRON_HTML_FALLBACK` if it has to fall back to saved Astro-Seek HTML.
 - Shared constants now live in `app.common.Config`.
 - Shared runtime error collection now lives in the singleton `app.common.Logger`.
 - There is currently no active `src/test` suite, but legacy artifacts still exist under `test/` and `target/`.
@@ -59,7 +61,7 @@ run.bat
 - Prefer reading and editing files over guessing.
 - After every code change, run `mvn compile` and verify the project still builds.
 - If you change runtime logic or output, also run `mvn exec:java -Dexec.args="--names ilia marwa reda"` when practical, or at least a representative subset such as `--names ilia`.
-- Current representative validation target is `ilia`; use it to check parser/processor alignment section by section.
+- Current representative validation targets are `ilia`, `marwa`, and `reda`; use them to check parser/processor alignment section by section.
 - The main runtime flow uses `app.App`, reads names from CLI `--names ...` or falls back to all entries in `input/native-list.json`, writes Mystro JSON to `output/mystro/json/`, writes Astro-Seek JSON to `output/astroseek/json/`, and writes one comparison summary to `output/report.json`.
 - Both branches normalize into the same shared runtime model before JSON is written.
 - Missing native config entries, missing Astro-Seek HTML, and missing generated JSON files are collected through `app.common.Logger` instead of ad-hoc missing-lists.

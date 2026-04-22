@@ -13,16 +13,17 @@ public final class HermeticLotsProcessor extends MystroProcessor {
         public void populate(NativeReportBuilder builder) {
                 NativeChart chart = builder.nativeChart();
 
-                ChartPoint fortune = chart.diurnal() ? projectLot("Fortune", chart, chart.point("Moon"), chart.point("Sun")) : projectLot("Fortune", chart, chart.point("Sun"), chart.point("Moon"));
-                ChartPoint spirit = chart.diurnal() ? projectLot("Spirit", chart, chart.point("Sun"), chart.point("Moon")) : projectLot("Spirit", chart, chart.point("Moon"), chart.point("Sun"));
+                boolean diurnal = chart.diurnal();
+                ChartPoint fortune = diurnal ? projectLot("Fortune", chart, chart.point("Moon"), chart.point("Sun")) : projectLot("Fortune", chart, chart.point("Sun"), chart.point("Moon"));
+                ChartPoint spirit = diurnal ? projectLot("Spirit", chart, chart.point("Sun"), chart.point("Moon")) : projectLot("Spirit", chart, chart.point("Moon"), chart.point("Sun"));
 
-                builder.lot(buildLot("Fortune", chart.diurnal() ? "Sun → Moon" : "Moon → Sun", fortune, fortune, chart));
-                builder.lot(buildLot("Spirit", chart.diurnal() ? "Moon → Sun" : "Sun → Moon", spirit, fortune, chart));
-                builder.lot(buildLot("Eros", "Venus → Spirit", spirit, chart.point("Venus"), fortune, chart));
-                builder.lot(buildLot("Victory", "Jupiter → Spirit", spirit, chart.point("Jupiter"), fortune, chart));
-                builder.lot(buildLot("Necessity", "Fortune → Mercury", chart.point("Mercury"), fortune, fortune, chart));
-                builder.lot(buildLot("Courage", "Fortune → Mars", chart.point("Mars"), fortune, fortune, chart));
-                builder.lot(buildLot("Nemesis", "Fortune → Saturn", chart.point("Saturn"), fortune, fortune, chart));
+                builder.lot(buildLot("Fortune", diurnal ? "Moon → Sun" : "Sun → Moon", fortune, fortune, chart));
+                builder.lot(buildLot("Spirit", diurnal ? "Sun → Moon" : "Moon → Sun", spirit, fortune, chart));
+                builder.lot(buildLot("Eros", diurnal ? "Venus → Spirit" : "Spirit → Venus", diurnal ? chart.point("Venus") : spirit, diurnal ? spirit : chart.point("Venus"), fortune, chart));
+                builder.lot(buildLot("Victory", diurnal ? "Jupiter → Spirit" : "Spirit → Jupiter", diurnal ? chart.point("Jupiter") : spirit, diurnal ? spirit : chart.point("Jupiter"), fortune, chart));
+                builder.lot(buildLot("Necessity", diurnal ? "Fortune → Mercury" : "Mercury → Fortune", diurnal ? fortune : chart.point("Mercury"), diurnal ? chart.point("Mercury") : fortune, fortune, chart));
+                builder.lot(buildLot("Courage", diurnal ? "Mars → Fortune" : "Fortune → Mars", diurnal ? chart.point("Mars") : fortune, diurnal ? fortune : chart.point("Mars"), fortune, chart));
+                builder.lot(buildLot("Nemesis", diurnal ? "Fortune → Saturn" : "Saturn → Fortune", diurnal ? fortune : chart.point("Saturn"), diurnal ? chart.point("Saturn") : fortune, fortune, chart));
 
         }
 

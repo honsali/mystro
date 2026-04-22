@@ -1,6 +1,6 @@
 # Astro Rules and Inferred Algorithms
 
-Last updated: 2026-04-13
+Last updated: 2026-04-21
 
 This file stores astrology-specific rules and inferred algorithms adopted in the `mystro` project so future sessions can continue without reconstructing them from scratch.
 
@@ -11,7 +11,7 @@ Match the Astro-Seek style Lord of the Orb logic as closely as possible.
 
 ### Algorithm
 1. Compute the **planetary hour ruler at birth** using the actual birth data from the input file.
-2. The birth planetary hour ruler is the Lord of the Orb for the **first year of life**.
+2. The birth planetary hour ruler is the Lord of the Orb for the **first year of life / age 0 row**.
 3. Advance one planet per year in **Chaldean order**:
    - Saturn → Jupiter → Mars → Sun → Venus → Mercury → Moon
 4. Support two variants:
@@ -21,6 +21,7 @@ Match the Astro-Seek style Lord of the Orb logic as closely as possible.
 ### Notes
 - This replaced an older placeholder implementation based on term/triplicity.
 - The correct source is the **birth planetary hour ruler**, not the profected sign's term/triplicity lords.
+- Saved Astro-Seek HTML currently exposes only the visible 12-row Lord of the Orb table window, so validator comparisons should match overlapping ages rather than assuming a full 0..83 export.
 
 ## 2. The 7 Hermetic Lots
 
@@ -37,19 +38,28 @@ Produce results approximately matching Astro-Seek for the 7 principal Hermetic L
 - Nemesis
 
 ### Formula conventions
-For **nocturnal** births:
+The project now uses explicit sect-conditional formulas for all seven lots.
+
+For **diurnal** births:
 - Fortune = Moon → Sun
 - Spirit = Sun → Moon
 - Eros = Venus → Spirit
 - Victory = Jupiter → Spirit
 - Necessity = Fortune → Mercury
-- Courage = Fortune → Mars
+- Courage = Mars → Fortune
 - Nemesis = Fortune → Saturn
 
-For **diurnal** births, Fortune/Spirit reverse according to day/night formulas.
+For **nocturnal** births:
+- Fortune = Sun → Moon
+- Spirit = Moon → Sun
+- Eros = Spirit → Venus
+- Victory = Spirit → Jupiter
+- Necessity = Mercury → Fortune
+- Courage = Fortune → Mars
+- Nemesis = Saturn → Fortune
 
 ### Important implementation note
-Implementation choices should prioritize behavior that matches Astro-Seek as closely as practical.
+Implementation should keep the arc direction explicit in code and formulas. Astro-Seek agreement is useful, but shared Courage mismatches in saved HTML mean parity alone is not enough for validation.
 
 ## 3. House logic for Hermetic Lots
 

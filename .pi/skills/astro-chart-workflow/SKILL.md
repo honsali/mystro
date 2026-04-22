@@ -7,7 +7,7 @@ compatibility: Requires the astro Java Maven project.
 # Astro Chart Workflow
 
 ## First checks
-1. Work from the `astro/` directory.
+1. Work from the project root.
 2. Confirm the Maven project builds.
 3. Confirm ephemeris files are available in `ephe/`.
 
@@ -15,13 +15,11 @@ compatibility: Requires the astro Java Maven project.
 
 ### Build
 ```bash
-cd astro
 mvn compile
 ```
 
 ### Run the main workflow
 ```bash
-cd astro
 mvn exec:java -Dexec.args="--names ilia marwa reda"
 ```
 
@@ -36,7 +34,7 @@ Runtime JSON writing currently works; `JsonFileSupport` registers Jackson Java T
 - Astro-Seek parsing should evolve via small section parsers orchestrated by `AstroSeekService`.
 - Astro-Seek birth data must be parsed from the HTML details panel, not copied from `native-list.json`.
 - Mystro calculation is split into focused computation processors orchestrated by `MystroService`.
-- Current normalized output sections include planets, houses, aspects, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- Current normalized output sections include Lord of the Orb, planets, houses, aspects, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
 - Shared constants and shared runtime error reporting now live in `app.common.Config` and `app.common.Logger`.
 
 ## Input format

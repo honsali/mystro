@@ -10,6 +10,7 @@ public final class NativeReport {
     private NativeBirth birth;
     private NativePlanetaryHour planetaryHour;
     private NativeSyzygy syzygy;
+    private NativeLordOfOrb lordOfOrb;
     private Map<String, NativeHermeticLot> lots;
     private Map<String, ChartPoint> planets;
     private Map<String, ChartPoint> houses;
@@ -36,6 +37,7 @@ public final class NativeReport {
                         NativeBirth birth,
                         NativePlanetaryHour planetaryHour,
                         NativeSyzygy syzygy,
+                        NativeLordOfOrb lordOfOrb,
                         Map<String, NativeHermeticLot> lots,
                         Map<String, ChartPoint> planets,
                         Map<String, ChartPoint> houses,
@@ -49,6 +51,7 @@ public final class NativeReport {
         this.birth = birth;
         this.planetaryHour = planetaryHour;
         this.syzygy = syzygy;
+        this.lordOfOrb = lordOfOrb;
         this.lots = lots == null ? new LinkedHashMap<>() : new LinkedHashMap<>(lots);
         this.planets = planets == null ? new LinkedHashMap<>() : new LinkedHashMap<>(planets);
         this.houses = houses == null ? new LinkedHashMap<>() : new LinkedHashMap<>(houses);
@@ -64,6 +67,7 @@ public final class NativeReport {
     public NativeBirth birth() { return birth; }
     public NativePlanetaryHour planetaryHour() { return planetaryHour; }
     public NativeSyzygy syzygy() { return syzygy; }
+    public NativeLordOfOrb lordOfOrb() { return lordOfOrb; }
     public Map<String, NativeHermeticLot> lots() { if (lots == null) lots = new LinkedHashMap<>(); return lots; }
     public Map<String, ChartPoint> planets() { if (planets == null) planets = new LinkedHashMap<>(); return planets; }
     public Map<String, ChartPoint> houses() { if (houses == null) houses = new LinkedHashMap<>(); return houses; }
@@ -82,6 +86,8 @@ public final class NativeReport {
     public void setPlanetaryHour(NativePlanetaryHour planetaryHour) { this.planetaryHour = planetaryHour; }
     public NativeSyzygy getSyzygy() { return syzygy; }
     public void setSyzygy(NativeSyzygy syzygy) { this.syzygy = syzygy; }
+    public NativeLordOfOrb getLordOfOrb() { return lordOfOrb; }
+    public void setLordOfOrb(NativeLordOfOrb lordOfOrb) { this.lordOfOrb = lordOfOrb; }
     public Map<String, NativeHermeticLot> getLots() { return lots(); }
     public void setLots(Map<String, NativeHermeticLot> lots) { this.lots = lots == null ? new LinkedHashMap<>() : new LinkedHashMap<>(lots); }
     public Map<String, ChartPoint> getPlanets() { return planets(); }

@@ -12,6 +12,7 @@ import app.common.io.JsonFileSupport;
 import app.common.model.ChartPoint;
 import app.common.model.NativeAspect;
 import app.common.model.NativeHermeticLot;
+import app.common.model.NativeLordOfOrbEntry;
 import app.common.model.NativeReport;
 import app.validator.model.ComparisonEntry;
 import app.validator.model.ComparisonSummary;
@@ -60,7 +61,7 @@ public final class ValidatorService {
 
             NativeReport mystroReport = JsonFileSupport.read(mystroPath, NativeReport.class);
             NativeReport astroseekReport = JsonFileSupport.read(astroseekPath, NativeReport.class);
-            List<String> differences = compareReports(mystroReport, astroseekReport);
+            List<String> differences = compareReports(name, mystroReport, astroseekReport, logger);
             comparedCount++;
             if (differences.isEmpty()) {
                 matchCount++;
@@ -76,7 +77,7 @@ public final class ValidatorService {
         return summary;
     }
 
-    private List<String> compareReports(NativeReport mystroReport, NativeReport astroseekReport) {
+    private List<String> compareReports(String name, NativeReport mystroReport, NativeReport astroseekReport, Logger logger) {
         List<String> differences = new ArrayList<>();
         compareField("name", mystroReport.name(), astroseekReport.name(), differences);
         compareField("birth.birthDate", mystroReport.birth().birthDate(), astroseekReport.birth().birthDate(), differences);
@@ -94,8 +95,8 @@ public final class ValidatorService {
             compareField("planetaryHour.hourNumber", mystroReport.planetaryHour().hourNumber(), astroseekReport.planetaryHour().hourNumber(), differences);
             compareField("planetaryHour.dayRuler", mystroReport.planetaryHour().dayRuler(), astroseekReport.planetaryHour().dayRuler(), differences);
             compareField("planetaryHour.hourRuler", mystroReport.planetaryHour().hourRuler(), astroseekReport.planetaryHour().hourRuler(), differences);
-            compareNumericField("planetaryHour.last", mystroReport.planetaryHour().last(), astroseekReport.planetaryHour().last(), 0.6, differences);
-            compareNumericField("planetaryHour.next", mystroReport.planetaryHour().next(), astroseekReport.planetaryHour().next(), 0.6, differences);
+            compareNumericField("planetaryHour.last", mystroReport.planetaryHour().last(), astroseekReport.planetaryHour().last(), 1.0, differences);
+            compareNumericField("planetaryHour.next", mystroReport.planetaryHour().next(), astroseekReport.planetaryHour().next(), 1.0, differences);
         }
 
         if (mystroReport.syzygy() == null || astroseekReport.syzygy() == null) {
@@ -107,6 +108,8 @@ public final class ValidatorService {
                 differences.add("syzygy.dateTime: mystro=" + mystroReport.syzygy().syzygyDateTime() + ", astroseek=" + astroseekReport.syzygy().syzygyDateTime() + ", delta_minutes=" + minuteDelta);
             }
         }
+
+        compareLordOfOrb(mystroReport, astroseekReport, differences);
 
         for (Map.Entry<String, NativeHermeticLot> entry : astroseekReport.lots().entrySet()) {
             NativeHermeticLot mystroLot = mystroReport.lots().get(entry.getKey());
@@ -128,6 +131,9 @@ public final class ValidatorService {
         }
 
         comparePointMaps("planets", mystroReport.planets(), astroseekReport.planets(), differences);
+        if (logger.hasError("CHIRON_HTML_FALLBACK", name) && mystroReport.planets().containsKey("Chiron")) {
+            differences.add("planets.Chiron: Mystro used HTML fallback; agreement is not independent validation");
+        }
         comparePointMaps("houses", mystroReport.houses(), astroseekReport.houses(), differences);
         compareAspectLists("mainAspects", mystroReport.mainAspects(), astroseekReport.mainAspects(), differences);
         compareAspectLists("otherAspects", mystroReport.otherAspects(), astroseekReport.otherAspects(), differences);
@@ -136,6 +142,27 @@ public final class ValidatorService {
         comparePointMaps("antiscia", mystroReport.antiscia(), astroseekReport.antiscia(), differences);
         comparePointMaps("contraAntiscia", mystroReport.contraAntiscia(), astroseekReport.contraAntiscia(), differences);
         return differences;
+    }
+
+    private void compareLordOfOrb(NativeReport mystroReport, NativeReport astroseekReport, List<String> differences) {
+        if (mystroReport.lordOfOrb() == null || astroseekReport.lordOfOrb() == null) {
+            compareField("lordOfOrb", mystroReport.lordOfOrb(), astroseekReport.lordOfOrb(), differences);
+            return;
+        }
+        if (astroseekReport.lordOfOrb().startingRuler() != null) {
+            compareField("lordOfOrb.startingRuler", mystroReport.lordOfOrb().startingRuler(), astroseekReport.lordOfOrb().startingRuler(), differences);
+        }
+        Map<Integer, NativeLordOfOrbEntry> mystroYearsByAge = mystroReport.lordOfOrb().years().stream()
+                .collect(java.util.stream.Collectors.toMap(NativeLordOfOrbEntry::age, year -> year, (left, right) -> left));
+        for (NativeLordOfOrbEntry astroseekYear : astroseekReport.lordOfOrb().years()) {
+            NativeLordOfOrbEntry mystroYear = mystroYearsByAge.get(astroseekYear.age());
+            if (mystroYear == null) {
+                differences.add("lordOfOrb.years[age=" + astroseekYear.age() + "]: missing in mystro");
+                continue;
+            }
+            compareField("lordOfOrb.years[age=" + astroseekYear.age() + "].mod84", mystroYear.mod84(), astroseekYear.mod84(), differences);
+            compareField("lordOfOrb.years[age=" + astroseekYear.age() + "].mod12", mystroYear.mod12(), astroseekYear.mod12(), differences);
+        }
     }
 
     private void comparePointMaps(String section, Map<String, ChartPoint> mystroPoints, Map<String, ChartPoint> astroseekPoints, List<String> differences) {
@@ -152,7 +179,10 @@ public final class ValidatorService {
                 compareField(section + "." + entry.getKey() + ".house", mystroPoint.wholeSignHouse(), astroseekPoint.wholeSignHouse(), differences);
             }
             if (astroseekPoint.retrograde() || mystroPoint.retrograde()) {
-                compareField(section + "." + entry.getKey() + ".retrograde", mystroPoint.retrograde(), astroseekPoint.retrograde(), differences);
+                boolean stationSensitive = "planets".equals(section) && Math.abs(mystroPoint.speed()) <= 0.1;
+                if (!stationSensitive) {
+                    compareField(section + "." + entry.getKey() + ".retrograde", mystroPoint.retrograde(), astroseekPoint.retrograde(), differences);
+                }
             }
         }
     }

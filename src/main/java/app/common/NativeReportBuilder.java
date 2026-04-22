@@ -9,6 +9,7 @@ import app.common.model.NativeAspect;
 import app.common.model.NativeBirth;
 import app.common.model.NativeChart;
 import app.common.model.NativeHermeticLot;
+import app.common.model.NativeLordOfOrb;
 import app.common.model.NativePlanetaryHour;
 import app.common.model.NativeReport;
 import app.common.model.NativeSyzygy;
@@ -20,6 +21,7 @@ public final class NativeReportBuilder {
     private NativeBirth birth;
     private NativePlanetaryHour planetaryHour;
     private NativeSyzygy syzygy;
+    private NativeLordOfOrb lordOfOrb;
     private NativeChart nativeChart;
     private final Map<String, NativeHermeticLot> lots = new LinkedHashMap<>();
     private final Map<String, ChartPoint> planets = new LinkedHashMap<>();
@@ -43,6 +45,8 @@ public final class NativeReportBuilder {
     public NativePlanetaryHour planetaryHour() { return planetaryHour; }
     public void syzygy(NativeSyzygy syzygy) { this.syzygy = syzygy; }
     public NativeSyzygy syzygy() { return syzygy; }
+    public void lordOfOrb(NativeLordOfOrb lordOfOrb) { this.lordOfOrb = lordOfOrb; }
+    public NativeLordOfOrb lordOfOrb() { return lordOfOrb; }
     public void lot(NativeHermeticLot lot) { this.lots.put(lot.lot(), lot); }
     public Map<String, NativeHermeticLot> lots() { return lots; }
     public NativeHermeticLot lot(String lotName) { return lots.get(lotName); }
@@ -64,6 +68,6 @@ public final class NativeReportBuilder {
     public Map<String, ChartPoint> contraAntiscia() { return contraAntiscia; }
 
     public NativeReport build() {
-        return new NativeReport(name, birth, planetaryHour, syzygy, new LinkedHashMap<>(lots), new LinkedHashMap<>(planets), new LinkedHashMap<>(houses), List.copyOf(mainAspects), List.copyOf(otherAspects), new LinkedHashMap<>(dodecatemoria), new LinkedHashMap<>(novenaria), new LinkedHashMap<>(antiscia), new LinkedHashMap<>(contraAntiscia));
+        return new NativeReport(name, birth, planetaryHour, syzygy, lordOfOrb, new LinkedHashMap<>(lots), new LinkedHashMap<>(planets), new LinkedHashMap<>(houses), List.copyOf(mainAspects), List.copyOf(otherAspects), new LinkedHashMap<>(dodecatemoria), new LinkedHashMap<>(novenaria), new LinkedHashMap<>(antiscia), new LinkedHashMap<>(contraAntiscia));
     }
 }

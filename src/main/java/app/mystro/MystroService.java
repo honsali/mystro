@@ -17,6 +17,7 @@ import app.mystro.processor.impl.ChartProcessor;
 import app.mystro.processor.impl.DerivedChartsProcessor;
 import app.mystro.processor.impl.HermeticLotsProcessor;
 import app.mystro.processor.impl.HousesProcessor;
+import app.mystro.processor.impl.LordOfOrbProcessor;
 import app.mystro.processor.impl.PlanetPositionsProcessor;
 import app.mystro.processor.impl.PlanetaryHourProcessor;
 import app.mystro.processor.impl.SyzygyProcessor;
@@ -27,6 +28,7 @@ public final class MystroService {
     private final List<MystroProcessor> sectionProcessors = List.of(//
             new ChartProcessor(), //
             new PlanetaryHourProcessor(), //
+            new LordOfOrbProcessor(), //
             new SyzygyProcessor(), //
             new HermeticLotsProcessor(), //
             new PlanetPositionsProcessor(), //

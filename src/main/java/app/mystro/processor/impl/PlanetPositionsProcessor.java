@@ -72,9 +72,17 @@ public final class PlanetPositionsProcessor extends MystroProcessor {
         var utcDateTime = syzygy.syzygyDateTime().withOffsetSameInstant(ZoneOffset.UTC);
         double hourUt = utcDateTime.getHour() + utcDateTime.getMinute() / 60.0 + utcDateTime.getSecond() / 3600.0;
         double jd = builder.swissEph().swe_julday(utcDateTime.getYear(), utcDateTime.getMonthValue(), utcDateTime.getDayOfMonth(), hourUt, SweConst.SE_GREG_CAL);
+        int planetId = resolveSyzygyPlanetId(syzygy, chart);
         double[] xx = new double[6];
-        builder.swissEph().swe_calc_ut(jd, SweConst.SE_SUN, SweConst.SEFLG_SPEED, xx, new StringBuilder());
+        builder.swissEph().swe_calc_ut(jd, planetId, SweConst.SEFLG_SPEED, xx, new StringBuilder());
         double lon = xx[0];
         positions.put("Syzygy", new ChartPoint("Syzygy", signOf(lon), signLon(lon), normalize(lon), signHouse(chart.ascSign(), signOf(lon)), xx[3], xx[3] < 0));
+    }
+
+    private int resolveSyzygyPlanetId(NativeSyzygy syzygy, NativeChart chart) {
+        if ("Full Moon".equalsIgnoreCase(syzygy.phase())) {
+            return chart.diurnal() ? SweConst.SE_SUN : SweConst.SE_MOON;
+        }
+        return SweConst.SE_SUN;
     }
 }

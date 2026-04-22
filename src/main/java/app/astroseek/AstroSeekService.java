@@ -12,6 +12,7 @@ import app.astroseek.parser.impl.AstroSeekBirthParser;
 import app.astroseek.parser.impl.AstroSeekDerivedChartsParser;
 import app.astroseek.parser.impl.AstroSeekHermeticLotParser;
 import app.astroseek.parser.impl.AstroSeekHousesParser;
+import app.astroseek.parser.impl.AstroSeekLordOfOrbParser;
 import app.astroseek.parser.impl.AstroSeekMainAspectsParser;
 import app.astroseek.parser.impl.AstroSeekOtherAspectsParser;
 import app.astroseek.parser.impl.AstroSeekPlanetPositionsParser;
@@ -33,6 +34,7 @@ public final class AstroSeekService {
             new AstroSeekOtherAspectsParser(), //
             new AstroSeekDerivedChartsParser(), //
             new AstroSeekPlanetaryHourParser(), //
+            new AstroSeekLordOfOrbParser(), //
             new AstroSeekSyzygyParser(), //
             new AstroSeekHermeticLotParser()//
     );

@@ -17,7 +17,6 @@ The app now uses the bundled **pure Java Swiss Ephemeris port** under `src/main/
 Validate changes with compilation first, then validate runtime flow with:
 
 ```bash
-cd astro
 mvn compile
 mvn exec:java -Dexec.args="--names ilia marwa reda"
 ```
@@ -37,6 +36,7 @@ mvn exec:java -Dexec.args="--names ilia marwa reda"
 - Markdown output, i18n resources, and the old `src/test` suite were removed.
 - Mystro report assembly now lives in `app.mystro.MystroService` via `NativeReportBuilder` plus computation processors.
 - Astro-Seek parsing orchestration now lives in `app.astroseek.AstroSeekService`.
-- Current Mystro runtime includes a pragmatic Chiron fallback from saved Astro-Seek HTML when direct ephemeris output is unavailable.
+- Current Mystro runtime attempts direct Swiss Ephemeris Chiron calculation first and only falls back to saved Astro-Seek HTML when needed; fallback runs are logged with `CHIRON_HTML_FALLBACK`.
 - Shared constants and common runtime error collection now live in `app.common.Config` and `app.common.Logger`.
 - Validation should focus on Astro-Seek behavior and known target charts.
+- The validation agent now writes versioned reports under `validation/validation-report-v<version>.md`.

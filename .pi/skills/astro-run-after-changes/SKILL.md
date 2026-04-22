@@ -11,7 +11,6 @@ After every code change in `astro`, recompile the project. When the change affec
 
 ## Required command
 ```bash
-cd astro
 mvn compile
 ```
 
