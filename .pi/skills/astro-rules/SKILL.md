@@ -22,6 +22,7 @@ If the task touches implementation details, also read:
 - Lord of the Orb
 - planetary hour based calculations
 - Hermetic lots
+- textbook arrow notation for lot formulas (`A → B` = forward arc `(B - A)`)
 - whole-sign house logic for lots
 - aversion / sign-based relationship logic
 - efforts to approximate Astro-Seek results algorithmically

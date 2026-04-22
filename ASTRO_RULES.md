@@ -1,6 +1,6 @@
 # Astro Rules and Inferred Algorithms
 
-Last updated: 2026-04-21
+Last updated: 2026-04-22
 
 This file stores astrology-specific rules and inferred algorithms adopted in the `mystro` project so future sessions can continue without reconstructing them from scratch.
 
@@ -40,16 +40,12 @@ Produce results approximately matching Astro-Seek for the 7 principal Hermetic L
 ### Formula conventions
 The project now uses explicit sect-conditional formulas for all seven lots.
 
-For **diurnal** births:
-- Fortune = Moon → Sun
-- Spirit = Sun → Moon
-- Eros = Venus → Spirit
-- Victory = Jupiter → Spirit
-- Necessity = Fortune → Mercury
-- Courage = Mars → Fortune
-- Nemesis = Fortune → Saturn
+Arrow notation follows the textbook convention used in Dorotheus / Valens / Brennan:
+- `A → B` means the forward arc from `A` to `B`
+- mathematically: `(B - A)`
+- lot longitude = `Asc + (B - A)`
 
-For **nocturnal** births:
+For **diurnal** births:
 - Fortune = Sun → Moon
 - Spirit = Moon → Sun
 - Eros = Spirit → Venus
@@ -58,8 +54,17 @@ For **nocturnal** births:
 - Courage = Fortune → Mars
 - Nemesis = Saturn → Fortune
 
+For **nocturnal** births:
+- Fortune = Moon → Sun
+- Spirit = Sun → Moon
+- Eros = Venus → Spirit
+- Victory = Jupiter → Spirit
+- Necessity = Fortune → Mercury
+- Courage = Mars → Fortune
+- Nemesis = Fortune → Saturn
+
 ### Important implementation note
-Implementation should keep the arc direction explicit in code and formulas. Astro-Seek agreement is useful, but shared Courage mismatches in saved HTML mean parity alone is not enough for validation.
+Implementation should keep the arc direction explicit in code and formulas. `HermeticLotsProcessor.projectLot()` currently computes `Asc + p1 - p2`, so the displayed textbook formula label for that computation is `p2 → p1`. Astro-Seek agreement is useful, but shared Courage mismatches in saved HTML mean parity alone is not enough for validation.
 
 ## 3. House logic for Hermetic Lots
 

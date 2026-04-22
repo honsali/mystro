@@ -63,7 +63,7 @@ Expected case structure in `native-list.json`:
 - check project working directory
 - check ephemeris path resolution
 - distinguish runtime setup issues from astrology-logic issues before changing code
-- if the issue is on the Mystro side, check whether it belongs in a computation processor, chart support logic, or Astro-Seek-alignment fallback logic before changing shared runtime assumptions
+- if the issue is on the Mystro side, check whether it belongs in a computation processor, chart support logic, or Astro-Seek-alignment logic before changing shared runtime assumptions
 
 ## Related references
 - `../AGENTS.md`

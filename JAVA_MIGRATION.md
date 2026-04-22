@@ -36,7 +36,7 @@ mvn exec:java -Dexec.args="--names ilia marwa reda"
 - Markdown output, i18n resources, and the old `src/test` suite were removed.
 - Mystro report assembly now lives in `app.mystro.MystroService` via `NativeReportBuilder` plus computation processors.
 - Astro-Seek parsing orchestration now lives in `app.astroseek.AstroSeekService`.
-- Current Mystro runtime attempts direct Swiss Ephemeris Chiron calculation first and only falls back to saved Astro-Seek HTML when needed; fallback runs are logged with `CHIRON_HTML_FALLBACK`.
+- Current Mystro runtime calculates Chiron directly from Swiss Ephemeris via the project `ephe/` files; the old Astro-Seek HTML fallback is no longer part of the active validation path.
 - Shared constants and common runtime error collection now live in `app.common.Config` and `app.common.Logger`.
 - Validation should focus on Astro-Seek behavior and known target charts.
 - The validation agent now writes versioned reports under `validation/validation-report-v<version>.md`.

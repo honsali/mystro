@@ -1,6 +1,6 @@
 # Session Memory
 
-Last updated: 2026-04-21
+Last updated: 2026-04-22
 Source: refreshed from current codebase, compile/run validation, and existing project notes
 
 ## Durable facts
@@ -30,8 +30,9 @@ Source: refreshed from current codebase, compile/run validation, and existing pr
 - Astro-Seek parsing still uses the `app.astroseek.parser.AstroSeekParser` interface with parser implementations under `app.astroseek.parser.impl`.
 - Current Astro-Seek parser modules are `AstroSeekBirthParser`, `AstroSeekPlanetPositionsParser`, `AstroSeekHousesParser`, `AstroSeekMainAspectsParser`, `AstroSeekOtherAspectsParser`, `AstroSeekDerivedChartsParser`, `AstroSeekPlanetaryHourParser`, `AstroSeekLordOfOrbParser`, `AstroSeekSyzygyParser`, and `AstroSeekHermeticLotParser`.
 - `HermeticLotsProcessor` now uses explicit day/night formulas for all seven lots rather than only swapping Fortune and Spirit.
+- Hermetic lot `formula` strings now follow textbook arrow notation: `A → B` means the forward arc `(B - A)` added to the Ascendant.
 - `PlanetPositionsProcessor` now resolves the Syzygy point by phase and sect instead of always injecting the Sun's longitude.
-- `ChartProcessor` attempts direct Swiss Ephemeris Chiron calculation first and logs `CHIRON_HTML_FALLBACK` when it has to reuse the saved Astro-Seek HTML fallback.
+- `ChartProcessor` calculates Chiron directly through Swiss Ephemeris from the expanded `ephe/` tables; Chiron is now part of normal independent validation rather than an Astro-Seek HTML fallback case.
 - Package layout is organized under `app` with `app.astroseek`, `app.mystro`, `app.common`, `app.swisseph.core`, and `app.swisseph.wrapper`.
 - Astro-Seek parsing lives in main code under `src/main/java/app/astroseek/`.
 - Astro-Seek parsing uses micro-parsers orchestrated by `app.astroseek.AstroSeekService`.
@@ -56,7 +57,7 @@ Current status:
 - `mvn compile` succeeds
 - `mvn exec:java -Dexec.args="--names ilia marwa reda"` succeeds
 - Current normalized outputs cover Lord of the Orb, planets, houses, aspects, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
-- Current remaining comparison diffs are concentrated in Courage-vs-Astro-Seek, aspect policy/oracle differences, and station-sensitive retrograde flags.
+- Current remaining comparison diffs are concentrated in Courage-vs-Astro-Seek, aspect policy/oracle differences, and a real Chiron retrograde mismatch on `marwa`.
 
 ### Lord of the Orb rule to keep
 Use the Astro-Seek-style method:

@@ -72,7 +72,7 @@ For each domain: what is computed, what you check, which errors to look for.
 - Retrograde flag matches (speed < 0).
 - Sign = floor(longitude / 30°); degree-in-sign = longitude mod 30°.
 - Lunar node: confirm whether Mean or True Node is computed and compared. Astro-Seek's default in most views is True Node. Mismatch on which node is being computed is a common source of apparent disagreement.
-- **Chiron fallback**: Chiron currently has a fallback path that reads from the saved Astro-Seek HTML when direct ephemeris output is unavailable. Flag any run where Chiron's Mystro value is suspiciously identical to the parsed Astro-Seek value across every chart — that indicates the fallback is masking a real computation gap rather than validating it.
+- **Chiron**: Chiron is expected to be computed directly from Swiss Ephemeris using the local `ephe/` tables. Treat any persistent Chiron mismatch as a real computation or parsing issue, not as a fallback artifact.
 
 **Common errors:**
 - Equatorial vs ecliptic coordinates confused.
@@ -114,20 +114,32 @@ For each domain: what is computed, what you check, which errors to look for.
 
 **Computed:** Fortune, Spirit, Eros, Victory, Necessity, Courage, Nemesis — each with longitude, sign, house, and lord-to-ruler relations (L→R, F→R).
 
-**Diurnal formulas** (Sun above the horizon at birth):
-- Fortune = Asc + Moon − Sun
-- Spirit = Asc + Sun − Moon
-- Eros = Asc + Spirit − Venus
-- Victory = Asc + Jupiter − Spirit
-- Necessity = Asc + Mercury − Fortune
-- Courage = Asc + Mars − Fortune
-- Nemesis = Asc + Saturn − Fortune
+Textbook arrow notation is used for lot formulas:
+- `A → B` means the forward arc from `A` to `B`
+- mathematically: `(B - A)`
+- lot longitude = `Asc + (B - A)`
 
-**Nocturnal formulas** (Sun below the horizon): Fortune and Spirit swap. Several of the derived lots also reverse their arc direction — verify each nocturnal formula term-by-term against the project's declared source (Valens, Paulus, Brennan's modern synthesis).
+**Diurnal formulas** (Sun above the horizon at birth):
+- Fortune = Sun → Moon
+- Spirit = Moon → Sun
+- Eros = Spirit → Venus
+- Victory = Spirit → Jupiter
+- Necessity = Mercury → Fortune
+- Courage = Fortune → Mars
+- Nemesis = Saturn → Fortune
+
+**Nocturnal formulas** (Sun below the horizon at birth):
+- Fortune = Moon → Sun
+- Spirit = Sun → Moon
+- Eros = Venus → Spirit
+- Victory = Jupiter → Spirit
+- Necessity = Fortune → Mercury
+- Courage = Mars → Fortune
+- Nemesis = Fortune → Saturn
 
 **Check:**
 - Sect determination: is the Sun above or below the horizon (Asc–Desc axis) at birth? Verify the project's cutoff (some use a small arc above horizon as still nocturnal; the choice must be consistent).
-- Each lot's longitude computed as `(Asc + arc_start − arc_end) mod 360`.
+- Each lot's longitude computed as `Asc + (destination - source)` modulo 360, matching the emitted `A → B` formula label.
 - Lot house via whole-sign from the Ascendant sign, not via degree-based house allocation. A known earlier bug in the project was using `chart.houses.getObjectHouse(...)` instead.
 - **L→R**: whole-sign relationship from the lot's sign to its traditional ruler's sign, expressed as `1e, 2e, 3e ... 12e` or `A` for aversion.
 - **F→R**: whole-sign relationship from Fortune's sign to the lot's ruler's sign.

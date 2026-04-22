@@ -131,9 +131,6 @@ public final class ValidatorService {
         }
 
         comparePointMaps("planets", mystroReport.planets(), astroseekReport.planets(), differences);
-        if (logger.hasError("CHIRON_HTML_FALLBACK", name) && mystroReport.planets().containsKey("Chiron")) {
-            differences.add("planets.Chiron: Mystro used HTML fallback; agreement is not independent validation");
-        }
         comparePointMaps("houses", mystroReport.houses(), astroseekReport.houses(), differences);
         compareAspectLists("mainAspects", mystroReport.mainAspects(), astroseekReport.mainAspects(), differences);
         compareAspectLists("otherAspects", mystroReport.otherAspects(), astroseekReport.otherAspects(), differences);

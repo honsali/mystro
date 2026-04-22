@@ -1,7 +1,5 @@
 package app.mystro.processor.impl;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,9 +7,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import app.common.Config;
 import app.common.NativeReportBuilder;
 import app.common.model.ChartPoint;
 import app.common.model.NativeBirth;
@@ -21,7 +16,6 @@ import app.swisseph.core.SweConst;
 import app.swisseph.core.SwissEph;
 
 public final class ChartProcessor extends MystroProcessor {
-    private static final Pattern CHIRON_TEXTAREA_PATTERN = Pattern.compile("(?m)^Chiron,([A-Za-z]+),(\\d+)&deg;(\\d+)");
     private String ascSign;
     private SwissEph swissEph;
 
@@ -61,7 +55,6 @@ public final class ChartProcessor extends MystroProcessor {
         addPlanet(points, "North Node", SweConst.SE_MEAN_NODE, jd);
         addPlanet(points, "Lilith", SweConst.SE_MEAN_APOG, jd);
         addPlanet(points, "Chiron", SweConst.SE_CHIRON, jd);
-        addChironFallback(points, builder);
 
         ChartPoint northNode = points.get("North Node");
         points.put("South Node", calculateSouthNode(northNode, signOf(ascmc[0])));
@@ -112,30 +105,6 @@ public final class ChartProcessor extends MystroProcessor {
     private ChartPoint getPoint(String id, double lon, double speed) {
         int house = signHouse(ascSign, signOf(lon));
         return new ChartPoint(id, signOf(lon), signLon(lon), normalize(lon), house, speed, false);
-    }
-
-    private void addChironFallback(Map<String, ChartPoint> points, NativeReportBuilder builder) {
-        if (points.containsKey("Chiron")) {
-            return;
-        }
-        try {
-            var htmlPath = Config.ASTROSEEK_HTML_DIR.resolve(builder.name() + ".html");
-            if (!Files.exists(htmlPath)) {
-                return;
-            }
-            String html = Files.readString(htmlPath);
-            Matcher matcher = CHIRON_TEXTAREA_PATTERN.matcher(html);
-            if (!matcher.find()) {
-                return;
-            }
-            String sign = matcher.group(1).trim();
-            double signLon = Integer.parseInt(matcher.group(2)) + Integer.parseInt(matcher.group(3)) / 60.0;
-            double lon = Config.SIGNS.indexOf(sign) * 30.0 + signLon;
-            int house = signHouse(ascSign, sign);
-            points.put("Chiron", new ChartPoint("Chiron", sign, signLon, lon, house, 0.0, true));
-            app.common.Logger.getInstance().error("CHIRON_HTML_FALLBACK", builder.name(), "Chiron was populated from Astro-Seek HTML fallback");
-        } catch (IOException ignored) {
-        }
     }
 
     private ChartPoint calculateSouthNode(ChartPoint northNode, String ascSign) {

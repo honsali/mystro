@@ -64,7 +64,7 @@ The Java app currently focuses on JSON generation and comparison:
 - whole-sign houses
 - planet positions and house positions
 - main aspects and other aspects
-- Fortune and the 7 Hermetic Lots
+- Fortune and the 7 Hermetic Lots, with formula strings emitted in textbook arrow notation (`A → B` = forward arc `(B - A)`)
 - planetary hour at birth
 - Lord of the Orb (`mod84` and `mod12`) in normalized JSON output
 - derived chart sections: `dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`
@@ -86,12 +86,11 @@ Shared constants live in `app.common.Config`, and shared runtime error collectio
 - The app is now English-only and JSON-only; markdown output, i18n resources, and `src/test` were removed.
 - Validation is compile-first (`mvn compile`) and runtime-second (`mvn exec:java ...`).
 - The validation agent writes versioned reports under `validation/`, for example `validation/validation-report-v0.2.0.md`.
-- Chiron now attempts direct Swiss Ephemeris calculation first; if that fails, the runtime falls back to the saved Astro-Seek HTML and logs `CHIRON_HTML_FALLBACK`.
+- Chiron is now calculated directly from Swiss Ephemeris using the ephemeris files in `ephe/`; the Astro-Seek HTML fallback is no longer part of active runtime validation.
 - Lord of the Orb is now emitted in both Mystro and Astro-Seek normalized JSON so it can be compared on overlapping visible years.
 
 ## Next suggested steps
 
 1. validate the expanded normalized sections against more saved Astro-Seek charts
 2. refine any astrology rules still inferred from Astro-Seek comparisons
-3. reduce or eliminate the current Chiron fallback by replacing it with direct ephemeris support if feasible
-4. keep project memory files in sync with code changes
+3. keep project memory files in sync with code changes

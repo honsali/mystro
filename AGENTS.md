@@ -42,9 +42,9 @@ run.bat
 - Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `LordOfOrbProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
 - Shared normalized runtime model is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
 - `NativeReport` currently emits `lordOfOrb`, `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia` in addition to birth / planetary hour / syzygy / lots.
-- `HermeticLotsProcessor` now applies explicit sect-conditional formulas for all seven lots.
+- `HermeticLotsProcessor` now applies explicit sect-conditional formulas for all seven lots, and its emitted `formula` strings use textbook arrow notation where `A → B` means the forward arc `(B - A)` added to the Ascendant.
 - `PlanetPositionsProcessor` now resolves the Syzygy point by phase/sect instead of always forcing the Sun.
-- `ChartProcessor` now attempts direct Swiss Ephemeris Chiron calculation first and logs `CHIRON_HTML_FALLBACK` if it has to fall back to saved Astro-Seek HTML.
+- `ChartProcessor` now calculates Chiron directly through Swiss Ephemeris using the bundled `ephe/` tables; treat Chiron as normal computed output during validation.
 - Shared constants now live in `app.common.Config`.
 - Shared runtime error collection now lives in the singleton `app.common.Logger`.
 - There is currently no active `src/test` suite, but legacy artifacts still exist under `test/` and `target/`.
