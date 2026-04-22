@@ -12,6 +12,7 @@ import app.common.io.NativeListLoader;
 import app.common.model.NativeBirth;
 import app.common.model.NativeReport;
 import app.mystro.processor.MystroProcessor;
+import app.mystro.processor.impl.AnnualProfectionsProcessor;
 import app.mystro.processor.impl.AspectsProcessor;
 import app.mystro.processor.impl.ChartProcessor;
 import app.mystro.processor.impl.DerivedChartsProcessor;
@@ -31,6 +32,7 @@ public final class MystroService {
             new LordOfOrbProcessor(), //
             new SyzygyProcessor(), //
             new HermeticLotsProcessor(), //
+            new AnnualProfectionsProcessor(), //
             new PlanetPositionsProcessor(), //
             new HousesProcessor(), //
             new AspectsProcessor(), //

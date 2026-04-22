@@ -18,7 +18,8 @@ mvn compile
 1. Make the code change.
 2. Run the compile command above.
 3. If the change affects runtime behavior, validate with:
-   - `mvn exec:java -Dexec.args="--names ilia marwa reda"`
+   - `run.bat`
+   - or equivalently `mvn exec:java -Dexec.args="--names ilia reda marwa"`
 4. Confirm the main flow still works: it reads `native-list.json`, writes Mystro JSON to `output/mystro/json/`, writes Astro-Seek JSON to `output/astroseek/json/`, and writes one comparison summary to `output/report.json`.
 5. Only consider the change complete after compilation succeeds and runtime validation succeeds when applicable.
 

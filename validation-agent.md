@@ -36,7 +36,9 @@ Your inspection path:
 1. Trigger a build and run representative charts:
    ```bash
    mvn compile
-   mvn exec:java -Dexec.args="--names ilia marwa reda"
+   run.bat
+   # or equivalently:
+   mvn exec:java -Dexec.args="--names ilia reda marwa"
    ```
 2. Read `output/report.json` for MATCH / DIFF statuses per chart and per section.
 3. For each DIFF: open the two JSONs side by side, identify the exact field, then trace the computation in the Java source to locate its origin.
@@ -125,7 +127,7 @@ Textbook arrow notation is used for lot formulas:
 - Eros = Spirit → Venus
 - Victory = Spirit → Jupiter
 - Necessity = Mercury → Fortune
-- Courage = Fortune → Mars
+- Courage = Mars → Fortune
 - Nemesis = Saturn → Fortune
 
 **Nocturnal formulas** (Sun below the horizon at birth):
@@ -134,7 +136,7 @@ Textbook arrow notation is used for lot formulas:
 - Eros = Venus → Spirit
 - Victory = Jupiter → Spirit
 - Necessity = Fortune → Mercury
-- Courage = Mars → Fortune
+- Courage = Fortune → Mars
 - Nemesis = Fortune → Saturn
 
 **Check:**

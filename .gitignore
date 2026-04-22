@@ -8,6 +8,9 @@
 # Local input data
 /input/
 
+# Legacy local test artifacts
+/test/
+
 # Local agent state
 /.cp
 /.cp_runtime

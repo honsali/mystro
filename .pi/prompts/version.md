@@ -33,6 +33,7 @@ Required workflow:
 
 5. Stage the correct files for the version commit:
    - include all intentional source/doc/config changes
+   - if this workflow creates or updates a versioned validation report under `validation/validation-report-v<version>.md`, review it and include it in the version commit when it reflects the released state
    - exclude ignored files and accidental local-only artifacts
 
 6. Create the version commit:

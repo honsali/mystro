@@ -51,7 +51,7 @@ For **diurnal** births:
 - Eros = Spirit → Venus
 - Victory = Spirit → Jupiter
 - Necessity = Mercury → Fortune
-- Courage = Fortune → Mars
+- Courage = Mars → Fortune
 - Nemesis = Saturn → Fortune
 
 For **nocturnal** births:
@@ -60,7 +60,7 @@ For **nocturnal** births:
 - Eros = Venus → Spirit
 - Victory = Jupiter → Spirit
 - Necessity = Fortune → Mercury
-- Courage = Mars → Fortune
+- Courage = Fortune → Mars
 - Nemesis = Fortune → Saturn
 
 ### Important implementation note
@@ -125,7 +125,32 @@ In zero-based modular offsets, these are:
 
 This matched Astro-Seek-style results much better than interpreting `A` as angular.
 
-## 6. Future guidance
+## 6. Annual profections structure
+
+### Rule
+Keep `lordOfOrb` and `annualProfections` as separate normalized sections.
+
+### Reason
+Astro-Seek's Annual Profections table contains a broader structure than the Lord of the Orb column alone.
+
+### Current normalized annual profections fields
+Each annual profection row currently carries:
+- `age`
+- `date`
+- `lordOfYearSign`
+- `lordOfYearRuler`
+- `lordOfOrbMod84`
+- `lordOfOrbMod12`
+- `mcSign`
+- `sunSign`
+- `moonSign`
+- `fortuneSign`
+
+### Notes
+- `lordOfOrb` remains independently normalized and compared.
+- Annual profection dates should be emitted as ISO `yyyy-MM-dd` strings.
+
+## 7. Future guidance
 
 When refining astro algorithms in future sessions:
 1. Prefer matching **algorithmic behavior** over copying display text from Astro-Seek.

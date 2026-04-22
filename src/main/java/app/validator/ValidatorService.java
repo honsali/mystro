@@ -10,6 +10,7 @@ import app.common.Config;
 import app.common.Logger;
 import app.common.io.JsonFileSupport;
 import app.common.model.ChartPoint;
+import app.common.model.NativeAnnualProfectionEntry;
 import app.common.model.NativeAspect;
 import app.common.model.NativeHermeticLot;
 import app.common.model.NativeLordOfOrbEntry;
@@ -110,6 +111,7 @@ public final class ValidatorService {
         }
 
         compareLordOfOrb(mystroReport, astroseekReport, differences);
+        compareAnnualProfections(mystroReport, astroseekReport, differences);
 
         for (Map.Entry<String, NativeHermeticLot> entry : astroseekReport.lots().entrySet()) {
             NativeHermeticLot mystroLot = mystroReport.lots().get(entry.getKey());
@@ -159,6 +161,31 @@ public final class ValidatorService {
             }
             compareField("lordOfOrb.years[age=" + astroseekYear.age() + "].mod84", mystroYear.mod84(), astroseekYear.mod84(), differences);
             compareField("lordOfOrb.years[age=" + astroseekYear.age() + "].mod12", mystroYear.mod12(), astroseekYear.mod12(), differences);
+        }
+    }
+
+    private void compareAnnualProfections(NativeReport mystroReport, NativeReport astroseekReport, List<String> differences) {
+        if (mystroReport.annualProfections() == null || astroseekReport.annualProfections() == null) {
+            compareField("annualProfections", mystroReport.annualProfections(), astroseekReport.annualProfections(), differences);
+            return;
+        }
+        Map<Integer, NativeAnnualProfectionEntry> mystroYearsByAge = mystroReport.annualProfections().years().stream()
+                .collect(java.util.stream.Collectors.toMap(NativeAnnualProfectionEntry::age, year -> year, (left, right) -> left));
+        for (NativeAnnualProfectionEntry astroseekYear : astroseekReport.annualProfections().years()) {
+            NativeAnnualProfectionEntry mystroYear = mystroYearsByAge.get(astroseekYear.age());
+            if (mystroYear == null) {
+                differences.add("annualProfections.years[age=" + astroseekYear.age() + "]: missing in mystro");
+                continue;
+            }
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].date", mystroYear.date(), astroseekYear.date(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].lordOfYearSign", mystroYear.lordOfYearSign(), astroseekYear.lordOfYearSign(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].lordOfYearRuler", mystroYear.lordOfYearRuler(), astroseekYear.lordOfYearRuler(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].lordOfOrbMod84", mystroYear.lordOfOrbMod84(), astroseekYear.lordOfOrbMod84(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].lordOfOrbMod12", mystroYear.lordOfOrbMod12(), astroseekYear.lordOfOrbMod12(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].mcSign", mystroYear.mcSign(), astroseekYear.mcSign(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].sunSign", mystroYear.sunSign(), astroseekYear.sunSign(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].moonSign", mystroYear.moonSign(), astroseekYear.moonSign(), differences);
+            compareField("annualProfections.years[age=" + astroseekYear.age() + "].fortuneSign", mystroYear.fortuneSign(), astroseekYear.fortuneSign(), differences);
         }
     }
 

@@ -22,7 +22,7 @@ public final class HermeticLotsProcessor extends MystroProcessor {
                 builder.lot(buildLot("Eros", diurnal ? "Spirit → Venus" : "Venus → Spirit", diurnal ? chart.point("Venus") : spirit, diurnal ? spirit : chart.point("Venus"), fortune, chart));
                 builder.lot(buildLot("Victory", diurnal ? "Spirit → Jupiter" : "Jupiter → Spirit", diurnal ? chart.point("Jupiter") : spirit, diurnal ? spirit : chart.point("Jupiter"), fortune, chart));
                 builder.lot(buildLot("Necessity", diurnal ? "Mercury → Fortune" : "Fortune → Mercury", diurnal ? fortune : chart.point("Mercury"), diurnal ? chart.point("Mercury") : fortune, fortune, chart));
-                builder.lot(buildLot("Courage", diurnal ? "Fortune → Mars" : "Mars → Fortune", diurnal ? chart.point("Mars") : fortune, diurnal ? fortune : chart.point("Mars"), fortune, chart));
+                builder.lot(buildLot("Courage", diurnal ? "Mars → Fortune" : "Fortune → Mars", diurnal ? fortune : chart.point("Mars"), diurnal ? chart.point("Mars") : fortune, fortune, chart));
                 builder.lot(buildLot("Nemesis", diurnal ? "Saturn → Fortune" : "Fortune → Saturn", diurnal ? fortune : chart.point("Saturn"), diurnal ? chart.point("Saturn") : fortune, fortune, chart));
 
         }

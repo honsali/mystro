@@ -15,7 +15,7 @@
 ## Common commands
 ```bash
 mvn compile
-mvn exec:java -Dexec.args="--names ilia marwa reda"
+mvn exec:java -Dexec.args="--names ilia reda marwa"
 run.bat
 ```
 
@@ -37,17 +37,18 @@ run.bat
 - Main orchestration classes are `app.mystro.MystroService`, `app.astroseek.AstroSeekService`, and `app.validator.ValidatorService`.
 - Astro-Seek HTML parsing lives under `src/main/java/app/astroseek/`.
 - Astro-Seek parsing is modular and currently uses the `app.astroseek.parser.AstroSeekParser` interface plus parser implementations under `app.astroseek.parser.impl`, orchestrated by `app.astroseek.AstroSeekService`.
-- Current Astro-Seek parser modules cover birth data, planet positions, houses, main aspects, other aspects, planetary hour, Lord of the Orb, syzygy, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- Current Astro-Seek parser modules cover birth data, planet positions, houses, main aspects, other aspects, planetary hour, Lord of the Orb, annual profections, syzygy, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- Annual profections are modeled separately from `lordOfOrb`; `lordOfOrb` remains as its own normalized section while `annualProfections` carries the broader table (`lordOfYear`, `lordOfOrb`, profected MC / Sun / Moon / Fortune signs).
 - `app.mystro.MystroService` orchestrates JSON report assembly through computation processors plus `app.common.NativeReportBuilder`.
-- Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `LordOfOrbProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
-- Shared normalized runtime model is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
-- `NativeReport` currently emits `lordOfOrb`, `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia` in addition to birth / planetary hour / syzygy / lots.
+- Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `LordOfOrbProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `AnnualProfectionsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
+- Shared normalized runtime model is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeAnnualProfections`, `NativeAnnualProfectionEntry`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
+- `NativeReport` currently emits `lordOfOrb`, `annualProfections`, `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia` in addition to birth / planetary hour / syzygy / lots.
 - `HermeticLotsProcessor` now applies explicit sect-conditional formulas for all seven lots, and its emitted `formula` strings use textbook arrow notation where `A → B` means the forward arc `(B - A)` added to the Ascendant.
 - `PlanetPositionsProcessor` now resolves the Syzygy point by phase/sect instead of always forcing the Sun.
 - `ChartProcessor` now calculates Chiron directly through Swiss Ephemeris using the bundled `ephe/` tables; treat Chiron as normal computed output during validation.
 - Shared constants now live in `app.common.Config`.
 - Shared runtime error collection now lives in the singleton `app.common.Logger`.
-- There is currently no active `src/test` suite, but legacy artifacts still exist under `test/` and `target/`.
+- There is currently no active `src/test` suite. The old tracked `test/` artifact tree was removed from Git and is now ignored locally; `target/` remains generated build output.
 
 ## When touching Lord of the Orb
 - Base it on the birth **planetary hour ruler** from the input birth data.
@@ -60,7 +61,7 @@ run.bat
 ## Working style
 - Prefer reading and editing files over guessing.
 - After every code change, run `mvn compile` and verify the project still builds.
-- If you change runtime logic or output, also run `mvn exec:java -Dexec.args="--names ilia marwa reda"` when practical, or at least a representative subset such as `--names ilia`.
+- If you change runtime logic or output, also run `run.bat` or the equivalent `mvn exec:java -Dexec.args="--names ilia reda marwa"` when practical, or at least a representative subset such as `--names ilia`.
 - Current representative validation targets are `ilia`, `marwa`, and `reda`; use them to check parser/processor alignment section by section.
 - The main runtime flow uses `app.App`, reads names from CLI `--names ...` or falls back to all entries in `input/native-list.json`, writes Mystro JSON to `output/mystro/json/`, writes Astro-Seek JSON to `output/astroseek/json/`, and writes one comparison summary to `output/report.json`.
 - Both branches normalize into the same shared runtime model before JSON is written.

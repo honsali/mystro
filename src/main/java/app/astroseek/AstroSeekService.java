@@ -8,6 +8,7 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import app.astroseek.parser.AstroSeekParser;
+import app.astroseek.parser.impl.AstroSeekAnnualProfectionsParser;
 import app.astroseek.parser.impl.AstroSeekBirthParser;
 import app.astroseek.parser.impl.AstroSeekDerivedChartsParser;
 import app.astroseek.parser.impl.AstroSeekHermeticLotParser;
@@ -35,6 +36,7 @@ public final class AstroSeekService {
             new AstroSeekDerivedChartsParser(), //
             new AstroSeekPlanetaryHourParser(), //
             new AstroSeekLordOfOrbParser(), //
+            new AstroSeekAnnualProfectionsParser(), //
             new AstroSeekSyzygyParser(), //
             new AstroSeekHermeticLotParser()//
     );

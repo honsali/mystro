@@ -11,6 +11,7 @@ Source: refreshed from current codebase, compile/run validation, and existing pr
 - `JsonFileSupport` now registers `JavaTimeModule`, so `OffsetDateTime` JSON serialization works.
 - Runtime uses the bundled **pure Java Swiss Ephemeris port** in `src/main/java/app/swisseph/core/`.
 - There is currently **no active `src/test` suite**; validation is compile plus runtime execution.
+- The old tracked `test/` artifact tree was removed from Git and `/test/` is now ignored locally.
 
 ### Project scaffold decisions
 - `mystro` is a **Java Maven project**.
@@ -18,17 +19,18 @@ Source: refreshed from current codebase, compile/run validation, and existing pr
 - The `/version` workflow now treats the current `pom.xml` version as the release version, then bumps the next iteration by incrementing the middle number and resetting the last number to zero (for example `0.2.0 -> 0.3.0`).
 - Main entry point: `src/main/java/app/App.java`
 - Main orchestration classes are now `app.mystro.MystroService`, `app.astroseek.AstroSeekService`, and `app.validator.ValidatorService`.
-- Shared normalized runtime model used by both Mystro and Astro-Seek branches is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
-- `NativeChart` still exists as the internal Mystro calculation context, and `NativeReportBuilder.build()` now emits normalized chart-derived sections including `lordOfOrb`, `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia`.
+- Shared normalized runtime model used by both Mystro and Astro-Seek branches is centered on `NativeReport`, `NativeBirth`, `NativePlanetaryHour`, `NativeLordOfOrb`, `NativeAnnualProfections`, `NativeAnnualProfectionEntry`, `NativeSyzygy`, `NativeHermeticLot`, `ChartPoint`, and `NativeAspect`.
+- `NativeChart` still exists as the internal Mystro calculation context, and `NativeReportBuilder.build()` now emits normalized chart-derived sections including `lordOfOrb`, `annualProfections`, `planets`, `houses`, `mainAspects`, `otherAspects`, `dodecatemoria`, `novenaria`, `antiscia`, and `contraAntiscia`.
+- `annualProfections` is a separate normalized section from `lordOfOrb`; it captures the broader Astro-Seek annual profections table (`lordOfYear`, `lordOfOrb`, profected MC / Sun / Moon / Fortune signs) while keeping `lordOfOrb` intact.
 - Shared constants live in `src/main/java/app/common/Config.java`.
 - Shared runtime error collection lives in `src/main/java/app/common/Logger.java`.
 - Mystro now builds directly from `app.mystro.MystroService` through processor modules using `app.common.NativeReportBuilder` and `app.swisseph.core.SwissEph`.
 - Main comparison target for astrology behavior: Astro-Seek.
 - The app is now **JSON-only** and **English-only**; markdown writers, i18n resources, and language selection were removed.
 - `app.mystro.MystroService` assembles Mystro JSON through `NativeReportBuilder` plus processor modules.
-- Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `LordOfOrbProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
+- Current Mystro processors are `ChartProcessor`, `PlanetaryHourProcessor`, `LordOfOrbProcessor`, `SyzygyProcessor`, `HermeticLotsProcessor`, `AnnualProfectionsProcessor`, `PlanetPositionsProcessor`, `HousesProcessor`, `AspectsProcessor`, and `DerivedChartsProcessor`.
 - Astro-Seek parsing still uses the `app.astroseek.parser.AstroSeekParser` interface with parser implementations under `app.astroseek.parser.impl`.
-- Current Astro-Seek parser modules are `AstroSeekBirthParser`, `AstroSeekPlanetPositionsParser`, `AstroSeekHousesParser`, `AstroSeekMainAspectsParser`, `AstroSeekOtherAspectsParser`, `AstroSeekDerivedChartsParser`, `AstroSeekPlanetaryHourParser`, `AstroSeekLordOfOrbParser`, `AstroSeekSyzygyParser`, and `AstroSeekHermeticLotParser`.
+- Current Astro-Seek parser modules are `AstroSeekBirthParser`, `AstroSeekPlanetPositionsParser`, `AstroSeekHousesParser`, `AstroSeekMainAspectsParser`, `AstroSeekOtherAspectsParser`, `AstroSeekDerivedChartsParser`, `AstroSeekPlanetaryHourParser`, `AstroSeekLordOfOrbParser`, `AstroSeekAnnualProfectionsParser`, `AstroSeekSyzygyParser`, and `AstroSeekHermeticLotParser`.
 - `HermeticLotsProcessor` now uses explicit day/night formulas for all seven lots rather than only swapping Fortune and Spirit.
 - Hermetic lot `formula` strings now follow textbook arrow notation: `A → B` means the forward arc `(B - A)` added to the Ascendant.
 - `PlanetPositionsProcessor` now resolves the Syzygy point by phase and sect instead of always injecting the Sun's longitude.
@@ -36,7 +38,7 @@ Source: refreshed from current codebase, compile/run validation, and existing pr
 - Package layout is organized under `app` with `app.astroseek`, `app.mystro`, `app.common`, `app.swisseph.core`, and `app.swisseph.wrapper`.
 - Astro-Seek parsing lives in main code under `src/main/java/app/astroseek/`.
 - Astro-Seek parsing uses micro-parsers orchestrated by `app.astroseek.AstroSeekService`.
-- Current Astro-Seek parser modules cover birth data, planet positions, houses, main aspects, other aspects, planetary hour, Lord of the Orb, syzygy, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- Current Astro-Seek parser modules cover birth data, planet positions, houses, main aspects, other aspects, planetary hour, Lord of the Orb, annual profections, syzygy, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
 
 ### CLI and input facts
 - The main CLI supports `--names name1 name2 ...`; with no names it processes all entries.
@@ -49,14 +51,15 @@ Source: refreshed from current codebase, compile/run validation, and existing pr
 ### Current Java commands
 ```bash
 mvn compile
-mvn exec:java -Dexec.args="--names ilia marwa reda"
+mvn exec:java -Dexec.args="--names ilia reda marwa"
 run.bat
 ```
 
 Current status:
 - `mvn compile` succeeds
-- `mvn exec:java -Dexec.args="--names ilia marwa reda"` succeeds
-- Current normalized outputs cover Lord of the Orb, planets, houses, aspects, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- `run.bat` is a known-good runtime validation entry point and currently delegates to `mvn exec:java -Dexec.args="--names ilia reda marwa"`
+- Current normalized outputs cover Lord of the Orb, annual profections, planets, houses, aspects, Hermetic lots, and derived charts (`dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`).
+- Lord of the Orb / annual profection dates are normalized to ISO `yyyy-MM-dd` strings in JSON.
 - Current remaining comparison diffs are concentrated in Courage-vs-Astro-Seek, aspect policy/oracle differences, and a real Chiron retrograde mismatch on `marwa`.
 
 ### Lord of the Orb rule to keep
@@ -81,7 +84,9 @@ mvn compile
 ```
 For runtime validation, use:
 ```bash
-mvn exec:java -Dexec.args="--names ilia marwa reda"
+run.bat
+# or equivalently:
+mvn exec:java -Dexec.args="--names ilia reda marwa"
 ```
 or run with no args to process all entries from `input/native-list.json`.
 Runtime validation is now possible again.

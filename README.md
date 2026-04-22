@@ -36,7 +36,9 @@ mvn compile
 Run the validation workflow:
 
 ```bash
-mvn exec:java -Dexec.args="--names ilia marwa reda"
+run.bat
+# or equivalently:
+mvn exec:java -Dexec.args="--names ilia reda marwa"
 ```
 
 If no `--names` are passed, the app processes all entries in `input/native-list.json`.
@@ -67,6 +69,7 @@ The Java app currently focuses on JSON generation and comparison:
 - Fortune and the 7 Hermetic Lots, with formula strings emitted in textbook arrow notation (`A → B` = forward arc `(B - A)`)
 - planetary hour at birth
 - Lord of the Orb (`mod84` and `mod12`) in normalized JSON output
+- annual profections in normalized JSON output (`lordOfYear`, `lordOfOrb`, profected MC / Sun / Moon / Fortune signs), kept as a separate section from `lordOfOrb`
 - derived chart sections: `dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`
 - normalized JSON generation for Mystro and Astro-Seek
 - JSON comparison with tolerance-based validation
@@ -83,11 +86,12 @@ Shared constants live in `app.common.Config`, and shared runtime error collectio
 - The `/version` workflow releases the current `pom.xml` version, then bumps the next iteration by incrementing the middle number and resetting the last number to zero (for example `0.2.0 -> 0.3.0`).
 - Ephemeris files are expected in `ephe/` under the project root.
 - The runtime no longer depends on a native JNI `swisseph` library.
-- The app is now English-only and JSON-only; markdown output, i18n resources, and `src/test` were removed.
-- Validation is compile-first (`mvn compile`) and runtime-second (`mvn exec:java ...`).
+- The app is now English-only and JSON-only; markdown output and i18n resources were removed, and the old tracked `test/` artifact tree is no longer part of the repository.
+- Validation is compile-first (`mvn compile`) and runtime-second (`run.bat`, which delegates to `mvn exec:java ...`).
 - The validation agent writes versioned reports under `validation/`, for example `validation/validation-report-v0.2.0.md`.
 - Chiron is now calculated directly from Swiss Ephemeris using the ephemeris files in `ephe/`; the Astro-Seek HTML fallback is no longer part of active runtime validation.
 - Lord of the Orb is now emitted in both Mystro and Astro-Seek normalized JSON so it can be compared on overlapping visible years.
+- Annual profections are emitted in both Mystro and Astro-Seek normalized JSON as a separate section from `lordOfOrb`.
 
 ## Next suggested steps
 
