@@ -8,76 +8,78 @@ import app.model.basic.BasicSyzygy;
 import app.model.basic.ChartAngle;
 import app.model.basic.LotPosition;
 import app.model.basic.PlanetPosition;
+import app.model.basic.PointEntry;
+import app.model.basic.TriplicityRulers;
 import app.model.data.Planet;
+import app.model.data.PointType;
 import app.model.data.ZodiacSign;
 
 public class PointCalculator extends BaseCalculator {
 
     protected void executeCalculation() {
-        Map<String, Map<String, Object>> points = new LinkedHashMap<>();
+        Map<String, PointEntry> points = new LinkedHashMap<>();
         for (PlanetPosition planet : basicChart.getPlanets()) {
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("type", "PLANET");
-            data.put("longitude", planet.getLongitude());
-            data.put("sign", planet.getSign());
-            data.put("degreeInSign", planet.getDegreeInSign());
-            data.put("latitude", planet.getLatitude());
-            data.put("declination", planet.getDeclination());
-            data.put("speed", planet.getSpeed());
-            data.put("meanDailySpeed", planet.getMeanDailySpeed());
-            data.put("speedRatio", planet.getSpeedRatio());
-            data.put("retrograde", planet.getRetrograde());
-            data.put("house", planet.getHouse());
-            data.put("angularity", planet.getAngularity());
-            data.put("antisciaLongitude", planet.getAntisciaLongitude());
-            data.put("contraAntisciaLongitude", planet.getContraAntisciaLongitude());
+            PointEntry.Builder entry = PointEntry.builder(PointType.PLANET)
+                    .longitude(planet.getLongitude())
+                    .sign(planet.getSign())
+                    .degreeInSign(planet.getDegreeInSign())
+                    .latitude(planet.getLatitude())
+                    .declination(planet.getDeclination())
+                    .speed(planet.getSpeed())
+                    .meanDailySpeed(planet.getMeanDailySpeed())
+                    .speedRatio(planet.getSpeedRatio())
+                    .retrograde(planet.getRetrograde())
+                    .house(planet.getHouse())
+                    .angularity(planet.getAngularity())
+                    .antisciaLongitude(planet.getAntisciaLongitude())
+                    .contraAntisciaLongitude(planet.getContraAntisciaLongitude());
             if (isTraditionalPlanet(planet.getPlanet())) {
-                data.put("domicileRuler", domicileRuler(planet.getSign()));
-                data.put("exaltationRuler", exaltationRuler(planet.getSign()));
-                data.put("triplicityRulers", triplicityRulers(planet.getSign()));
-                data.put("termRuler", planet.getTermRuler());
-                data.put("faceRuler", faceRuler(planet.getSign(), planet.getDegreeInSign()));
-                data.put("detrimentRuler", domicileRuler(opposite(planet.getSign())));
-                data.put("fallRuler", exaltationRuler(opposite(planet.getSign())));
+                entry.domicileRuler(domicileRuler(planet.getSign()))
+                        .exaltationRuler(exaltationRuler(planet.getSign()))
+                        .triplicityRulers(triplicityRulers(planet.getSign()))
+                        .termRuler(planet.getTermRuler())
+                        .faceRuler(faceRuler(planet.getSign(), planet.getDegreeInSign()))
+                        .detrimentRuler(domicileRuler(opposite(planet.getSign())))
+                        .fallRuler(exaltationRuler(opposite(planet.getSign())));
             }
-            points.put(planet.getPlanet().name(), data);
+            points.put(planet.getPlanet().name(), entry.build());
         }
         for (ChartAngle angle : basicChart.getAngles()) {
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("type", "ANGLE");
-            data.put("longitude", angle.getLongitude());
-            data.put("sign", angle.getSign());
-            data.put("degreeInSign", angle.getDegreeInSign());
-            points.put(angle.getName(), data);
+            PointEntry entry = PointEntry.builder(PointType.ANGLE)
+                    .longitude(angle.getLongitude())
+                    .sign(angle.getSign())
+                    .degreeInSign(angle.getDegreeInSign())
+                    .build();
+            points.put(angle.getName(), entry);
         }
         for (LotPosition lot : basicChart.getLots()) {
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("type", "LOT");
-            data.put("longitude", lot.getLongitude());
-            data.put("sign", lot.getSign());
-            data.put("degreeInSign", lot.getDegreeInSign());
-            data.put("house", lot.getHouse());
-            data.put("antisciaLongitude", lot.getAntisciaLongitude());
-            data.put("contraAntisciaLongitude", lot.getContraAntisciaLongitude());
-            points.put(lot.getName(), data);
+            PointEntry entry = PointEntry.builder(PointType.LOT)
+                    .longitude(lot.getLongitude())
+                    .sign(lot.getSign())
+                    .degreeInSign(lot.getDegreeInSign())
+                    .house(lot.getHouse())
+                    .antisciaLongitude(lot.getAntisciaLongitude())
+                    .contraAntisciaLongitude(lot.getContraAntisciaLongitude())
+                    .build();
+            points.put(lot.getName(), entry);
         }
         BasicSyzygy syzygy = basicChart.getSyzygy();
         if (syzygy != null) {
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("type", "SYZYGY_POINT");
-            data.put("longitude", syzygy.getLongitude());
-            data.put("sign", syzygy.getSign());
-            data.put("degreeInSign", syzygy.getDegreeInSign());
-            data.put("house", syzygy.getHouse());
-            data.put("syzygyType", syzygy.getType());
-            data.put("julianDay", syzygy.getJulianDay());
-            data.put("approximateUtcInstant", syzygy.getApproximateUtcInstant());
-            data.put("sunLongitudeAtSyzygy", syzygy.getSunLongitude());
-            data.put("moonLongitudeAtSyzygy", syzygy.getMoonLongitude());
-            data.put("angularSeparation", syzygy.getAngularSeparation());
-            data.put("sunSignAtSyzygy", syzygy.getSunSign());
-            data.put("moonSignAtSyzygy", syzygy.getMoonSign());
-            points.put("PRENATAL_SYZYGY", data);
+            PointEntry entry = PointEntry.builder(PointType.SYZYGY_POINT)
+                    .longitude(syzygy.getLongitude())
+                    .sign(syzygy.getSign())
+                    .degreeInSign(syzygy.getDegreeInSign())
+                    .house(syzygy.getHouse())
+                    .syzygyType(syzygy.getType())
+                    .julianDay(syzygy.getJulianDay())
+                    .approximateUtcInstant(syzygy.getApproximateUtcInstant())
+                    .sunLongitudeAtSyzygy(syzygy.getSunLongitude())
+                    .moonLongitudeAtSyzygy(syzygy.getMoonLongitude())
+                    .angularSeparation(syzygy.getAngularSeparation())
+                    .sunSignAtSyzygy(syzygy.getSunSign())
+                    .moonSignAtSyzygy(syzygy.getMoonSign())
+                    .build();
+            points.put("PRENATAL_SYZYGY", entry);
         }
         basicChart.setPoints(points);
     }
@@ -103,9 +105,7 @@ public class PointCalculator extends BaseCalculator {
         return TraditionalTables.faceRuler(sign, degreeInSign);
     }
 
-    private Map<String, Object> triplicityRulers(ZodiacSign sign) {
+    private TriplicityRulers triplicityRulers(ZodiacSign sign) {
         return TraditionalTables.triplicityRulers(sign);
     }
-
-
 }

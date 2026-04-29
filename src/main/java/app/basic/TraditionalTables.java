@@ -1,8 +1,7 @@
 package app.basic;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import app.model.basic.TriplicityRulers;
 import app.model.data.Element;
 import app.model.data.Planet;
 import app.model.data.Terms;
@@ -44,31 +43,13 @@ public final class TraditionalTables {
         };
     }
 
-    public static Map<String, Object> triplicityRulers(ZodiacSign sign) {
-        Map<String, Object> rulers = new LinkedHashMap<>();
-        switch (element(sign)) {
-            case FIRE -> {
-                rulers.put("day", Planet.SUN);
-                rulers.put("night", Planet.JUPITER);
-                rulers.put("participating", Planet.SATURN);
-            }
-            case EARTH -> {
-                rulers.put("day", Planet.VENUS);
-                rulers.put("night", Planet.MOON);
-                rulers.put("participating", Planet.MARS);
-            }
-            case AIR -> {
-                rulers.put("day", Planet.SATURN);
-                rulers.put("night", Planet.MERCURY);
-                rulers.put("participating", Planet.JUPITER);
-            }
-            case WATER -> {
-                rulers.put("day", Planet.VENUS);
-                rulers.put("night", Planet.MARS);
-                rulers.put("participating", Planet.MOON);
-            }
-        }
-        return rulers;
+    public static TriplicityRulers triplicityRulers(ZodiacSign sign) {
+        return switch (element(sign)) {
+            case FIRE -> new TriplicityRulers(Planet.SUN, Planet.JUPITER, Planet.SATURN);
+            case EARTH -> new TriplicityRulers(Planet.VENUS, Planet.MOON, Planet.MARS);
+            case AIR -> new TriplicityRulers(Planet.SATURN, Planet.MERCURY, Planet.JUPITER);
+            case WATER -> new TriplicityRulers(Planet.VENUS, Planet.MARS, Planet.MOON);
+        };
     }
 
     public static Element element(ZodiacSign sign) {

@@ -34,14 +34,14 @@ public class SyzygyCalculator extends BaseCalculator {
         double laterValue = syzygySignedDelta(laterJulianDay, targetSeparation);
         for (double earlierJulianDay = birthJulianDay - step; earlierJulianDay >= birthJulianDay - 30.0; earlierJulianDay -= step) {
             double earlierValue = syzygySignedDelta(earlierJulianDay, targetSeparation);
-            if (earlierValue == 0.0 || (Math.signum(earlierValue) != Math.signum(laterValue) && Math.abs(earlierValue - laterValue) < 90.0)) {
+            if (Math.abs(earlierValue) < 1e-9 || (Math.signum(earlierValue) != Math.signum(laterValue) && Math.abs(earlierValue - laterValue) < 90.0)) {
                 return new SyzygyCandidate(type, refineSyzygy(earlierJulianDay, laterJulianDay, targetSeparation));
             }
             laterJulianDay = earlierJulianDay;
             laterValue = earlierValue;
         }
         Logger.instance.error(ctx.getInput(), "Could not find previous " + type + " syzygy within 30 days");
-        return new SyzygyCandidate(type, birthJulianDay - step);
+        throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
     }
 
     private double refineSyzygy(double earlierJulianDay, double laterJulianDay, double targetSeparation) {

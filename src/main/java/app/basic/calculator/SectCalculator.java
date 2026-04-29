@@ -3,7 +3,9 @@ package app.basic.calculator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.BaseCalculator;
+import app.model.basic.BasicSect;
 import app.model.basic.PlanetPosition;
+import app.model.basic.PlanetSectInfo;
 import app.model.data.Planet;
 import app.model.data.Sect;
 import app.model.data.SectCondition;
@@ -12,26 +14,41 @@ import app.model.data.SolarOrientation;
 public class SectCalculator extends BaseCalculator {
 
     protected void executeCalculation() {
-        PlanetPosition sun = ctx.planet(basicChart.getPlanets(), Planet.SUN);
-        PlanetPosition moon = ctx.planet(basicChart.getPlanets(), Planet.MOON);
+        PlanetPosition sun = requiredPlanet(Planet.SUN);
+        PlanetPosition moon = requiredPlanet(Planet.MOON);
         PlanetPosition mercury = ctx.planet(basicChart.getPlanets(), Planet.MERCURY);
-        boolean diurnal = sun != null && sun.getHouse() >= 7 && sun.getHouse() <= 12;
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("sect", diurnal ? Sect.DIURNAL : Sect.NOCTURNAL);
-        data.put("lightOfSect", diurnal ? Planet.SUN : Planet.MOON);
-        data.put("lightContraryToSect", diurnal ? Planet.MOON : Planet.SUN);
-        data.put("beneficOfSect", diurnal ? Planet.JUPITER : Planet.VENUS);
-        data.put("beneficContraryToSect", diurnal ? Planet.VENUS : Planet.JUPITER);
-        data.put("maleficOfSect", diurnal ? Planet.SATURN : Planet.MARS);
-        data.put("maleficContraryToSect", diurnal ? Planet.MARS : Planet.SATURN);
-        data.put("sunAboveHorizon", sun != null && sun.getHouse() >= 7 && sun.getHouse() <= 12);
-        data.put("moonAboveHorizon", moon != null && moon.getHouse() >= 7 && moon.getHouse() <= 12);
-        data.put("planetSects", planetSects(diurnal, mercury, sun));
+        double sunAltitude = ctx.round(ctx.horizontalAltitude(sun.getLongitude(), sun.getLatitude()));
+        double moonAltitude = ctx.round(ctx.horizontalAltitude(moon.getLongitude(), moon.getLatitude()));
+        boolean sunAboveHorizon = sunAltitude >= 0.0;
+        boolean moonAboveHorizon = moonAltitude >= 0.0;
+        boolean diurnal = sunAboveHorizon;
+        BasicSect data = new BasicSect(
+                diurnal ? Sect.DIURNAL : Sect.NOCTURNAL,
+                diurnal ? Planet.SUN : Planet.MOON,
+                diurnal ? Planet.MOON : Planet.SUN,
+                diurnal ? Planet.JUPITER : Planet.VENUS,
+                diurnal ? Planet.VENUS : Planet.JUPITER,
+                diurnal ? Planet.SATURN : Planet.MARS,
+                diurnal ? Planet.MARS : Planet.SATURN,
+                sunAboveHorizon,
+                moonAboveHorizon,
+                sunAltitude,
+                moonAltitude,
+                planetSects(diurnal, mercury, sun)
+        );
         basicChart.setSect(data);
     }
 
-    private Map<String, Object> planetSects(boolean chartDiurnal, PlanetPosition mercury, PlanetPosition sun) {
-        Map<String, Object> planets = new LinkedHashMap<>();
+    private PlanetPosition requiredPlanet(Planet planet) {
+        PlanetPosition position = ctx.planet(basicChart.getPlanets(), planet);
+        if (position == null) {
+            throw new IllegalArgumentException("Calculation failed: missing required planet " + planet);
+        }
+        return position;
+    }
+
+    private Map<String, PlanetSectInfo> planetSects(boolean chartDiurnal, PlanetPosition mercury, PlanetPosition sun) {
+        Map<String, PlanetSectInfo> planets = new LinkedHashMap<>();
         addPlanetSect(planets, Planet.SUN, Sect.DIURNAL, chartDiurnal);
         addPlanetSect(planets, Planet.JUPITER, Sect.DIURNAL, chartDiurnal);
         addPlanetSect(planets, Planet.SATURN, Sect.DIURNAL, chartDiurnal);
@@ -39,19 +56,16 @@ public class SectCalculator extends BaseCalculator {
         addPlanetSect(planets, Planet.VENUS, Sect.NOCTURNAL, !chartDiurnal);
         addPlanetSect(planets, Planet.MARS, Sect.NOCTURNAL, !chartDiurnal);
         Sect mercurySect = mercurySect(mercury, sun);
-        Map<String, Object> mercuryData = new LinkedHashMap<>();
-        mercuryData.put("sect", mercurySect);
-        mercuryData.put("condition", mercurySect == (chartDiurnal ? Sect.DIURNAL : Sect.NOCTURNAL) ? SectCondition.OF_SECT : SectCondition.CONTRARY_TO_SECT);
-        mercuryData.put("phaseRelativeToSun", mercurySect == Sect.DIURNAL ? SolarOrientation.ORIENTAL : SolarOrientation.OCCIDENTAL);
-        planets.put(Planet.MERCURY.name(), mercuryData);
+        planets.put(Planet.MERCURY.name(), new PlanetSectInfo(
+                mercurySect,
+                mercurySect == (chartDiurnal ? Sect.DIURNAL : Sect.NOCTURNAL) ? SectCondition.OF_SECT : SectCondition.CONTRARY_TO_SECT,
+                mercurySect == Sect.DIURNAL ? SolarOrientation.ORIENTAL : SolarOrientation.OCCIDENTAL
+        ));
         return planets;
     }
 
-    private void addPlanetSect(Map<String, Object> planets, Planet planet, Sect planetSect, boolean ofSect) {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("sect", planetSect);
-        data.put("condition", ofSect ? SectCondition.OF_SECT : SectCondition.CONTRARY_TO_SECT);
-        planets.put(planet.name(), data);
+    private void addPlanetSect(Map<String, PlanetSectInfo> planets, Planet planet, Sect planetSect, boolean ofSect) {
+        planets.put(planet.name(), new PlanetSectInfo(planetSect, ofSect ? SectCondition.OF_SECT : SectCondition.CONTRARY_TO_SECT));
     }
 
     private Sect mercurySect(PlanetPosition mercury, PlanetPosition sun) {

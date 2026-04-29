@@ -14,6 +14,7 @@ public class SimpleCalculator extends BaseCalculator {
         int result = ctx.getSwissEph().swe_calc_ut(ctx.getFullJulianDay(), SweConst.SE_ECL_NUT, 0, values, error);
         if (result < 0 || Double.isNaN(values[0])) {
             Logger.instance.error(ctx.getInput(), "Swiss Ephemeris failed to calculate obliquity: " + error);
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
 
         basicChart.setResolvedUtcInstant(ctx.getInput().getSubject().getResolvedUtcInstant());

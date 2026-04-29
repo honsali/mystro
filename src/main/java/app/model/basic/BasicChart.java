@@ -12,7 +12,7 @@ public class BasicChart {
     private double armc;
     private double localSiderealTime;
     private double obliquity;
-    private Map<String, Map<String, Object>> points;
+    private Map<String, PointEntry> points;
     private List<PlanetPosition> planets;
     private List<HousePosition> houses;
     private List<ChartAngle> angles;
@@ -22,7 +22,7 @@ public class BasicChart {
     private List<PairwiseRelation> pairwiseRelations;
     private List<SolarPhaseEntry> solarPhase;
     private MoonPhase moonPhase;
-    private Map<String, Object> sect;
+    private BasicSect sect;
     private BasicSyzygy syzygy;
     private List<LotPosition> lots;
 
@@ -66,11 +66,11 @@ public class BasicChart {
         this.obliquity = obliquity;
     }
 
-    public Map<String, Map<String, Object>> getPoints() {
+    public Map<String, PointEntry> getPoints() {
         return points;
     }
 
-    public void setPoints(Map<String, Map<String, Object>> points) {
+    public void setPoints(Map<String, PointEntry> points) {
         this.points = points;
     }
 
@@ -151,11 +151,11 @@ public class BasicChart {
         this.moonPhase = moonPhase;
     }
 
-    public Map<String, Object> getSect() {
+    public BasicSect getSect() {
         return sect;
     }
 
-    public void setSect(Map<String, Object> sect) {
+    public void setSect(BasicSect sect) {
         this.sect = sect;
     }
 

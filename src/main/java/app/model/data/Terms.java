@@ -6,12 +6,15 @@ public enum Terms {
     NONE;
 
     public static Terms parse(String value) {
-        if (value == null || value.isBlank()) return EGYPTIAN;
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("Terms value is required");
+        }
         String normalized = value.trim().toUpperCase();
         return switch (normalized) {
+            case "EGYPTIAN" -> EGYPTIAN;
             case "PTOLEMAIC", "PTOLEMY" -> PTOLEMAIC;
             case "NONE" -> NONE;
-            default -> EGYPTIAN;
+            default -> throw new IllegalArgumentException("Unknown terms: " + value);
         };
     }
 }

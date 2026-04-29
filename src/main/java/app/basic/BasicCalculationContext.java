@@ -34,8 +34,9 @@ public class BasicCalculationContext {
 
 
         int result = calculateSwissHouses(fullJulianDay, cusps, ascmc);
-        if (result < 0) {
+        if (result < 0 || Double.isNaN(ascmc[0]) || Double.isNaN(ascmc[1]) || Double.isNaN(ascmc[2])) {
             Logger.instance.error(input, "Swiss Ephemeris failed to calculate houses");
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         armc = normalize(ascmc[2]);
 
@@ -135,6 +136,14 @@ public class BasicCalculationContext {
         return normalize(360.0 - longitude);
     }
 
+    public double horizontalAltitude(double longitude, double latitude) {
+        double[] geopos = new double[] {input.getSubject().getLongitude(), input.getSubject().getLatitude(), 0.0};
+        double[] eclipticCoordinates = new double[] {longitude, latitude, 1.0};
+        double[] horizontalCoordinates = new double[3];
+        swissEph.swe_azalt(fullJulianDay, SweConst.SE_ECL2HOR, geopos, 0.0, 10.0, eclipticCoordinates, horizontalCoordinates);
+        return horizontalCoordinates[1];
+    }
+
     public int planetFlags() {
         int flags = SweConst.SEFLG_SPEED;
         if (input.getDoctrine().getZodiac() == Zodiac.SIDEREAL) {
@@ -158,7 +167,7 @@ public class BasicCalculationContext {
     private int houseSystem(HouseSystem houseSystem) {
         return switch (houseSystem) {
             case PLACIDUS -> 'P';
-            case WHOLE_SIGN, UNKNOWN -> 'W';
+            case WHOLE_SIGN -> 'W';
         };
     }
 

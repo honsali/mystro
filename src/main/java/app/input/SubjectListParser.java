@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,9 +74,6 @@ public final class SubjectListParser {
             return null;
         }
         try {
-            if (value.contains("/")) {
-                return LocalDate.parse(value, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            }
             return LocalDate.parse(value);
         } catch (DateTimeParseException e) {
             Logger.instance.error("input", "Invalid Date " + field + " for " + id + ": " + value);
@@ -92,7 +88,10 @@ public final class SubjectListParser {
             return null;
         }
         try {
-            return value.length() == 5 ? LocalTime.parse(value + ":00") : LocalTime.parse(value);
+            if (!value.matches("\\d{2}:\\d{2}:\\d{2}")) {
+                throw new DateTimeParseException("Expected HH:mm:ss", value, 0);
+            }
+            return LocalTime.parse(value);
         } catch (DateTimeParseException e) {
             Logger.instance.error("input", "Invalid Time " + field + " for " + id + ": " + value);
             return null;
