@@ -1,0 +1,20 @@
+package app.basic.calculator;
+
+import java.util.ArrayList;
+import java.util.List;
+import app.basic.BaseCalculator;
+import app.model.basic.HousePosition;
+
+public class HouseCalculator extends BaseCalculator {
+
+    protected void executeCalculation() {
+
+        List<HousePosition> houses = new ArrayList<>();
+
+        for (int house = 1; house <= 12; house++) {
+            double cuspLongitude = ctx.normalize(ctx.getCusps()[house]);
+            houses.add(new HousePosition(house, ctx.round(cuspLongitude), ctx.signOf(cuspLongitude), ctx.round(ctx.degreeInSign(cuspLongitude))));
+        }
+        basicChart.setHouses(houses);
+    }
+}

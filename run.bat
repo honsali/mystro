@@ -2,6 +2,6 @@
 setlocal
 
 cd /d "%~dp0"
-  mvn exec:java -Dexec.args="--names ilia reda marwa" %*
+  mvn exec:java -Dexec.args="--subjects ilia --doctrines valens dorotheus ptolemy" %*
 
 endlocal

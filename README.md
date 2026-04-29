@@ -1,100 +1,97 @@
-# mystro
+# Mystro
 
-`mystro` now contains a Java port of the traditional astrology report generator, using the bundled pure-Java Swiss Ephemeris port.
+Mystro is a self-contained Java traditional astrology calculation engine.
 
-The project is a standalone Java astrology application centered on Swiss Ephemeris and Astro-Seek-oriented validation.
+The authoritative project specification is:
 
-## Goals
+- [`NEW_ARCHITECTURE_SPEC.md`](NEW_ARCHITECTURE_SPEC.md)
 
-- provide one project-specific astrology application
-- keep all local customizations inside `mystro`
-- validate output against Astro-Seek where relevant
-- keep the codebase self-contained
-
-## Project layout
+## Current architecture
 
 ```text
-mystro/
-  input/
-    astroseek/
-    native-list.json
-  output/
-  validation/
-  pom.xml
-  ephe/
-  src/main/java/app/
+Input loading
+→ Input validation / normalization
+→ Basic calculation
+→ Descriptive calculation
+→ Predictive calculation
+→ Comparative calculation
+→ Formatting / printing
+→ Reference validation
 ```
 
-## Quick start
+Core principle:
 
-Build the Java project:
+```text
+Natal data × Doctrine modules → descriptive output
+Natal data × Doctrine modules × inquiry periods → predictive output
+Natal data × Doctrine modules × comparison inputs → comparative output
+```
+
+A doctrine is a hardcoded knowledge module, not a settings profile and not a partial implementation of a universal astrology schema.
+
+## Current implementation status
+
+The fresh app skeleton is implemented under `src/main/java/app/`.
+
+Implemented now:
+
+- `input`, `common`, `basic`, `doctrine`, and `output` package skeletons
+- `NatalInput` with one subject identifier: `id`
+- natal input loading from `input/native-list.json`
+- CLI doctrine selection through `--doctrines ...`
+- basic calculation placeholder with resolved UTC instant and Julian Day
+- descriptive report writing
+- run manifest writing
+- placeholder doctrine modules for `dorotheus`, `ptolemy`, and `valens`
+
+Code under `app.old` is migration/reference material only.
+
+## Input
+
+`input/native-list.json` contains natal data only. Doctrine choices do not live in natal input.
+
+Current natal entry shape:
+
+```json
+{
+  "id": "ilia",
+  "birthDate": "1975-07-14",
+  "birthTime": "22:55:00",
+  "latitude": 50.60600755996812,
+  "longitude": 3.0333769552426793,
+  "utcOffset": "+01:00"
+}
+```
+
+## Run
+
+Build:
 
 ```bash
 mvn compile
 ```
 
-Run the validation workflow:
+Run a subject with explicit doctrine modules:
 
 ```bash
-run.bat
-# or equivalently:
-mvn exec:java -Dexec.args="--names ilia reda marwa"
+mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
 ```
 
-If no `--names` are passed, the app processes all entries in `input/native-list.json`.
-The runtime writes Mystro JSON to `output/mystro/json/`, Astro-Seek JSON to `output/astroseek/json/`, and one comparison summary JSON to `output/report.json`.
-Runtime JSON writing currently works; `JsonFileSupport` registers Jackson Java Time support for `OffsetDateTime`.
+`--subjects` is also accepted as an alias for `--subjects`.
 
-## Java project layout
+If no doctrines are passed, the app writes an execution-level error to `output/run-manifest.json`.
+
+## Current output
 
 ```text
-mystro/
-  src/main/java/app/
-    App.java
-    astroseek/
-    common/
-    mystro/
-    swisseph/core/
-    swisseph/wrapper/
+output/descriptive/{subjectId}/{doctrineId}.json
+output/run-manifest.json
 ```
 
-## Current Java scope
+Report metadata currently contains only:
 
-The Java app currently focuses on JSON generation and comparison:
-- native JSON loading from `input/native-list.json`
-- Swiss Ephemeris chart calculation
-- whole-sign houses
-- planet positions and house positions
-- main aspects and other aspects
-- Fortune and the 7 Hermetic Lots, with formula strings emitted in textbook arrow notation (`A → B` = forward arc `(B - A)`)
-- planetary hour at birth
-- Lord of the Orb (`mod84` and `mod12`) in normalized JSON output
-- annual profections in normalized JSON output (`lordOfYear`, `lordOfOrb`, profected MC / Sun / Moon / Fortune signs), kept as a separate section from `lordOfOrb`
-- derived chart sections: `dodecatemoria`, `novenaria`, `antiscia`, `contraAntiscia`
-- normalized JSON generation for Mystro and Astro-Seek
-- JSON comparison with tolerance-based validation
-
-Mystro JSON assembly is orchestrated by `app.mystro.MystroService` through `NativeReportBuilder` and computation processors.
-Astro-Seek parsing is orchestrated directly by `app.astroseek.AstroSeekService` through section parsers.
-Astro-Seek birth data is parsed from the saved HTML details panel rather than copied from `native-list.json`.
-Shared constants live in `app.common.Config`, and shared runtime error collection lives in `app.common.Logger`.
-
-## Notes
-
-- The authoritative app version is the top-level `<version>` in `pom.xml`.
-- Validation reports should include that exact project version and be written to `validation/validation-report-v<version>.md`.
-- The `/version` workflow releases the current `pom.xml` version, then bumps the next iteration by incrementing the middle number and resetting the last number to zero (for example `0.2.0 -> 0.3.0`).
-- Ephemeris files are expected in `ephe/` under the project root.
-- The runtime no longer depends on a native JNI `swisseph` library.
-- The app is now English-only and JSON-only; markdown output and i18n resources were removed, and the old tracked `test/` artifact tree is no longer part of the repository.
-- Validation is compile-first (`mvn compile`) and runtime-second (`run.bat`, which delegates to `mvn exec:java ...`).
-- The validation agent writes versioned reports under `validation/`, for example `validation/validation-report-v0.2.0.md`.
-- Chiron is now calculated directly from Swiss Ephemeris using the ephemeris files in `ephe/`; the Astro-Seek HTML fallback is no longer part of active runtime validation.
-- Lord of the Orb is now emitted in both Mystro and Astro-Seek normalized JSON so it can be compared on overlapping visible years.
-- Annual profections are emitted in both Mystro and Astro-Seek normalized JSON as a separate section from `lordOfOrb`.
-
-## Next suggested steps
-
-1. validate the expanded normalized sections against more saved Astro-Seek charts
-2. refine any astrology rules still inferred from Astro-Seek comparisons
-3. keep project memory files in sync with code changes
+```json
+{
+  "engineVersion": "0.1.0"
+}
+```
