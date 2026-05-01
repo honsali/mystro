@@ -1,15 +1,17 @@
 package app.basic.calculator;
 
-import app.basic.BaseCalculator;
+import app.basic.Calculator;
+import app.basic.BasicCalculationContext;
+import app.model.basic.BasicChart;
 import app.model.basic.MoonPhase;
 import app.model.basic.PlanetPosition;
 import app.model.data.MoonPhaseName;
 import app.model.data.Planet;
 
-public class MoonPhaseCalculator extends BaseCalculator {
+public class MoonPhaseCalculator implements Calculator {
 
 
-    protected void executeCalculation() {
+    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
         PlanetPosition sun = ctx.planet(basicChart.getPlanets(), Planet.SUN);
         PlanetPosition moon = ctx.planet(basicChart.getPlanets(), Planet.MOON);
         if (sun == null || moon == null) {
@@ -17,7 +19,7 @@ public class MoonPhaseCalculator extends BaseCalculator {
         }
         double elongation = ctx.rawAngularSeparation(moon.getLongitude(), sun.getLongitude());
         double directedElongation = ctx.normalize(moon.getLongitude() - sun.getLongitude());
-        boolean waxing = directedElongation < 180.0;
+        boolean waxing = directedElongation <= 180.0;
         double illumination = (1.0 - Math.cos(Math.toRadians(elongation))) / 2.0;
         MoonPhase moonPhase = new MoonPhase(ctx.round(illumination), moonPhaseName(directedElongation), waxing);
         basicChart.setMoonPhase(moonPhase);

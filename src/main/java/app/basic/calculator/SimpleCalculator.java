@@ -1,13 +1,15 @@
 package app.basic.calculator;
 
-import app.basic.BaseCalculator;
+import app.basic.Calculator;
+import app.basic.BasicCalculationContext;
+import app.model.basic.BasicChart;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 
-public class SimpleCalculator extends BaseCalculator {
+public class SimpleCalculator implements Calculator {
 
 
-    protected void executeCalculation() {
+    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
 
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();

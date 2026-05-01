@@ -2,12 +2,14 @@ package app.basic.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
-import app.basic.BaseCalculator;
+import app.basic.Calculator;
+import app.basic.BasicCalculationContext;
+import app.model.basic.BasicChart;
 import app.model.basic.HousePosition;
 
-public class HouseCalculator extends BaseCalculator {
+public class HouseCalculator implements Calculator {
 
-    protected void executeCalculation() {
+    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
 
         List<HousePosition> houses = new ArrayList<>();
 

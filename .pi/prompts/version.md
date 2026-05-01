@@ -1,23 +1,36 @@
 ---
-description: Validate and prepare a version commit
-argument-hint: "[commit message]"
+description: Save project knowledge, validate, commit, push, then advance the Maven version
+argument-hint: "<one-line description of the main thing done>"
 ---
 
-Before committing:
+Run the version workflow.
 
-1. Check repository status.
-2. Read `NEW_ARCHITECTURE_SPEC.md` if docs or architecture changed.
-3. Ensure markdown files do not reintroduce stale former-architecture guidance.
-4. Run:
+Use the argument as `$desc`. If no argument is provided, derive a concise one-line description from the intended changes before committing.
+
+1. Save durable knowledge into the accurate markdown files before committing.
+   - Update `AGENTS.md` for current implementation facts and standing agent instructions.
+   - Update `SESSION_MEMORY.md` for future-session context.
+   - Update `NEW_ARCHITECTURE_SPEC.md` only when the architecture/specification itself changed.
+   - Update relevant `.pi/skills/**/SKILL.md` files when workflow or skill behavior changed.
+   - Update README or audit docs only when they are the accurate home for that knowledge.
+   - Ensure markdown files do not reintroduce stale former-architecture guidance such as `--names`, hidden default doctrines, config/profile doctrines, or treating `app.old` as active code.
+2. Check repository status and identify intended vs accidental/generated files. Do not commit `target/`, generated build output, or accidental local files.
+3. Run:
 
 ```bash
 mvn compile
 ```
 
-For a representative current runtime check, run:
+4. If compilation fails, issue a prominent warning, stop immediately, and do not commit, push, or bump the version.
+5. If compilation succeeds:
+   - Read the current project version `$v` from the first project `<version>` in `pom.xml`.
+   - Commit the intended changes with exactly this message shape:
 
-```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+```text
+version $v: $desc
 ```
 
-Do not commit generated build output or accidental local files.
+6. Push the commit.
+7. After the successful push, level up the project version in `pom.xml` for the next development cycle.
+   - Increment the patch component by default, e.g. `0.5.0` → `0.5.1`.
+   - Do not include the post-push version bump in the version commit unless the user explicitly asks for a release-style version bump before committing.

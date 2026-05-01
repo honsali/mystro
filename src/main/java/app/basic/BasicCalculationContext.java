@@ -141,6 +141,10 @@ public class BasicCalculationContext {
         double[] eclipticCoordinates = new double[] {longitude, latitude, 1.0};
         double[] horizontalCoordinates = new double[3];
         swissEph.swe_azalt(fullJulianDay, SweConst.SE_ECL2HOR, geopos, 0.0, 10.0, eclipticCoordinates, horizontalCoordinates);
+        if (Double.isNaN(horizontalCoordinates[1])) {
+            Logger.instance.error(input, "Swiss Ephemeris failed to calculate horizontal altitude");
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        }
         return horizontalCoordinates[1];
     }
 

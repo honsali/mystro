@@ -1,9 +1,10 @@
 package app.model.basic;
 
+import app.model.data.LotType;
 import app.model.data.ZodiacSign;
 
 public final class LotPosition {
-    private final String name;
+    private final LotType name;
     private final double longitude;
     private final ZodiacSign sign;
     private final double degreeInSign;
@@ -11,7 +12,7 @@ public final class LotPosition {
     private final double antisciaLongitude;
     private final double contraAntisciaLongitude;
 
-    public LotPosition(String name, double longitude, ZodiacSign sign, double degreeInSign, int house, double antisciaLongitude, double contraAntisciaLongitude) {
+    public LotPosition(LotType name, double longitude, ZodiacSign sign, double degreeInSign, int house, double antisciaLongitude, double contraAntisciaLongitude) {
         this.name = name;
         this.longitude = longitude;
         this.sign = sign;
@@ -21,7 +22,7 @@ public final class LotPosition {
         this.contraAntisciaLongitude = contraAntisciaLongitude;
     }
 
-    public String getName() { return name; }
+    public LotType getName() { return name; }
     public double getLongitude() { return longitude; }
     public ZodiacSign getSign() { return sign; }
     public double getDegreeInSign() { return degreeInSign; }

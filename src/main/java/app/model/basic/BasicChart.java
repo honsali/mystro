@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import app.model.data.PointKey;
 
 public class BasicChart {
 
@@ -12,7 +13,7 @@ public class BasicChart {
     private double armc;
     private double localSiderealTime;
     private double obliquity;
-    private Map<String, PointEntry> points;
+    private Map<PointKey, PointEntry> points;
     private List<PlanetPosition> planets;
     private List<HousePosition> houses;
     private List<ChartAngle> angles;
@@ -66,11 +67,11 @@ public class BasicChart {
         this.obliquity = obliquity;
     }
 
-    public Map<String, PointEntry> getPoints() {
+    public Map<PointKey, PointEntry> getPoints() {
         return points;
     }
 
-    public void setPoints(Map<String, PointEntry> points) {
+    public void setPoints(Map<PointKey, PointEntry> points) {
         this.points = points;
     }
 

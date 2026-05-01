@@ -16,9 +16,9 @@ public final class BasicSect {
     private final boolean moonAboveHorizon;
     private final double sunAltitude;
     private final double moonAltitude;
-    private final Map<String, PlanetSectInfo> planetSects;
+    private final Map<Planet, PlanetSectInfo> planetSects;
 
-    public BasicSect(Sect sect, Planet lightOfSect, Planet lightContraryToSect, Planet beneficOfSect, Planet beneficContraryToSect, Planet maleficOfSect, Planet maleficContraryToSect, boolean sunAboveHorizon, boolean moonAboveHorizon, double sunAltitude, double moonAltitude, Map<String, PlanetSectInfo> planetSects) {
+    public BasicSect(Sect sect, Planet lightOfSect, Planet lightContraryToSect, Planet beneficOfSect, Planet beneficContraryToSect, Planet maleficOfSect, Planet maleficContraryToSect, boolean sunAboveHorizon, boolean moonAboveHorizon, double sunAltitude, double moonAltitude, Map<Planet, PlanetSectInfo> planetSects) {
         this.sect = sect;
         this.lightOfSect = lightOfSect;
         this.lightContraryToSect = lightContraryToSect;
@@ -44,5 +44,5 @@ public final class BasicSect {
     public boolean isMoonAboveHorizon() { return moonAboveHorizon; }
     public double getSunAltitude() { return sunAltitude; }
     public double getMoonAltitude() { return moonAltitude; }
-    public Map<String, PlanetSectInfo> getPlanetSects() { return planetSects; }
+    public Map<Planet, PlanetSectInfo> getPlanetSects() { return planetSects; }
 }

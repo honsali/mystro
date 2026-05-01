@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import app.basic.BaseCalculator;
+import app.basic.Calculator;
+import app.basic.BasicCalculationContext;
+import app.model.basic.BasicChart;
 import app.model.basic.ChartAngle;
 import app.model.basic.ChartPoint;
 import app.model.basic.PairwiseRelation;
@@ -15,23 +17,23 @@ import app.model.basic.RawSignDistanceMatrixEntry;
 import app.model.data.PointType;
 import app.model.data.ZodiacSign;
 
-public class ChartPointCalculator extends BaseCalculator {
+public class ChartPointCalculator implements Calculator {
 
 
-    protected void executeCalculation() {
+    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
         List<ChartPoint> chartPoints = new ArrayList<>();
         for (PlanetPosition planet : basicChart.getPlanets()) {
             chartPoints.add(new ChartPoint(PointType.PLANET, planet.getPlanet().name(), planet.getLongitude(), planet.getSign(), planet.getDegreeInSign(), planet.getHouse()));
         }
         for (ChartAngle angle : basicChart.getAngles()) {
-            chartPoints.add(new ChartPoint(PointType.ANGLE, angle.getName(), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
+            chartPoints.add(new ChartPoint(PointType.ANGLE, angle.getName().name(), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
         }
 
 
-        basicChart.setRawAspectMatrix(calculateRawAspectMatrix(chartPoints));
-        basicChart.setRawDeclinationMatrix(calculateRawDeclinationMatrix(basicChart.getPlanets()));
+        basicChart.setRawAspectMatrix(calculateRawAspectMatrix(chartPoints, ctx));
+        basicChart.setRawDeclinationMatrix(calculateRawDeclinationMatrix(basicChart.getPlanets(), ctx));
         basicChart.setRawSignDistanceMatrix(calculateRawSignDistanceMatrix(chartPoints));
-        basicChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, basicChart.getPlanets()));
+        basicChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, basicChart.getPlanets(), ctx));
     }
 
 
@@ -43,7 +45,7 @@ public class ChartPointCalculator extends BaseCalculator {
 
 
 
-    private List<RawAspectMatrixEntry> calculateRawAspectMatrix(List<ChartPoint> points) {
+    private List<RawAspectMatrixEntry> calculateRawAspectMatrix(List<ChartPoint> points, BasicCalculationContext ctx) {
         List<RawAspectMatrixEntry> matrix = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
             ChartPoint pointA = points.get(i);
@@ -57,7 +59,7 @@ public class ChartPointCalculator extends BaseCalculator {
 
 
 
-    private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets) {
+    private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets, BasicCalculationContext ctx) {
         Map<String, PlanetPosition> planetByName = new LinkedHashMap<>();
         for (PlanetPosition planet : planets) {
             planetByName.put(planet.getPlanet().name(), planet);
@@ -81,7 +83,7 @@ public class ChartPointCalculator extends BaseCalculator {
         return relations;
     }
 
-    private List<RawDeclinationMatrixEntry> calculateRawDeclinationMatrix(List<PlanetPosition> planets) {
+    private List<RawDeclinationMatrixEntry> calculateRawDeclinationMatrix(List<PlanetPosition> planets, BasicCalculationContext ctx) {
         List<RawDeclinationMatrixEntry> matrix = new ArrayList<>();
         for (int i = 0; i < planets.size(); i++) {
             PlanetPosition pointA = planets.get(i);

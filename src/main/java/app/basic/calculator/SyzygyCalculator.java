@@ -1,22 +1,24 @@
 package app.basic.calculator;
 
 import java.time.Instant;
-import app.basic.BaseCalculator;
+import app.basic.Calculator;
+import app.basic.BasicCalculationContext;
+import app.model.basic.BasicChart;
 import app.model.basic.BasicSyzygy;
 import app.model.data.Planet;
 import app.model.data.SyzygyType;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 
-public class SyzygyCalculator extends BaseCalculator {
+public class SyzygyCalculator implements Calculator {
 
 
     private record SyzygyCandidate(SyzygyType type, double julianDay) {
     }
 
-    protected void executeCalculation() {
-        SyzygyCandidate newMoon = previousSyzygyCandidate(ctx.getFullJulianDay(), 0.0, SyzygyType.NEW_MOON);
-        SyzygyCandidate fullMoon = previousSyzygyCandidate(ctx.getFullJulianDay(), 180.0, SyzygyType.FULL_MOON);
+    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+        SyzygyCandidate newMoon = previousSyzygyCandidate(ctx.getFullJulianDay(), 0.0, SyzygyType.NEW_MOON, ctx);
+        SyzygyCandidate fullMoon = previousSyzygyCandidate(ctx.getFullJulianDay(), 180.0, SyzygyType.FULL_MOON, ctx);
         SyzygyCandidate syzygy = newMoon.julianDay() > fullMoon.julianDay() ? newMoon : fullMoon;
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, syzygy.julianDay());
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, syzygy.julianDay());
@@ -28,14 +30,14 @@ public class SyzygyCalculator extends BaseCalculator {
         basicChart.setSyzygy(syzygyResult);
     }
 
-    private SyzygyCandidate previousSyzygyCandidate(double birthJulianDay, double targetSeparation, SyzygyType type) {
+    private SyzygyCandidate previousSyzygyCandidate(double birthJulianDay, double targetSeparation, SyzygyType type, BasicCalculationContext ctx) {
         double step = 0.25;
         double laterJulianDay = birthJulianDay;
-        double laterValue = syzygySignedDelta(laterJulianDay, targetSeparation);
+        double laterValue = syzygySignedDelta(laterJulianDay, targetSeparation, ctx);
         for (double earlierJulianDay = birthJulianDay - step; earlierJulianDay >= birthJulianDay - 30.0; earlierJulianDay -= step) {
-            double earlierValue = syzygySignedDelta(earlierJulianDay, targetSeparation);
+            double earlierValue = syzygySignedDelta(earlierJulianDay, targetSeparation, ctx);
             if (Math.abs(earlierValue) < 1e-9 || (Math.signum(earlierValue) != Math.signum(laterValue) && Math.abs(earlierValue - laterValue) < 90.0)) {
-                return new SyzygyCandidate(type, refineSyzygy(earlierJulianDay, laterJulianDay, targetSeparation));
+                return new SyzygyCandidate(type, refineSyzygy(earlierJulianDay, laterJulianDay, targetSeparation, ctx));
             }
             laterJulianDay = earlierJulianDay;
             laterValue = earlierValue;
@@ -44,13 +46,13 @@ public class SyzygyCalculator extends BaseCalculator {
         throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
     }
 
-    private double refineSyzygy(double earlierJulianDay, double laterJulianDay, double targetSeparation) {
+    private double refineSyzygy(double earlierJulianDay, double laterJulianDay, double targetSeparation, BasicCalculationContext ctx) {
         double low = earlierJulianDay;
         double high = laterJulianDay;
-        double lowValue = syzygySignedDelta(low, targetSeparation);
+        double lowValue = syzygySignedDelta(low, targetSeparation, ctx);
         for (int i = 0; i < 50; i++) {
             double middle = (low + high) / 2.0;
-            double middleValue = syzygySignedDelta(middle, targetSeparation);
+            double middleValue = syzygySignedDelta(middle, targetSeparation, ctx);
             if (Math.signum(lowValue) == Math.signum(middleValue)) {
                 low = middle;
                 lowValue = middleValue;
@@ -61,7 +63,7 @@ public class SyzygyCalculator extends BaseCalculator {
         return (low + high) / 2.0;
     }
 
-    private double syzygySignedDelta(double julianDay, double targetSeparation) {
+    private double syzygySignedDelta(double julianDay, double targetSeparation, BasicCalculationContext ctx) {
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, julianDay);
         double value = ctx.normalize(moonLongitude - sunLongitude - targetSeparation);

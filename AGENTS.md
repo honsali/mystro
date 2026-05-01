@@ -59,14 +59,16 @@ Input loading
 - Current `basicChart` JSON keys are: `resolvedUtcInstant`, `julianDay`, `armc`, `localSiderealTime`, `obliquity`, `points`, `houses`, `pairwiseRelations`, `solarPhase`, `moonPhase`, `sect`.
 - `basicChart.points` is a map keyed by point name and currently contains 16 points for the Lille fixture: 7 traditional planets, 2 nodes, 4 angles, Fortune, Spirit, and `PRENATAL_SYZYGY`.
 - `basicChart.pairwiseRelations` currently covers planets + angles only; the Lille fixture has 78 entries.
-- `points` and `sect` are still backed by `Map<String,Object>` shapes; this is known technical debt before stage 2 grows.
+- `basicChart.points` is currently `Map<PointKey, PointEntry>`. `PointKey` preserves the serialized point names; `PointEntry` is a sealed hierarchy with planet, angle, lot, and syzygy-point record implementations.
+- `sect` is backed by typed `BasicSect` / `PlanetSectInfo`; `planetSects` is keyed by `Planet`.
 - `BasicChart` output models live in `app.model.basic`; enums live in `app.model.data`.
 - `BasicCalculationContext` in `app.basic` is the per-run internal context. It owns Swiss Ephemeris, input, full Julian day, house cusps, `ascmc`, ARMC, and shared calculation helpers.
-- `BasicCalculator` orchestrates focused calculators under `app.basic.calculator` in this order: simple metadata, planets, houses, angles, lots, syzygy, point registry, pairwise relations, solar phase, moon phase, sect.
+- `BasicCalculator` orchestrates focused stateless calculators under `app.basic.calculator` in this order: simple metadata, planets, houses, angles, lots, syzygy, point registry, pairwise relations, solar phase, moon phase, sect.
 - `BasicChart` should remain output-facing; internal fields such as full Julian day, cusps, and `ascmc` belong in `BasicCalculationContext`, not in `BasicChart`.
-- Current stage 1 includes raw/non-interpretive: planet positions, signs, houses, terms, speeds, declinations, antiscia/contra-antiscia, Fortune/Spirit, syzygy point, raw pairwise ecliptic/equatorial relations, solar orientation, moon phase geometry, sect roles, and essential dignity rulers on traditional planets.
+- Current stage 1 includes raw/non-interpretive: planet positions, signs, houses, terms, speeds, declinations, antiscia/contra-antiscia, Fortune/Spirit, syzygy point, raw pairwise ecliptic/equatorial relations, solar orientation, moon phase geometry, altitude-based sect roles, and essential dignity rulers on traditional planets.
 - Fixed stars are not implemented. If added, the star set must be explicitly parameterized; no doctrine-free canonical star list should be assumed.
-- Remaining known technical debt: global `Logger.instance`, rounding during calculation instead of serialization, house-based sect instead of altitude-based sect, fragile syzygy search, Jackson annotations on domain models, stateful `BaseCalculator`, and some Swiss Ephemeris failures still returning plausible fallback values.
+- `Logger.instance` is intentionally retained for the short-term CLI. The project may move to Spring Boot soon; when that happens, prefer injecting/request-scoping the logger instead of doing an interim de-singleton refactor now.
+- Remaining known technical debt: global `Logger.instance` until Spring Boot migration, rounding during calculation instead of serialization, fragile syzygy search, Jackson annotations on domain models, and hard-coded calculation-setting assumptions that should not be exposed as configurable metadata until wired.
 
 ## Dependency direction
 
