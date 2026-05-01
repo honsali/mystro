@@ -14,7 +14,7 @@ Use the argument as `$desc`. If no argument is provided, derive a concise one-li
    - Update relevant `.pi/skills/**/SKILL.md` files when workflow or skill behavior changed.
    - Update README or audit docs only when they are the accurate home for that knowledge.
    - Ensure markdown files do not reintroduce stale former-architecture guidance such as `--names`, hidden default doctrines, config/profile doctrines, or treating `app.old` as active code.
-2. Check repository status and identify intended vs accidental/generated files. Do not commit `target/`, generated build output, or accidental local files.
+2. Check repository status and identify intended vs accidental/generated files. Commit all intended tracked and untracked project files, including markdown/audit files, but never commit `input/`, `output/`, `target/`, generated build output, or accidental local files.
 3. Run:
 
 ```bash
@@ -32,5 +32,6 @@ version $v: $desc
 
 6. Push the commit.
 7. After the successful push, level up the project version in `pom.xml` for the next development cycle.
-   - Increment the patch component by default, e.g. `0.5.0` → `0.5.1`.
+   - Increment the minor component and reset patch to zero, e.g. `0.6.0` → `0.7.0`, `0.24.0` → `0.25.0`.
+   - Never increment the major component automatically; the project owner does major bumps manually.
    - Do not include the post-push version bump in the version commit unless the user explicitly asks for a release-style version bump before committing.

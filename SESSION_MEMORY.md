@@ -71,10 +71,10 @@ mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
 Version prompt:
 
 ```text
-.pi/prompts/version.md saves durable knowledge, runs mvn compile, stops on compile failure, commits successful changes as "version $v: $desc", pushes, then bumps the patch version in pom.xml for the next development cycle.
+.pi/prompts/version.md saves durable knowledge, commits all intended project files except input/output/build artifacts, runs mvn compile, stops on compile failure, commits successful changes as "version $v: $desc", pushes, then bumps the minor version in pom.xml for the next development cycle. Major version bumps are manual.
 ```
 
-Current Maven version after the manual correction for the last commit is `0.6.0`.
+Current Maven version for the next development cycle is `0.7.0`.
 
 ## Read first in future sessions
 
