@@ -51,7 +51,7 @@ public class ChartPointCalculator implements Calculator {
             ChartPoint pointA = points.get(i);
             for (int j = i + 1; j < points.size(); j++) {
                 ChartPoint pointB = points.get(j);
-                matrix.add(new RawAspectMatrixEntry(pointA.getType(), pointA.getName(), ctx.round(pointA.getLongitude()), pointB.getType(), pointB.getName(), ctx.round(pointB.getLongitude()), ctx.round(ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude()))));
+                matrix.add(new RawAspectMatrixEntry(pointA.getType(), pointA.getName(), pointA.getLongitude(), pointB.getType(), pointB.getName(), pointB.getLongitude(), ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude())));
             }
         }
         return matrix;
@@ -75,9 +75,9 @@ public class ChartPointCalculator implements Calculator {
                 if (planetA != null && planetB != null) {
                     double declinationDifference = Math.abs(planetA.getDeclination() - planetB.getDeclination());
                     boolean sameHemisphere = (planetA.getDeclination() >= 0.0 && planetB.getDeclination() >= 0.0) || (planetA.getDeclination() < 0.0 && planetB.getDeclination() < 0.0);
-                    equatorial = new PairwiseRelation.EquatorialRelation(ctx.round(declinationDifference), sameHemisphere);
+                    equatorial = new PairwiseRelation.EquatorialRelation(declinationDifference, sameHemisphere);
                 }
-                relations.add(new PairwiseRelation(pointA.getName(), pointB.getName(), new PairwiseRelation.EclipticRelation(ctx.round(ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude())), signDistance(pointA.getSign(), pointB.getSign())), equatorial));
+                relations.add(new PairwiseRelation(pointA.getName(), pointB.getName(), new PairwiseRelation.EclipticRelation(ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude()), signDistance(pointA.getSign(), pointB.getSign())), equatorial));
             }
         }
         return relations;
@@ -91,7 +91,7 @@ public class ChartPointCalculator implements Calculator {
                 PlanetPosition pointB = planets.get(j);
                 double difference = Math.abs(pointA.getDeclination() - pointB.getDeclination());
                 boolean sameHemisphere = (pointA.getDeclination() >= 0.0 && pointB.getDeclination() >= 0.0) || (pointA.getDeclination() < 0.0 && pointB.getDeclination() < 0.0);
-                matrix.add(new RawDeclinationMatrixEntry(pointA.getPlanet().name(), ctx.round(pointA.getDeclination()), pointB.getPlanet().name(), ctx.round(pointB.getDeclination()), ctx.round(difference), sameHemisphere));
+                matrix.add(new RawDeclinationMatrixEntry(pointA.getPlanet().name(), pointA.getDeclination(), pointB.getPlanet().name(), pointB.getDeclination(), difference, sameHemisphere));
             }
         }
         return matrix;

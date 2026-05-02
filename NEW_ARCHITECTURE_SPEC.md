@@ -468,8 +468,7 @@ public record BasicCalculationContext(
     HouseSystem houseSystem,
     Zodiac zodiac,
     Terms terms,
-    CalculationPrecision precision,
-    RoundingPolicy roundingPolicy
+    CalculationPrecision precision
 ) {}
 ```
 
@@ -894,8 +893,7 @@ Recommended descriptive JSON shape:
     "houseSystem": "WHOLE_SIGN",
     "zodiac": "TROPICAL",
     "terms": "EGYPTIAN",
-    "precision": "STANDARD",
-    "roundingPolicy": "DECIMAL_6"
+    "precision": "STANDARD"
   },
   "basic": {
     "planets": [],
@@ -1072,7 +1070,6 @@ src/main/java/app/
     BasicCalculator.java
     BasicChart.java
     CalculationPrecision.java
-    RoundingPolicy.java
     PlanetPosition.java
     HousePosition.java
     ChartAngle.java

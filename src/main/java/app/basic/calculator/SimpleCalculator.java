@@ -19,11 +19,19 @@ public class SimpleCalculator implements Calculator {
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
 
+        double julianDayUt = ctx.getFullJulianDay();
+        double deltaTSeconds = ctx.getSwissEph().swe_deltat(julianDayUt) * 86400.0;
+
         basicChart.setResolvedUtcInstant(ctx.getInput().getSubject().getResolvedUtcInstant());
-        basicChart.setJulianDay(ctx.round(ctx.getFullJulianDay()));
-        basicChart.setArmc(ctx.round(ctx.getArmc()));
-        basicChart.setLocalSiderealTime(ctx.round(ctx.getArmc() / 15.0));
-        basicChart.setObliquity(ctx.round(values[0]));
+        basicChart.setJulianDayUt(julianDayUt);
+        basicChart.setJulianDayTt(julianDayUt + deltaTSeconds / 86400.0);
+        basicChart.setDeltaTSeconds(deltaTSeconds);
+        basicChart.setArmc(ctx.getArmc());
+        basicChart.setLocalApparentSiderealTimeHours(ctx.getArmc() / 15.0);
+        basicChart.setTrueObliquity(values[0]);
+        basicChart.setMeanObliquity(values[1]);
+        basicChart.setNutationLongitude(values[2]);
+        basicChart.setNutationObliquity(values[3]);
     }
 
 

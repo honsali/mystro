@@ -5,6 +5,7 @@ import app.model.basic.TriplicityRulers;
 import app.model.data.Element;
 import app.model.data.Planet;
 import app.model.data.Terms;
+import app.model.data.Triplicity;
 import app.model.data.ZodiacSign;
 
 public final class TraditionalTables {
@@ -43,12 +44,28 @@ public final class TraditionalTables {
         };
     }
 
-    public static TriplicityRulers triplicityRulers(ZodiacSign sign) {
+    public static TriplicityRulers triplicityRulers(ZodiacSign sign, Triplicity triplicity) {
+        return switch (triplicity) {
+            case DOROTHEAN -> dorotheanTriplicityRulers(sign);
+            case PTOLEMAIC -> ptolemaicTriplicityRulers(sign);
+        };
+    }
+
+    private static TriplicityRulers dorotheanTriplicityRulers(ZodiacSign sign) {
         return switch (element(sign)) {
             case FIRE -> new TriplicityRulers(Planet.SUN, Planet.JUPITER, Planet.SATURN);
             case EARTH -> new TriplicityRulers(Planet.VENUS, Planet.MOON, Planet.MARS);
             case AIR -> new TriplicityRulers(Planet.SATURN, Planet.MERCURY, Planet.JUPITER);
             case WATER -> new TriplicityRulers(Planet.VENUS, Planet.MARS, Planet.MOON);
+        };
+    }
+
+    private static TriplicityRulers ptolemaicTriplicityRulers(ZodiacSign sign) {
+        return switch (element(sign)) {
+            case FIRE -> new TriplicityRulers(Planet.SUN, Planet.JUPITER, null);
+            case EARTH -> new TriplicityRulers(Planet.VENUS, Planet.MOON, null);
+            case AIR -> new TriplicityRulers(Planet.SATURN, Planet.MERCURY, null);
+            case WATER -> new TriplicityRulers(Planet.MARS, Planet.VENUS, null);
         };
     }
 
@@ -104,12 +121,12 @@ public final class TraditionalTables {
 
     private static TermBoundary[] egyptianTerms(ZodiacSign sign) {
         return switch (sign) {
-            case ARIES -> terms(6, Planet.JUPITER, 14, Planet.VENUS, 21, Planet.MERCURY, 26, Planet.MARS, 30, Planet.SATURN);
+            case ARIES -> terms(6, Planet.JUPITER, 12, Planet.VENUS, 20, Planet.MERCURY, 25, Planet.MARS, 30, Planet.SATURN);
             case TAURUS -> terms(8, Planet.VENUS, 14, Planet.MERCURY, 22, Planet.JUPITER, 27, Planet.SATURN, 30, Planet.MARS);
             case GEMINI -> terms(6, Planet.MERCURY, 12, Planet.JUPITER, 17, Planet.VENUS, 24, Planet.MARS, 30, Planet.SATURN);
             case CANCER -> terms(7, Planet.MARS, 13, Planet.VENUS, 19, Planet.MERCURY, 26, Planet.JUPITER, 30, Planet.SATURN);
             case LEO -> terms(6, Planet.JUPITER, 11, Planet.VENUS, 18, Planet.SATURN, 24, Planet.MERCURY, 30, Planet.MARS);
-            case VIRGO -> terms(7, Planet.MERCURY, 13, Planet.VENUS, 17, Planet.JUPITER, 21, Planet.MARS, 30, Planet.SATURN);
+            case VIRGO -> terms(7, Planet.MERCURY, 17, Planet.VENUS, 21, Planet.JUPITER, 28, Planet.MARS, 30, Planet.SATURN);
             case LIBRA -> terms(6, Planet.SATURN, 14, Planet.MERCURY, 21, Planet.JUPITER, 28, Planet.VENUS, 30, Planet.MARS);
             case SCORPIO -> terms(7, Planet.MARS, 11, Planet.VENUS, 19, Planet.MERCURY, 24, Planet.JUPITER, 30, Planet.SATURN);
             case SAGITTARIUS -> terms(12, Planet.JUPITER, 17, Planet.VENUS, 21, Planet.MERCURY, 26, Planet.SATURN, 30, Planet.MARS);
@@ -123,12 +140,12 @@ public final class TraditionalTables {
         return switch (sign) {
             case ARIES -> terms(6, Planet.JUPITER, 14, Planet.VENUS, 21, Planet.MERCURY, 26, Planet.MARS, 30, Planet.SATURN);
             case TAURUS -> terms(8, Planet.VENUS, 15, Planet.MERCURY, 22, Planet.JUPITER, 27, Planet.SATURN, 30, Planet.MARS);
-            case GEMINI -> terms(7, Planet.MERCURY, 14, Planet.JUPITER, 21, Planet.VENUS, 25, Planet.MARS, 30, Planet.SATURN);
+            case GEMINI -> terms(7, Planet.MERCURY, 14, Planet.JUPITER, 21, Planet.VENUS, 25, Planet.SATURN, 30, Planet.MARS);
             case CANCER -> terms(6, Planet.MARS, 13, Planet.JUPITER, 20, Planet.MERCURY, 27, Planet.VENUS, 30, Planet.SATURN);
-            case LEO -> terms(6, Planet.JUPITER, 13, Planet.VENUS, 19, Planet.SATURN, 25, Planet.MERCURY, 30, Planet.MARS);
+            case LEO -> terms(6, Planet.SATURN, 13, Planet.MERCURY, 19, Planet.VENUS, 25, Planet.JUPITER, 30, Planet.MARS);
             case VIRGO -> terms(7, Planet.MERCURY, 13, Planet.VENUS, 18, Planet.JUPITER, 24, Planet.SATURN, 30, Planet.MARS);
-            case LIBRA -> terms(6, Planet.SATURN, 11, Planet.MERCURY, 19, Planet.JUPITER, 24, Planet.VENUS, 30, Planet.MARS);
-            case SCORPIO -> terms(6, Planet.MARS, 14, Planet.VENUS, 21, Planet.MERCURY, 27, Planet.JUPITER, 30, Planet.SATURN);
+            case LIBRA -> terms(6, Planet.SATURN, 11, Planet.VENUS, 19, Planet.JUPITER, 24, Planet.MERCURY, 30, Planet.MARS);
+            case SCORPIO -> terms(6, Planet.MARS, 14, Planet.JUPITER, 21, Planet.VENUS, 27, Planet.MERCURY, 30, Planet.SATURN);
             case SAGITTARIUS -> terms(8, Planet.JUPITER, 14, Planet.VENUS, 19, Planet.MERCURY, 25, Planet.SATURN, 30, Planet.MARS);
             case CAPRICORN -> terms(6, Planet.VENUS, 12, Planet.MERCURY, 19, Planet.JUPITER, 25, Planet.MARS, 30, Planet.SATURN);
             case AQUARIUS -> terms(6, Planet.SATURN, 12, Planet.MERCURY, 20, Planet.VENUS, 25, Planet.JUPITER, 30, Planet.MARS);

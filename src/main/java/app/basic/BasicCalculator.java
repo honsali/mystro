@@ -3,14 +3,12 @@ package app.basic;
 import app.basic.calculator.AngleCalculator;
 import app.basic.calculator.ChartPointCalculator;
 import app.basic.calculator.HouseCalculator;
-import app.basic.calculator.LotCalculator;
 import app.basic.calculator.MoonPhaseCalculator;
 import app.basic.calculator.PlanetCalculator;
 import app.basic.calculator.PointCalculator;
 import app.basic.calculator.SectCalculator;
 import app.basic.calculator.SimpleCalculator;
 import app.basic.calculator.SolarPhaseCalculator;
-import app.basic.calculator.SyzygyCalculator;
 import app.model.basic.BasicChart;
 import app.model.input.Input;
 
@@ -26,8 +24,6 @@ public final class BasicCalculator {
         (new PlanetCalculator()).calculate(basicChart, ctx);
         (new HouseCalculator()).calculate(basicChart, ctx);
         (new AngleCalculator()).calculate(basicChart, ctx);
-        (new LotCalculator()).calculate(basicChart, ctx);
-        (new SyzygyCalculator()).calculate(basicChart, ctx);
         (new PointCalculator()).calculate(basicChart, ctx);
         (new ChartPointCalculator()).calculate(basicChart, ctx);
         (new SolarPhaseCalculator()).calculate(basicChart, ctx);

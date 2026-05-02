@@ -9,10 +9,15 @@ import app.model.data.PointKey;
 public class BasicChart {
 
     private Instant resolvedUtcInstant;
-    private double julianDay;
+    private double julianDayUt;
+    private double julianDayTt;
+    private double deltaTSeconds;
     private double armc;
-    private double localSiderealTime;
-    private double obliquity;
+    private double localApparentSiderealTimeHours;
+    private double trueObliquity;
+    private double meanObliquity;
+    private double nutationLongitude;
+    private double nutationObliquity;
     private Map<PointKey, PointEntry> points;
     private List<PlanetPosition> planets;
     private List<HousePosition> houses;
@@ -24,8 +29,6 @@ public class BasicChart {
     private List<SolarPhaseEntry> solarPhase;
     private MoonPhase moonPhase;
     private BasicSect sect;
-    private BasicSyzygy syzygy;
-    private List<LotPosition> lots;
 
     public Instant getResolvedUtcInstant() {
         return resolvedUtcInstant;
@@ -35,12 +38,28 @@ public class BasicChart {
         this.resolvedUtcInstant = resolvedUtcInstant;
     }
 
-    public double getJulianDay() {
-        return julianDay;
+    public double getJulianDayUt() {
+        return julianDayUt;
     }
 
-    public void setJulianDay(double julianDay) {
-        this.julianDay = julianDay;
+    public void setJulianDayUt(double julianDayUt) {
+        this.julianDayUt = julianDayUt;
+    }
+
+    public double getJulianDayTt() {
+        return julianDayTt;
+    }
+
+    public void setJulianDayTt(double julianDayTt) {
+        this.julianDayTt = julianDayTt;
+    }
+
+    public double getDeltaTSeconds() {
+        return deltaTSeconds;
+    }
+
+    public void setDeltaTSeconds(double deltaTSeconds) {
+        this.deltaTSeconds = deltaTSeconds;
     }
 
     public double getArmc() {
@@ -51,20 +70,44 @@ public class BasicChart {
         this.armc = armc;
     }
 
-    public double getLocalSiderealTime() {
-        return localSiderealTime;
+    public double getLocalApparentSiderealTimeHours() {
+        return localApparentSiderealTimeHours;
     }
 
-    public void setLocalSiderealTime(double localSiderealTime) {
-        this.localSiderealTime = localSiderealTime;
+    public void setLocalApparentSiderealTimeHours(double localApparentSiderealTimeHours) {
+        this.localApparentSiderealTimeHours = localApparentSiderealTimeHours;
     }
 
-    public double getObliquity() {
-        return obliquity;
+    public double getTrueObliquity() {
+        return trueObliquity;
     }
 
-    public void setObliquity(double obliquity) {
-        this.obliquity = obliquity;
+    public void setTrueObliquity(double trueObliquity) {
+        this.trueObliquity = trueObliquity;
+    }
+
+    public double getMeanObliquity() {
+        return meanObliquity;
+    }
+
+    public void setMeanObliquity(double meanObliquity) {
+        this.meanObliquity = meanObliquity;
+    }
+
+    public double getNutationLongitude() {
+        return nutationLongitude;
+    }
+
+    public void setNutationLongitude(double nutationLongitude) {
+        this.nutationLongitude = nutationLongitude;
+    }
+
+    public double getNutationObliquity() {
+        return nutationObliquity;
+    }
+
+    public void setNutationObliquity(double nutationObliquity) {
+        this.nutationObliquity = nutationObliquity;
     }
 
     public Map<PointKey, PointEntry> getPoints() {
@@ -160,21 +203,5 @@ public class BasicChart {
         this.sect = sect;
     }
 
-    @JsonIgnore
-    public BasicSyzygy getSyzygy() {
-        return syzygy;
-    }
 
-    public void setSyzygy(BasicSyzygy syzygy) {
-        this.syzygy = syzygy;
-    }
-
-    @JsonIgnore
-    public List<LotPosition> getLots() {
-        return lots;
-    }
-
-    public void setLots(List<LotPosition> lots) {
-        this.lots = lots;
-    }
 }

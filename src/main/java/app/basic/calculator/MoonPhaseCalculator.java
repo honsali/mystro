@@ -21,7 +21,7 @@ public class MoonPhaseCalculator implements Calculator {
         double directedElongation = ctx.normalize(moon.getLongitude() - sun.getLongitude());
         boolean waxing = directedElongation <= 180.0;
         double illumination = (1.0 - Math.cos(Math.toRadians(elongation))) / 2.0;
-        MoonPhase moonPhase = new MoonPhase(ctx.round(illumination), moonPhaseName(directedElongation), waxing);
+        MoonPhase moonPhase = new MoonPhase(illumination, moonPhaseName(directedElongation), waxing);
         basicChart.setMoonPhase(moonPhase);
     }
 

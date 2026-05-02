@@ -7,14 +7,10 @@ import app.basic.BasicCalculationContext;
 import app.basic.TraditionalTables;
 import app.model.basic.AnglePointEntry;
 import app.model.basic.BasicChart;
-import app.model.basic.BasicSyzygy;
 import app.model.basic.ChartAngle;
-import app.model.basic.LotPointEntry;
-import app.model.basic.LotPosition;
 import app.model.basic.PlanetPointEntry;
 import app.model.basic.PlanetPosition;
 import app.model.basic.PointEntry;
-import app.model.basic.SyzygyPointEntry;
 import app.model.basic.TriplicityRulers;
 import app.model.data.Planet;
 import app.model.data.PointKey;
@@ -25,7 +21,7 @@ public class PointCalculator implements Calculator {
     public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
         for (PlanetPosition planet : basicChart.getPlanets()) {
-            points.put(PointKey.of(planet.getPlanet()), planetEntry(planet));
+            points.put(PointKey.of(planet.getPlanet()), planetEntry(planet, ctx));
         }
         for (ChartAngle angle : basicChart.getAngles()) {
             points.put(PointKey.of(angle.getName()), new AnglePointEntry(
@@ -34,37 +30,10 @@ public class PointCalculator implements Calculator {
                     angle.getDegreeInSign()
             ));
         }
-        for (LotPosition lot : basicChart.getLots()) {
-            points.put(PointKey.of(lot.getName()), new LotPointEntry(
-                    lot.getLongitude(),
-                    lot.getSign(),
-                    lot.getDegreeInSign(),
-                    lot.getHouse(),
-                    lot.getAntisciaLongitude(),
-                    lot.getContraAntisciaLongitude()
-            ));
-        }
-        BasicSyzygy syzygy = basicChart.getSyzygy();
-        if (syzygy != null) {
-            points.put(PointKey.PRENATAL_SYZYGY, new SyzygyPointEntry(
-                    syzygy.getLongitude(),
-                    syzygy.getSign(),
-                    syzygy.getDegreeInSign(),
-                    syzygy.getHouse(),
-                    syzygy.getType(),
-                    syzygy.getJulianDay(),
-                    syzygy.getApproximateUtcInstant(),
-                    syzygy.getSunLongitude(),
-                    syzygy.getMoonLongitude(),
-                    syzygy.getAngularSeparation(),
-                    syzygy.getSunSign(),
-                    syzygy.getMoonSign()
-            ));
-        }
         basicChart.setPoints(points);
     }
 
-    private PointEntry planetEntry(PlanetPosition planet) {
+    private PointEntry planetEntry(PlanetPosition planet, BasicCalculationContext ctx) {
         Planet domicileRuler = null;
         Planet exaltationRuler = null;
         TriplicityRulers triplicityRulers = null;
@@ -75,7 +44,7 @@ public class PointCalculator implements Calculator {
         if (isTraditionalPlanet(planet.getPlanet())) {
             domicileRuler = domicileRuler(planet.getSign());
             exaltationRuler = exaltationRuler(planet.getSign());
-            triplicityRulers = triplicityRulers(planet.getSign());
+            triplicityRulers = triplicityRulers(planet.getSign(), ctx);
             termRuler = planet.getTermRuler();
             faceRuler = faceRuler(planet.getSign(), planet.getDegreeInSign());
             detrimentRuler = domicileRuler(opposite(planet.getSign()));
@@ -86,12 +55,17 @@ public class PointCalculator implements Calculator {
                 planet.getSign(),
                 planet.getDegreeInSign(),
                 planet.getLatitude(),
+                planet.getRightAscension(),
                 planet.getDeclination(),
+                planet.getAltitude(),
+                planet.getAboveHorizon(),
                 planet.getSpeed(),
                 planet.getMeanDailySpeed(),
                 planet.getSpeedRatio(),
                 planet.getRetrograde(),
                 planet.getHouse(),
+                planet.getWholeSignHouse(),
+                planet.getQuadrantHouse(),
                 planet.getAngularity(),
                 planet.getAntisciaLongitude(),
                 planet.getContraAntisciaLongitude(),
@@ -125,7 +99,7 @@ public class PointCalculator implements Calculator {
         return TraditionalTables.faceRuler(sign, degreeInSign);
     }
 
-    private TriplicityRulers triplicityRulers(ZodiacSign sign) {
-        return TraditionalTables.triplicityRulers(sign);
+    private TriplicityRulers triplicityRulers(ZodiacSign sign, BasicCalculationContext ctx) {
+        return TraditionalTables.triplicityRulers(sign, ctx.getInput().getDoctrine().getTriplicity());
     }
 }

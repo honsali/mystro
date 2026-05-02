@@ -25,7 +25,7 @@ public class AngleCalculator implements Calculator {
     }
 
     private void addAngle(List<ChartAngle> angles, AngleType name, double longitude, BasicCalculationContext ctx) {
-        angles.add(new ChartAngle(name, ctx.round(longitude), ctx.signOf(longitude), ctx.round(ctx.degreeInSign(longitude))));
+        angles.add(new ChartAngle(name, longitude, ctx.signOf(longitude), ctx.degreeInSign(longitude)));
     }
 
 }

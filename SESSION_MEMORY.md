@@ -53,6 +53,8 @@ It is not a settings file, not a doctrine profile, and not a partial universal s
 - Current report metadata contains only `engineVersion`.
 - Current implemented output path: `output/descriptive/{subjectId}/{doctrineId}.json`.
 - Execution-level status is written to `output/run-manifest.json`.
+- Basic calculators keep full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`.
+- Current stage 1 basic output includes UT/TT Julian days, delta T, ARMC, local apparent sidereal time, true/mean obliquity, nutation, planet longitude/latitude/right ascension/declination/altitude/above-horizon facts, houses, essential dignity rulers, antiscia/contra-antiscia, solar phase, moon phase, pairwise relations, and sect.
 
 ## Commands
 
@@ -74,7 +76,7 @@ Version prompt:
 .pi/prompts/version.md saves durable knowledge, commits all intended project files except input/output/build artifacts, runs mvn compile, stops on compile failure, commits successful changes as "version $v: $desc", pushes, then bumps the minor version in pom.xml for the next development cycle. Major version bumps are manual.
 ```
 
-Current Maven version for the next development cycle is `0.7.0`.
+Current Maven version for the next development cycle is `0.8.0`.
 
 ## Read first in future sessions
 

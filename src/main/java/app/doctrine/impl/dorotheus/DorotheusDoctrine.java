@@ -6,7 +6,9 @@ import app.doctrine.DescriptiveResult;
 import app.doctrine.Doctrine;
 import app.doctrine.SimpleDescriptiveResult;
 import app.model.data.HouseSystem;
+import app.model.data.NodeType;
 import app.model.data.Terms;
+import app.model.data.Triplicity;
 import app.model.data.Zodiac;
 import app.model.input.Input;
 
@@ -34,6 +36,16 @@ public final class DorotheusDoctrine implements Doctrine {
     @Override
     public Terms getTerms() {
         return Terms.EGYPTIAN;
+    }
+
+    @Override
+    public Triplicity getTriplicity() {
+        return Triplicity.DOROTHEAN;
+    }
+
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.MEAN;
     }
 
     @Override

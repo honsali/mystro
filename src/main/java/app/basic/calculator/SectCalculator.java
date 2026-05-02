@@ -19,10 +19,10 @@ public class SectCalculator implements Calculator {
         PlanetPosition sun = requiredPlanet(Planet.SUN, basicChart, ctx);
         PlanetPosition moon = requiredPlanet(Planet.MOON, basicChart, ctx);
         PlanetPosition mercury = requiredPlanet(Planet.MERCURY, basicChart, ctx);
-        double sunAltitude = ctx.round(ctx.horizontalAltitude(sun.getLongitude(), sun.getLatitude()));
-        double moonAltitude = ctx.round(ctx.horizontalAltitude(moon.getLongitude(), moon.getLatitude()));
-        boolean sunAboveHorizon = sunAltitude >= 0.0;
-        boolean moonAboveHorizon = moonAltitude >= 0.0;
+        double sunAltitude = sun.getAltitude();
+        double moonAltitude = moon.getAltitude();
+        boolean sunAboveHorizon = sun.getAboveHorizon();
+        boolean moonAboveHorizon = moon.getAboveHorizon();
         boolean diurnal = sunAboveHorizon;
         BasicSect data = new BasicSect(
                 diurnal ? Sect.DIURNAL : Sect.NOCTURNAL,

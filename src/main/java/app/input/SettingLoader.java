@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 import app.model.data.CalculationPrecision;
-import app.model.data.RoundingPolicy;
 import app.model.input.CalculationSetting;
 import app.model.input.InputListBundle;
 import app.output.Logger;
@@ -22,9 +21,8 @@ public final class SettingLoader {
         }
 
         CalculationPrecision precision = parsePrecision(properties);
-        RoundingPolicy roundingPolicy = parseRoundingPolicy(properties);
         boolean includeReferenceTables = parseIncludeReferenceTables(properties);
-        input.setCalculationSetting(new CalculationSetting(precision, roundingPolicy, includeReferenceTables));
+        input.setCalculationSetting(new CalculationSetting(precision, includeReferenceTables));
     }
 
     private CalculationPrecision parsePrecision(Properties properties) {
@@ -34,16 +32,6 @@ public final class SettingLoader {
         } catch (IllegalArgumentException e) {
             Logger.instance.error("settings", "Unknown calculation.precision: " + value);
             return CalculationPrecision.STANDARD;
-        }
-    }
-
-    private RoundingPolicy parseRoundingPolicy(Properties properties) {
-        String value = properties.getProperty("roundingPolicy", RoundingPolicy.DECIMAL_6.name());
-        try {
-            return RoundingPolicy.valueOf(value.trim().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            Logger.instance.error("settings", "Unknown roundingPolicy: " + value);
-            return RoundingPolicy.DECIMAL_6;
         }
     }
 

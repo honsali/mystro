@@ -13,10 +13,7 @@ public enum PointKey {
     ASCENDANT,
     MIDHEAVEN,
     DESCENDANT,
-    IMUM_COELI,
-    FORTUNE,
-    SPIRIT,
-    PRENATAL_SYZYGY;
+    IMUM_COELI;
 
     public static PointKey of(Planet planet) {
         return switch (planet) {
@@ -41,10 +38,4 @@ public enum PointKey {
         };
     }
 
-    public static PointKey of(LotType lot) {
-        return switch (lot) {
-            case FORTUNE -> FORTUNE;
-            case SPIRIT -> SPIRIT;
-        };
-    }
 }

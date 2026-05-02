@@ -6,7 +6,6 @@ import java.util.List;
 import app.model.basic.PlanetPosition;
 import app.model.data.HouseSystem;
 import app.model.data.Planet;
-import app.model.data.RoundingPolicy;
 import app.model.data.Terms;
 import app.model.data.Zodiac;
 import app.model.data.ZodiacSign;
@@ -81,13 +80,6 @@ public class BasicCalculationContext {
         return null;
     }
 
-    public double round(double value) {
-        if (input.getCalculationSetting().getRoundingPolicy() == RoundingPolicy.DECIMAL_6) {
-            return Math.round(value * 1_000_000.0) / 1_000_000.0;
-        }
-        return value;
-    }
-
     public double normalize(double degrees) {
         double value = degrees % 360.0;
         return value < 0 ? value + 360.0 : value;
@@ -103,20 +95,60 @@ public class BasicCalculationContext {
 
 
     public double longitudeFor(Planet planet, int swissPlanetId, double julianDay) {
-        double[] values = new double[6];
-        StringBuilder error = new StringBuilder();
-        int result = swissEph.swe_calc_ut(julianDay, swissPlanetId, planetFlags(), values, error);
-        if (result < 0 || Double.isNaN(values[0])) {
-            Logger.instance.error(input, "Swiss Ephemeris failed for " + planet + " longitude: " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
-        }
+        double[] values = eclipticCoordinatesFor(planet, swissPlanetId, julianDay);
         return normalize(values[0]);
     }
 
+    public double latitudeFor(Planet planet, int swissPlanetId, double julianDay) {
+        double[] values = eclipticCoordinatesFor(planet, swissPlanetId, julianDay);
+        return values[1];
+    }
+
+    private double[] eclipticCoordinatesFor(Planet planet, int swissPlanetId, double julianDay) {
+        double[] values = new double[6];
+        StringBuilder error = new StringBuilder();
+        int result = swissEph.swe_calc_ut(julianDay, swissPlanetId, planetFlags(), values, error);
+        if (result < 0 || Double.isNaN(values[0]) || Double.isNaN(values[1])) {
+            Logger.instance.error(input, "Swiss Ephemeris failed for " + planet + " ecliptic coordinates: " + error);
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        }
+        return values;
+    }
+
     public int houseOf(double longitude, double ascendant) {
+        if (input.getDoctrine().getHouseSystem() == HouseSystem.WHOLE_SIGN) {
+            return wholeSignHouseOf(longitude, ascendant);
+        }
+        return quadrantHouseOf(longitude);
+    }
+
+    public int wholeSignHouseOf(double longitude, double ascendant) {
         int ascSignIndex = (int) Math.floor(normalize(ascendant) / 30.0);
         int planetSignIndex = (int) Math.floor(normalize(longitude) / 30.0);
         return Math.floorMod(planetSignIndex - ascSignIndex, 12) + 1;
+    }
+
+    public Integer quadrantHouseOf(double longitude) {
+        if (input.getDoctrine().getHouseSystem() == HouseSystem.WHOLE_SIGN) {
+            return null;
+        }
+        double normalizedLongitude = normalize(longitude);
+        for (int house = 1; house <= 12; house++) {
+            double start = normalize(cusps[house]);
+            double end = normalize(cusps[house == 12 ? 1 : house + 1]);
+            if (isWithinZodiacalArc(normalizedLongitude, start, end)) {
+                return house;
+            }
+        }
+        Logger.instance.error(input, "Could not assign quadrant house for longitude " + normalizedLongitude);
+        throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+    }
+
+    private boolean isWithinZodiacalArc(double longitude, double start, double end) {
+        if (start <= end) {
+            return longitude >= start && longitude < end;
+        }
+        return longitude >= start || longitude < end;
     }
 
     public Planet termRuler(double longitude, Terms terms) {
@@ -137,10 +169,14 @@ public class BasicCalculationContext {
     }
 
     public double horizontalAltitude(double longitude, double latitude) {
+        return horizontalAltitude(fullJulianDay, longitude, latitude);
+    }
+
+    public double horizontalAltitude(double julianDay, double longitude, double latitude) {
         double[] geopos = new double[] {input.getSubject().getLongitude(), input.getSubject().getLatitude(), 0.0};
         double[] eclipticCoordinates = new double[] {longitude, latitude, 1.0};
         double[] horizontalCoordinates = new double[3];
-        swissEph.swe_azalt(fullJulianDay, SweConst.SE_ECL2HOR, geopos, 0.0, 10.0, eclipticCoordinates, horizontalCoordinates);
+        swissEph.swe_azalt(julianDay, SweConst.SE_ECL2HOR, geopos, 0.0, 10.0, eclipticCoordinates, horizontalCoordinates);
         if (Double.isNaN(horizontalCoordinates[1])) {
             Logger.instance.error(input, "Swiss Ephemeris failed to calculate horizontal altitude");
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");

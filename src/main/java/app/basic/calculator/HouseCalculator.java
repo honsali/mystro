@@ -15,7 +15,7 @@ public class HouseCalculator implements Calculator {
 
         for (int house = 1; house <= 12; house++) {
             double cuspLongitude = ctx.normalize(ctx.getCusps()[house]);
-            houses.add(new HousePosition(house, ctx.round(cuspLongitude), ctx.signOf(cuspLongitude), ctx.round(ctx.degreeInSign(cuspLongitude))));
+            houses.add(new HousePosition(house, cuspLongitude, ctx.signOf(cuspLongitude), ctx.degreeInSign(cuspLongitude)));
         }
         basicChart.setHouses(houses);
     }
