@@ -2,11 +2,11 @@ package app.doctrine.impl.common;
 
 import java.time.Instant;
 import app.basic.BasicCalculationContext;
-import app.model.basic.BasicChart;
-import app.model.basic.BasicSyzygy;
-import app.model.data.Planet;
-import app.model.data.SyzygyType;
-import app.model.input.Input;
+import app.basic.model.BasicChart;
+import app.basic.model.BasicSyzygy;
+import app.basic.data.Planet;
+import app.basic.data.SyzygyType;
+import app.input.model.Input;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 

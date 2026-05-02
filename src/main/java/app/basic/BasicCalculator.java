@@ -9,8 +9,8 @@ import app.basic.calculator.PointCalculator;
 import app.basic.calculator.SectCalculator;
 import app.basic.calculator.SimpleCalculator;
 import app.basic.calculator.SolarPhaseCalculator;
-import app.model.basic.BasicChart;
-import app.model.input.Input;
+import app.basic.model.BasicChart;
+import app.input.model.Input;
 
 public final class BasicCalculator {
 

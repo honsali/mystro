@@ -1,10 +1,10 @@
 package app.doctrine;
 
-import app.model.data.HouseSystem;
-import app.model.data.NodeType;
-import app.model.data.Terms;
-import app.model.data.Triplicity;
-import app.model.data.Zodiac;
+import app.basic.data.HouseSystem;
+import app.basic.data.NodeType;
+import app.basic.data.Terms;
+import app.basic.data.Triplicity;
+import app.basic.data.Zodiac;
 
 public interface DoctrineDefinition {
 

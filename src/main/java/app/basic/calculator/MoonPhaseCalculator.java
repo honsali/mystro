@@ -2,11 +2,11 @@ package app.basic.calculator;
 
 import app.basic.Calculator;
 import app.basic.BasicCalculationContext;
-import app.model.basic.BasicChart;
-import app.model.basic.MoonPhase;
-import app.model.basic.PlanetPosition;
-import app.model.data.MoonPhaseName;
-import app.model.data.Planet;
+import app.basic.model.BasicChart;
+import app.basic.model.MoonPhase;
+import app.basic.model.PlanetPosition;
+import app.basic.data.MoonPhaseName;
+import app.basic.data.Planet;
 
 public class MoonPhaseCalculator implements Calculator {
 

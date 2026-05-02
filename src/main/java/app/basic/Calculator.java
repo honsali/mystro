@@ -1,6 +1,6 @@
 package app.basic;
 
-import app.model.basic.BasicChart;
+import app.basic.model.BasicChart;
 
 public interface Calculator {
     void calculate(BasicChart basicChart, BasicCalculationContext ctx);

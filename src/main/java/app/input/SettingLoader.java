@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
-import app.model.data.CalculationPrecision;
-import app.model.input.CalculationSetting;
-import app.model.input.InputListBundle;
+import app.basic.data.CalculationPrecision;
+import app.input.model.CalculationSetting;
+import app.input.model.InputListBundle;
 import app.output.Logger;
 
 public final class SettingLoader {

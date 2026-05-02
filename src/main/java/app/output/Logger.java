@@ -3,7 +3,7 @@ package app.output;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import app.model.input.Input;
+import app.input.model.Input;
 
 public final class Logger {
 

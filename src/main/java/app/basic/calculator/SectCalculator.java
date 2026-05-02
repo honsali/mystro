@@ -4,14 +4,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.Calculator;
 import app.basic.BasicCalculationContext;
-import app.model.basic.BasicChart;
-import app.model.basic.BasicSect;
-import app.model.basic.PlanetPosition;
-import app.model.basic.PlanetSectInfo;
-import app.model.data.Planet;
-import app.model.data.Sect;
-import app.model.data.SectCondition;
-import app.model.data.SolarOrientation;
+import app.basic.model.BasicChart;
+import app.basic.model.BasicSect;
+import app.basic.model.PlanetPosition;
+import app.basic.model.PlanetSectInfo;
+import app.basic.data.Planet;
+import app.basic.data.Sect;
+import app.basic.data.SectCondition;
+import app.basic.data.SolarOrientation;
 
 public class SectCalculator implements Calculator {
 

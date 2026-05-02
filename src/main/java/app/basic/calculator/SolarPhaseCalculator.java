@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.BasicCalculationContext;
-import app.model.basic.BasicChart;
-import app.model.basic.PlanetPosition;
-import app.model.basic.SolarPhaseEntry;
-import app.model.data.Planet;
-import app.model.data.SolarOrientation;
+import app.basic.model.BasicChart;
+import app.basic.model.PlanetPosition;
+import app.basic.model.SolarPhaseEntry;
+import app.basic.data.Planet;
+import app.basic.data.SolarOrientation;
 
 public class SolarPhaseCalculator implements Calculator {
 

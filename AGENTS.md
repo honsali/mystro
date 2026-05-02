@@ -61,7 +61,8 @@ Input loading
 - `basicChart.pairwiseRelations` currently covers planets + angles only; the Lille fixture has 78 entries.
 - `basicChart.points` is currently `Map<PointKey, PointEntry>`. `PointKey` preserves the serialized point names; `PointEntry` is a sealed hierarchy with planet and angle record implementations.
 - `sect` is backed by typed `BasicSect` / `PlanetSectInfo`; `planetSects` is keyed by `Planet`.
-- `BasicChart` output models live in `app.model.basic`; enums live in `app.model.data`.
+- Input models live in `app.input.model`.
+- Basic output models live in `app.basic.model`; basic/shared astrology enums currently live in `app.basic.data`.
 - `BasicCalculationContext` in `app.basic` is the per-run internal context. It owns Swiss Ephemeris, input, full Julian day, house cusps, `ascmc`, ARMC, and shared calculation helpers.
 - `BasicCalculator` orchestrates focused stateless calculators under `app.basic.calculator` in this order: simple metadata, planets, houses, angles, point registry, pairwise relations, solar phase, moon phase, sect.
 - `BasicChart` should remain output-facing; internal fields such as full Julian day, cusps, and `ascmc` belong in `BasicCalculationContext`, not in `BasicChart`.

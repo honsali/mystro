@@ -2,7 +2,7 @@ package app.input;
 
 import java.util.ArrayList;
 import java.util.List;
-import app.model.input.InputListBundle;
+import app.input.model.InputListBundle;
 
 public final class ArgParser {
 

@@ -2,8 +2,8 @@ package app.output;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
-import app.model.basic.BasicChart;
-import app.model.input.Input;
+import app.basic.model.BasicChart;
+import app.input.model.Input;
 
 public class DescriptiveAstrologyReport implements AstrologyReport {
     private final String engineVersion;

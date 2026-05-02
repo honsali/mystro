@@ -1,16 +1,16 @@
 package app.doctrine.impl.valens;
 
 import java.util.Map;
-import app.model.basic.BasicChart;
+import app.basic.model.BasicChart;
 import app.doctrine.DescriptiveResult;
 import app.doctrine.Doctrine;
 import app.doctrine.SimpleDescriptiveResult;
-import app.model.data.HouseSystem;
-import app.model.data.NodeType;
-import app.model.data.Terms;
-import app.model.data.Triplicity;
-import app.model.data.Zodiac;
-import app.model.input.Input;
+import app.basic.data.HouseSystem;
+import app.basic.data.NodeType;
+import app.basic.data.Terms;
+import app.basic.data.Triplicity;
+import app.basic.data.Zodiac;
+import app.input.model.Input;
 
 public final class ValensDoctrine implements Doctrine {
     @Override

@@ -9,7 +9,7 @@ import app.doctrine.Doctrine;
 import app.doctrine.impl.dorotheus.DorotheusDoctrine;
 import app.doctrine.impl.ptolemy.PtolemyDoctrine;
 import app.doctrine.impl.valens.ValensDoctrine;
-import app.model.input.InputListBundle;
+import app.input.model.InputListBundle;
 import app.output.Logger;
 
 public final class DoctrineLoader {

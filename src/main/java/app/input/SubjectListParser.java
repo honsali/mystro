@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import app.model.input.InputListBundle;
-import app.model.input.Subject;
+import app.input.model.InputListBundle;
+import app.input.model.Subject;
 import app.output.Logger;
 
 public final class SubjectListParser {

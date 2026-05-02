@@ -5,16 +5,16 @@ import java.util.Map;
 import app.basic.Calculator;
 import app.basic.BasicCalculationContext;
 import app.basic.TraditionalTables;
-import app.model.basic.AnglePointEntry;
-import app.model.basic.BasicChart;
-import app.model.basic.ChartAngle;
-import app.model.basic.PlanetPointEntry;
-import app.model.basic.PlanetPosition;
-import app.model.basic.PointEntry;
-import app.model.basic.TriplicityRulers;
-import app.model.data.Planet;
-import app.model.data.PointKey;
-import app.model.data.ZodiacSign;
+import app.basic.model.AnglePointEntry;
+import app.basic.model.BasicChart;
+import app.basic.model.ChartAngle;
+import app.basic.model.PlanetPointEntry;
+import app.basic.model.PlanetPosition;
+import app.basic.model.PointEntry;
+import app.basic.model.TriplicityRulers;
+import app.basic.data.Planet;
+import app.basic.data.PointKey;
+import app.basic.data.ZodiacSign;
 
 public class PointCalculator implements Calculator {
 

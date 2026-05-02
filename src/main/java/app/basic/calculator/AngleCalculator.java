@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.BasicCalculationContext;
-import app.model.basic.BasicChart;
-import app.model.basic.ChartAngle;
-import app.model.data.AngleType;
+import app.basic.model.BasicChart;
+import app.basic.model.ChartAngle;
+import app.basic.data.AngleType;
 
 public class AngleCalculator implements Calculator {
 

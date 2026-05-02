@@ -1,7 +1,7 @@
 package app.input;
 
 import java.io.IOException;
-import app.model.input.InputListBundle;
+import app.input.model.InputListBundle;
 import app.output.Logger;
 
 public final class InputLoader {

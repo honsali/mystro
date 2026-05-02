@@ -1017,21 +1017,22 @@ src/main/java/app/
   App.java
 
   input/
-    NatalInput.java
-    InputBundle.java
     InputLoader.java
     InputValidator.java
     InputNormalizer.java
-    DoctrineRequest.java
-    InquiryPeriod.java
-    InquiryDate.java
-    InquiryRange.java
-    InquiryYear.java
-    ComparisonInput.java
-    SecondaryNatalInput.java
-    ReturnInquiry.java
-    TransitInquiry.java
-    DerivedChartInquiry.java
+    model/
+      NatalInput.java
+      InputBundle.java
+      DoctrineRequest.java
+      InquiryPeriod.java
+      InquiryDate.java
+      InquiryRange.java
+      InquiryYear.java
+      ComparisonInput.java
+      SecondaryNatalInput.java
+      ReturnInquiry.java
+      TransitInquiry.java
+      DerivedChartInquiry.java
 
   doctrine/
     Doctrine.java
@@ -1068,11 +1069,47 @@ src/main/java/app/
   basic/
     BasicCalculationContext.java
     BasicCalculator.java
-    BasicChart.java
-    CalculationPrecision.java
-    PlanetPosition.java
-    HousePosition.java
-    ChartAngle.java
+    TraditionalTables.java
+    calculator/
+      SimpleCalculator.java
+      PlanetCalculator.java
+      HouseCalculator.java
+      AngleCalculator.java
+      PointCalculator.java
+      ChartPointCalculator.java
+      SolarPhaseCalculator.java
+      MoonPhaseCalculator.java
+      SectCalculator.java
+    model/
+      BasicChart.java
+      PlanetPosition.java
+      HousePosition.java
+      ChartAngle.java
+    data/
+      Planet.java
+      ZodiacSign.java
+      HouseSystem.java
+      Zodiac.java
+      Terms.java
+      CalculationPrecision.java
+
+  descriptive/
+    common/
+      calculator/
+      model/
+      data/
+    valens/
+      calculator/
+      model/
+      data/
+    ptolemy/
+      calculator/
+      model/
+      data/
+    dorotheus/
+      calculator/
+      model/
+      data/
 
   output/
     AstrologyReport.java
@@ -1085,15 +1122,11 @@ src/main/java/app/
     JsonReportWriter.java
 
   common/
-    Planet.java
-    ZodiacSign.java
-    HouseSystem.java
-    Zodiac.java
-    Terms.java
-    Angle.java
     Location.java
     BirthDateTime.java
 ```
+
+Input POJOs belong under `app.input.model`. Basic output POJOs belong under `app.basic.model`. Basic/shared astrology enums currently belong under `app.basic.data`. Descriptive POJOs and enums should be introduced under the relevant `app.descriptive...model` and `app.descriptive...data` packages instead of returning to the former catch-all `app.model.*` layout.
 
 Later, validation can live under:
 

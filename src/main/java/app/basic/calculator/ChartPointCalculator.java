@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 import app.basic.Calculator;
 import app.basic.BasicCalculationContext;
-import app.model.basic.BasicChart;
-import app.model.basic.ChartAngle;
-import app.model.basic.ChartPoint;
-import app.model.basic.PairwiseRelation;
-import app.model.basic.PlanetPosition;
-import app.model.basic.RawAspectMatrixEntry;
-import app.model.basic.RawDeclinationMatrixEntry;
-import app.model.basic.RawSignDistanceMatrixEntry;
-import app.model.data.PointType;
-import app.model.data.ZodiacSign;
+import app.basic.model.BasicChart;
+import app.basic.model.ChartAngle;
+import app.basic.model.ChartPoint;
+import app.basic.model.PairwiseRelation;
+import app.basic.model.PlanetPosition;
+import app.basic.model.RawAspectMatrixEntry;
+import app.basic.model.RawDeclinationMatrixEntry;
+import app.basic.model.RawSignDistanceMatrixEntry;
+import app.basic.data.PointType;
+import app.basic.data.ZodiacSign;
 
 public class ChartPointCalculator implements Calculator {
 

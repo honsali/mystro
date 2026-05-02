@@ -1,7 +1,7 @@
 package app.doctrine;
 
-import app.model.basic.BasicChart;
-import app.model.input.Input;
+import app.basic.model.BasicChart;
+import app.input.model.Input;
 
 public interface Doctrine extends DoctrineDefinition {
 
