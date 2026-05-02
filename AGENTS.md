@@ -55,7 +55,7 @@ Input loading
 - No hidden default doctrine should be introduced.
 - Current implemented output is descriptive JSON plus a run logger/manifest.
 - Report metadata currently contains only `engineVersion`.
-- Stage 1/basic data is emitted inside `basicChart`; the top-level `descriptive` key is absent until real stage 2 doctrine output exists.
+- Stage 1/basic data is emitted inside `basicChart`; Stage 2 doctrine output is emitted under the top-level `descriptive` key when implemented by the selected doctrine.
 - Current `basicChart` JSON keys are: `resolvedUtcInstant`, `julianDayUt`, `julianDayTt`, `deltaTSeconds`, `armc`, `localApparentSiderealTimeHours`, `trueObliquity`, `meanObliquity`, `nutationLongitude`, `nutationObliquity`, `points`, `houses`, `pairwiseRelations`, `solarPhase`, `moonPhase`, `sect`.
 - `basicChart.points` is a map keyed by point name and currently contains 13 points for the Lille fixture: 7 traditional planets, 2 nodes, and 4 angles.
 - `basicChart.pairwiseRelations` currently covers planets + angles only; the Lille fixture has 78 entries.
@@ -63,10 +63,15 @@ Input loading
 - `sect` is backed by typed `BasicSect` / `PlanetSectInfo`; `planetSects` is keyed by `Planet`.
 - Input models live in `app.input.model`.
 - Basic output models live in `app.basic.model`; basic/shared astrology enums currently live in `app.basic.data`.
-- `BasicCalculationContext` in `app.basic` is the per-run internal context. It owns Swiss Ephemeris, input, full Julian day, house cusps, `ascmc`, ARMC, and shared calculation helpers.
+- Descriptive layer packages live under `app.descriptive`; shared descriptive calculators/POJOs/enums are in `app.descriptive.common.calculator` / `app.descriptive.common.model` / `app.descriptive.common.data`, and doctrine-owned calculators/results are under packages such as `app.descriptive.valens`.
+- `DescriptiveResult` is a typed marker interface. Doctrine-specific descriptive records such as `ValensDescriptiveData` and `PtolemyDescriptiveData` implement it directly; do not convert typed descriptive data into `Map<String,Object>` at the doctrine boundary.
+- `BasicCalculationContext` in `app.basic` is the per-run internal context. It owns Swiss Ephemeris, input, full Julian day, house cusps, `ascmc`, ARMC, and shared calculation helpers. The same context is passed through basic and descriptive calculation; descriptive calculators must not rebuild a second context from input.
 - `BasicCalculator` orchestrates focused stateless calculators under `app.basic.calculator` in this order: simple metadata, planets, houses, angles, point registry, pairwise relations, solar phase, moon phase, sect.
 - `BasicChart` should remain output-facing; internal fields such as full Julian day, cusps, and `ascmc` belong in `BasicCalculationContext`, not in `BasicChart`.
 - Current stage 1 includes raw/non-interpretive: UT/TT Julian day and delta T, ARMC, local apparent sidereal time, true/mean obliquity, nutation, planet positions, signs, houses, terms, speeds, right ascensions, declinations, altitudes, above-horizon flags, antiscia/contra-antiscia, raw pairwise ecliptic/equatorial relations, solar orientation, moon phase geometry, altitude-based sect roles, and essential dignity rulers on traditional planets.
+- Current Valens Stage 2 descriptive output includes prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction among the seven traditional planets, essential dignity/debility assessment, and solar condition under `descriptive`.
+- Current Ptolemy Stage 2 descriptive output is intentionally different: prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and Ptolemaic dignity/debility assessment; lots and solar-condition sections are absent.
+- Prenatal syzygy search lives in `app.descriptive.common.calculator.SyzygyCalculator`, not under doctrine impl or basic. It uses the existing `BasicCalculationContext` and returns `PrenatalSyzygyEntry` directly.
 - Fixed stars are not implemented. If added, the star set must be explicitly parameterized; no doctrine-free canonical star list should be assumed.
 - `Logger.instance` is intentionally retained for the short-term CLI. The project may move to Spring Boot soon; when that happens, prefer injecting/request-scoping the logger instead of doing an interim de-singleton refactor now.
 - JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; basic calculators keep full internal double precision and `BasicCalculationContext` has no rounding helper.

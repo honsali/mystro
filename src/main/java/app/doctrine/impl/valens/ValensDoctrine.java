@@ -1,18 +1,19 @@
 package app.doctrine.impl.valens;
 
-import java.util.Map;
+import app.basic.BasicCalculationContext;
 import app.basic.model.BasicChart;
+import app.descriptive.valens.calculator.ValensDescriptiveCalculator;
 import app.doctrine.DescriptiveResult;
 import app.doctrine.Doctrine;
-import app.doctrine.SimpleDescriptiveResult;
 import app.basic.data.HouseSystem;
 import app.basic.data.NodeType;
 import app.basic.data.Terms;
 import app.basic.data.Triplicity;
 import app.basic.data.Zodiac;
-import app.input.model.Input;
 
 public final class ValensDoctrine implements Doctrine {
+    private final ValensDescriptiveCalculator descriptiveCalculator = new ValensDescriptiveCalculator(Triplicity.DOROTHEAN);
+
     @Override
     public String getId() {
         return "valens";
@@ -49,7 +50,7 @@ public final class ValensDoctrine implements Doctrine {
     }
 
     @Override
-    public DescriptiveResult describe(Input input, BasicChart chart) {
-        return new SimpleDescriptiveResult(getId(), Map.of());
+    public DescriptiveResult describe(BasicCalculationContext ctx, BasicChart chart) {
+        return descriptiveCalculator.calculate(ctx, chart);
     }
 }

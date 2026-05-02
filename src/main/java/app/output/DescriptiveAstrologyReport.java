@@ -1,21 +1,21 @@
 package app.output;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Map;
 import app.basic.model.BasicChart;
+import app.doctrine.DescriptiveResult;
 import app.input.model.Input;
 
 public class DescriptiveAstrologyReport implements AstrologyReport {
     private final String engineVersion;
     private final Input input;
     private final BasicChart basicChart;
-    private final Map<String, Object> descriptive;
+    private final DescriptiveResult descriptive;
 
-    public DescriptiveAstrologyReport(String engineVersion, Input input, BasicChart basicChart, Map<String, Object> descriptive) {
+    public DescriptiveAstrologyReport(String engineVersion, Input input, BasicChart basicChart, DescriptiveResult descriptive) {
         this.engineVersion = engineVersion;
         this.input = input;
         this.basicChart = basicChart;
-        this.descriptive = descriptive == null ? Map.of() : Map.copyOf(descriptive);
+        this.descriptive = descriptive;
     }
 
     public String getEngineVersion() {
@@ -31,7 +31,7 @@ public class DescriptiveAstrologyReport implements AstrologyReport {
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public Map<String, Object> getDescriptive() {
+    public DescriptiveResult getDescriptive() {
         return descriptive;
     }
 

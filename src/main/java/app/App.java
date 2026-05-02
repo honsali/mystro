@@ -1,6 +1,7 @@
 package app;
 
 import java.nio.file.Path;
+import app.basic.BasicCalculationContext;
 import app.basic.BasicCalculator;
 import app.doctrine.DescriptiveResult;
 import app.doctrine.Doctrine;
@@ -30,9 +31,10 @@ public final class App {
             for (Subject subject : inputListBundle.getSubjects()) {
                 for (Doctrine doctrine : inputListBundle.getDoctrines()) {
                     Input input = new Input(subject, doctrine, calculationSetting);
-                    BasicChart basicChart = basicCalculator.calculate(input);
-                    DescriptiveResult descriptive = doctrine.describe(input, basicChart);
-                    DescriptiveAstrologyReport report = new DescriptiveAstrologyReport(ENGINE_VERSION, input, basicChart, descriptive.getData());
+                    BasicCalculationContext ctx = new BasicCalculationContext(input);
+                    BasicChart basicChart = basicCalculator.calculate(ctx);
+                    DescriptiveResult descriptive = doctrine.describe(ctx, basicChart);
+                    DescriptiveAstrologyReport report = new DescriptiveAstrologyReport(ENGINE_VERSION, input, basicChart, descriptive);
                     reportWriter.write(Path.of("output", "descriptive", subject.getId(), doctrine.getId() + ".json"), report);
                     Logger.instance.info(subject.getId(), "Wrote descriptive report for doctrine " + doctrine.getId());
                 }

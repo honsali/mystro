@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import app.basic.data.AngleType;
+import app.basic.data.Planet;
 import app.basic.data.PointKey;
 
 public class BasicChart {
@@ -127,6 +129,13 @@ public class BasicChart {
         this.planets = planets;
     }
 
+    public PlanetPosition requirePlanet(Planet planet) {
+        return planets.stream()
+                .filter(candidate -> candidate.getPlanet() == planet)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Missing planet " + planet));
+    }
+
     public List<HousePosition> getHouses() {
         return houses;
     }
@@ -142,6 +151,13 @@ public class BasicChart {
 
     public void setAngles(List<ChartAngle> angles) {
         this.angles = angles;
+    }
+
+    public ChartAngle requireAngle(AngleType angle) {
+        return angles.stream()
+                .filter(candidate -> candidate.getName() == angle)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Missing angle " + angle));
     }
 
     @JsonIgnore

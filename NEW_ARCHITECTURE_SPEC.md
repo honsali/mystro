@@ -64,11 +64,11 @@ Comparison inputs
 For each natal × doctrine:
     Build BasicCalculationContext from engine metadata and doctrine choices
       ↓
-    BasicCalculator.calculate(natal, basicCalculationContext)
+    BasicCalculator.calculate(basicCalculationContext)
       ↓
     BasicChart
       ↓
-    doctrine.describe(natal, basicChart)
+    doctrine.describe(basicCalculationContext, basicChart)
       ↓
     DescriptiveResult
       ↓
@@ -596,7 +596,7 @@ public interface Doctrine {
     Zodiac zodiac();
     Terms terms();
 
-    DescriptiveResult describe(NatalInput natal, BasicChart chart);
+    DescriptiveResult describe(BasicCalculationContext context, BasicChart chart);
 
     List<PredictiveTechnique> predictiveTechniques();
     List<ComparativeTechnique> comparativeTechniques();
@@ -1096,15 +1096,35 @@ src/main/java/app/
   descriptive/
     common/
       calculator/
+        SyzygyCalculator.java
       model/
+        LotEntry.java
+        AspectEntry.java
+        PlanetDignityEntry.java
+        PrenatalSyzygyEntry.java
+        SolarConditionEntry.java
       data/
+        LotName.java
+        AspectType.java
+        DignityType.java
+        SolarCondition.java
     valens/
       calculator/
+        ValensDescriptiveCalculator.java
+        ValensLotCalculator.java
+        ValensAspectCalculator.java
+        ValensDignityCalculator.java
+        ValensSolarConditionCalculator.java
       model/
+        ValensDescriptiveData.java
       data/
     ptolemy/
       calculator/
+        PtolemyDescriptiveCalculator.java
+        PtolemyAspectCalculator.java
+        PtolemyDignityCalculator.java
       model/
+        PtolemyDescriptiveData.java
       data/
     dorotheus/
       calculator/
@@ -1126,7 +1146,7 @@ src/main/java/app/
     BirthDateTime.java
 ```
 
-Input POJOs belong under `app.input.model`. Basic output POJOs belong under `app.basic.model`. Basic/shared astrology enums currently belong under `app.basic.data`. Descriptive POJOs and enums should be introduced under the relevant `app.descriptive...model` and `app.descriptive...data` packages instead of returning to the former catch-all `app.model.*` layout.
+Input POJOs belong under `app.input.model`. Basic output POJOs belong under `app.basic.model`. Basic/shared astrology enums currently belong under `app.basic.data`. Descriptive calculators, POJOs, and enums should be introduced under the relevant `app.descriptive...calculator`, `app.descriptive...model`, and `app.descriptive...data` packages instead of returning to the former catch-all `app.model.*` layout. Doctrine-specific descriptive result records should implement `DescriptiveResult` directly; avoid converting typed descriptive records into `Map<String,Object>` at the doctrine boundary. Descriptive doctrine calculation receives the same `BasicCalculationContext` that produced the `BasicChart`, so descriptive helpers that need ephemeris access do not rebuild context from input.
 
 Later, validation can live under:
 

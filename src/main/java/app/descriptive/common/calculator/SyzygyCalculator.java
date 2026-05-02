@@ -1,12 +1,10 @@
-package app.doctrine.impl.common;
+package app.descriptive.common.calculator;
 
 import java.time.Instant;
 import app.basic.BasicCalculationContext;
-import app.basic.model.BasicChart;
-import app.basic.model.BasicSyzygy;
 import app.basic.data.Planet;
 import app.basic.data.SyzygyType;
-import app.input.model.Input;
+import app.descriptive.common.model.PrenatalSyzygyEntry;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 
@@ -22,19 +20,15 @@ public class SyzygyCalculator {
     private record SyzygyCandidate(SyzygyType type, double julianDay) {
     }
 
-    public BasicSyzygy calculate(Input input, BasicChart basicChart) {
-        return calculate(input);
-    }
-
-    public BasicSyzygy calculate(Input input) {
-        BasicCalculationContext ctx = new BasicCalculationContext(input);
+    public PrenatalSyzygyEntry calculate(BasicCalculationContext ctx) {
         SyzygyCandidate syzygy = previousSyzygyCandidate(ctx.getFullJulianDay(), ctx);
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, syzygy.julianDay());
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, syzygy.julianDay());
         double syzygyLongitude = syzygyLongitude(syzygy.type(), sunLongitude, moonLongitude, syzygy.julianDay(), ctx);
         double natalAscendant = ctx.normalize(ctx.getAscmc()[0]);
-        return new BasicSyzygy(syzygy.type(), syzygy.julianDay(), instantFromJulianDay(syzygy.julianDay()), sunLongitude, moonLongitude, ctx.rawAngularSeparation(sunLongitude, moonLongitude), ctx.signOf(syzygyLongitude),
-                ctx.degreeInSign(syzygyLongitude), ctx.houseOf(syzygyLongitude, natalAscendant), ctx.signOf(sunLongitude), ctx.signOf(moonLongitude));
+        return new PrenatalSyzygyEntry(syzygy.type(), syzygy.julianDay(), instantFromJulianDay(syzygy.julianDay()), syzygyLongitude, ctx.signOf(syzygyLongitude),
+                ctx.degreeInSign(syzygyLongitude), ctx.houseOf(syzygyLongitude, natalAscendant), sunLongitude, moonLongitude, ctx.rawAngularSeparation(sunLongitude, moonLongitude), ctx.signOf(sunLongitude),
+                ctx.signOf(moonLongitude));
     }
 
     /**

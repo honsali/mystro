@@ -17,7 +17,10 @@ public final class BasicCalculator {
 
 
     public BasicChart calculate(Input input) {
-        BasicCalculationContext ctx = new BasicCalculationContext(input);
+        return calculate(new BasicCalculationContext(input));
+    }
+
+    public BasicChart calculate(BasicCalculationContext ctx) {
         BasicChart basicChart = new BasicChart();
 
         (new SimpleCalculator()).calculate(basicChart, ctx);
