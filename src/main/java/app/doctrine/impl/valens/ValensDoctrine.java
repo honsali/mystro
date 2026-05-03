@@ -1,6 +1,6 @@
 package app.doctrine.impl.valens;
 
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
 import app.descriptive.valens.calculator.ValensDescriptiveCalculator;
 import app.doctrine.DescriptiveResult;
@@ -50,7 +50,7 @@ public final class ValensDoctrine implements Doctrine {
     }
 
     @Override
-    public DescriptiveResult describe(BasicCalculationContext ctx, BasicChart chart) {
+    public DescriptiveResult describe(CalculationContext ctx, BasicChart chart) {
         return descriptiveCalculator.calculate(ctx, chart);
     }
 }

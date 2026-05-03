@@ -3,7 +3,6 @@ package app.output;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import app.input.model.Input;
 
 public final class Logger {
 
@@ -24,10 +23,6 @@ public final class Logger {
 
     public void info(String scope, String message) {
         entries.add(new LogEntry("INFO", scope, message));
-    }
-
-    public void error(Input input, String message) {
-        entries.add(new LogEntry("ERROR", input.getSubject().getId(), message));
     }
 
     public void error(String scope, String message) {

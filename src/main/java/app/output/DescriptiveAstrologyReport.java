@@ -3,17 +3,23 @@ package app.output;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import app.basic.model.BasicChart;
 import app.doctrine.DescriptiveResult;
-import app.input.model.Input;
+import app.doctrine.Doctrine;
+import app.input.model.CalculationSetting;
+import app.input.model.Subject;
 
 public class DescriptiveAstrologyReport implements AstrologyReport {
     private final String engineVersion;
-    private final Input input;
+    private final Subject subject;
+    private final Doctrine doctrine;
+    private final CalculationSetting calculationSetting;
     private final BasicChart basicChart;
     private final DescriptiveResult descriptive;
 
-    public DescriptiveAstrologyReport(String engineVersion, Input input, BasicChart basicChart, DescriptiveResult descriptive) {
+    public DescriptiveAstrologyReport(String engineVersion, Subject subject, Doctrine doctrine, CalculationSetting calculationSetting, BasicChart basicChart, DescriptiveResult descriptive) {
         this.engineVersion = engineVersion;
-        this.input = input;
+        this.subject = subject;
+        this.doctrine = doctrine;
+        this.calculationSetting = calculationSetting;
         this.basicChart = basicChart;
         this.descriptive = descriptive;
     }
@@ -22,8 +28,16 @@ public class DescriptiveAstrologyReport implements AstrologyReport {
         return engineVersion;
     }
 
-    public Input getInput() {
-        return input;
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public Doctrine getDoctrine() {
+        return doctrine;
+    }
+
+    public CalculationSetting getCalculationSetting() {
+        return calculationSetting;
     }
 
     public BasicChart getBasicChart() {
@@ -34,5 +48,4 @@ public class DescriptiveAstrologyReport implements AstrologyReport {
     public DescriptiveResult getDescriptive() {
         return descriptive;
     }
-
 }

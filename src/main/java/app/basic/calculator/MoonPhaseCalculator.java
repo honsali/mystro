@@ -1,7 +1,7 @@
 package app.basic.calculator;
 
 import app.basic.Calculator;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
 import app.basic.model.MoonPhase;
 import app.basic.model.PlanetPosition;
@@ -11,7 +11,7 @@ import app.basic.data.Planet;
 public class MoonPhaseCalculator implements Calculator {
 
 
-    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+    public void calculate(BasicChart basicChart, CalculationContext ctx) {
         PlanetPosition sun = ctx.planet(basicChart.getPlanets(), Planet.SUN);
         PlanetPosition moon = ctx.planet(basicChart.getPlanets(), Planet.MOON);
         if (sun == null || moon == null) {

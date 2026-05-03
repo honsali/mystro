@@ -62,7 +62,7 @@ Inquiry inputs
 Comparison inputs
   ↓
 For each natal × doctrine:
-    Build BasicCalculationContext from engine metadata and doctrine choices
+    Build CalculationContext from subject, calculation settings, and doctrine choices
       ↓
     BasicCalculator.calculate(basicCalculationContext)
       ↓
@@ -456,20 +456,28 @@ PtolemyDoctrine
   → Ptolemaic Terms
 ```
 
-The exact choices are defined by doctrine implementation and copied into a `BasicCalculationContext`.
+The exact choices are defined by doctrine implementation and copied into a `CalculationContext` through a `CalculationDefinition` view.
 
-The basic calculator receives the context, not a doctrine object.
+The basic calculators receive the context, not concrete doctrine implementations.
 
-Suggested model:
+Suggested model shape:
 
 ```java
-public record BasicCalculationContext(
-    String doctrineId,
-    HouseSystem houseSystem,
-    Zodiac zodiac,
-    Terms terms,
-    CalculationPrecision precision
-) {}
+public final class CalculationContext {
+    Subject subject;
+    String doctrineId;
+    HouseSystem houseSystem;
+    Zodiac zodiac;
+    Terms terms;
+    Triplicity triplicity;
+    NodeType nodeType;
+    CalculationSetting calculationSetting;
+    SwissEph swissEph;
+    double fullJulianDay;
+    double[] cusps;
+    double[] ascmc;
+    double armc;
+}
 ```
 
 The context is the controlled place for future basic-calculation options, such as:
@@ -588,15 +596,19 @@ The base doctrine interface supports descriptive calculation only.
 Predictive and comparative techniques are optional and are exposed as separate modules.
 
 ```java
-public interface Doctrine {
+public interface CalculationDefinition {
     String id();
     String name();
 
     HouseSystem houseSystem();
     Zodiac zodiac();
     Terms terms();
+    Triplicity triplicity();
+    NodeType nodeType();
+}
 
-    DescriptiveResult describe(BasicCalculationContext context, BasicChart chart);
+public interface Doctrine extends CalculationDefinition {
+    DescriptiveResult describe(CalculationContext context, BasicChart chart);
 
     List<PredictiveTechnique> predictiveTechniques();
     List<ComparativeTechnique> comparativeTechniques();
@@ -1067,7 +1079,7 @@ src/main/java/app/
         ValensDoctrine.java
 
   basic/
-    BasicCalculationContext.java
+    CalculationContext.java
     BasicCalculator.java
     TraditionalTables.java
     calculator/
@@ -1146,7 +1158,7 @@ src/main/java/app/
     BirthDateTime.java
 ```
 
-Input POJOs belong under `app.input.model`. Basic output POJOs belong under `app.basic.model`. Basic/shared astrology enums currently belong under `app.basic.data`. Descriptive calculators, POJOs, and enums should be introduced under the relevant `app.descriptive...calculator`, `app.descriptive...model`, and `app.descriptive...data` packages instead of returning to the former catch-all `app.model.*` layout. Doctrine-specific descriptive result records should implement `DescriptiveResult` directly; avoid converting typed descriptive records into `Map<String,Object>` at the doctrine boundary. Descriptive doctrine calculation receives the same `BasicCalculationContext` that produced the `BasicChart`, so descriptive helpers that need ephemeris access do not rebuild context from input.
+Input POJOs belong under `app.input.model`. Basic output POJOs and basic-facing calculation definitions belong under `app.basic.model`. Basic/shared astrology enums currently belong under `app.basic.data`. Descriptive calculators, POJOs, and enums should be introduced under the relevant `app.descriptive...calculator`, `app.descriptive...model`, and `app.descriptive...data` packages instead of returning to the former catch-all `app.model.*` layout. Doctrine-specific descriptive result records should implement `DescriptiveResult` directly; avoid converting typed descriptive records into `Map<String,Object>` at the doctrine boundary. Descriptive doctrine calculation receives the same `CalculationContext` that produced the `BasicChart`, so descriptive helpers that need ephemeris access do not rebuild context from input.
 
 Later, validation can live under:
 
@@ -1178,7 +1190,7 @@ Load doctrine ids
 Validate and normalize inputs
 For each natal × doctrine:
     resolve doctrine
-    build BasicCalculationContext from doctrine choices
+    build CalculationContext from subject, calculation settings, and doctrine choices
     calculate placeholder BasicChart
     calculate placeholder DescriptiveResult
     write descriptive JSON output
@@ -1213,7 +1225,7 @@ Start with minimal basic values:
 - local birth datetime
 - resolved UTC instant
 - Julian day
-- BasicCalculationContext
+- CalculationContext
 ```
 
 Then add real Swiss Ephemeris-backed planetary positions.
@@ -1345,7 +1357,7 @@ Calculation depends on normalized input, doctrine modules, and the basic calcula
 
 There is one basic calculator.
 
-It receives `BasicCalculationContext`, which contains primitive calculation choices:
+It receives `CalculationContext`, which contains the subject, calculation settings, and primitive doctrine-derived calculation choices:
 
 ```text
 house_system, zodiac, terms, precision, rounding policy
@@ -1371,7 +1383,7 @@ The `basic` package may use input/common models and Swiss Ephemeris code.
 
 The `basic` package must not depend on concrete doctrine implementations.
 
-Doctrine-aware orchestration code may call the basic calculator by building `BasicCalculationContext` from doctrine choices.
+Doctrine-aware orchestration code may call the basic calculator by building `CalculationContext` from the subject, calculation settings, and doctrine choices.
 
 ### 14.5 Descriptive, predictive, and comparative calculations are separate
 
@@ -1553,9 +1565,9 @@ The doctrine hardcodes the basic calculation choices:
 house_system + zodiac + terms
 ```
 
-The orchestration layer copies those choices into `BasicCalculationContext` together with precision and rounding policy.
+The orchestration layer copies those choices into `CalculationContext` together with subject data and calculation settings.
 
-The basic calculator performs reusable Swiss Ephemeris-backed calculations from `NatalInput` and `BasicCalculationContext`.
+The basic calculator performs reusable Swiss Ephemeris-backed calculations from `CalculationContext`.
 
 The doctrine performs descriptive calculations and exposes optional predictive and comparative techniques.
 

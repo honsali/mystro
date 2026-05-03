@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import app.basic.Calculator;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
 import app.basic.model.ChartAngle;
 import app.basic.model.ChartPoint;
@@ -20,7 +20,7 @@ import app.basic.data.ZodiacSign;
 public class ChartPointCalculator implements Calculator {
 
 
-    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+    public void calculate(BasicChart basicChart, CalculationContext ctx) {
         List<ChartPoint> chartPoints = new ArrayList<>();
         for (PlanetPosition planet : basicChart.getPlanets()) {
             chartPoints.add(new ChartPoint(PointType.PLANET, planet.getPlanet().name(), planet.getLongitude(), planet.getSign(), planet.getDegreeInSign(), planet.getHouse()));
@@ -45,7 +45,7 @@ public class ChartPointCalculator implements Calculator {
 
 
 
-    private List<RawAspectMatrixEntry> calculateRawAspectMatrix(List<ChartPoint> points, BasicCalculationContext ctx) {
+    private List<RawAspectMatrixEntry> calculateRawAspectMatrix(List<ChartPoint> points, CalculationContext ctx) {
         List<RawAspectMatrixEntry> matrix = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
             ChartPoint pointA = points.get(i);
@@ -59,7 +59,7 @@ public class ChartPointCalculator implements Calculator {
 
 
 
-    private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets, BasicCalculationContext ctx) {
+    private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets, CalculationContext ctx) {
         Map<String, PlanetPosition> planetByName = new LinkedHashMap<>();
         for (PlanetPosition planet : planets) {
             planetByName.put(planet.getPlanet().name(), planet);
@@ -83,7 +83,7 @@ public class ChartPointCalculator implements Calculator {
         return relations;
     }
 
-    private List<RawDeclinationMatrixEntry> calculateRawDeclinationMatrix(List<PlanetPosition> planets, BasicCalculationContext ctx) {
+    private List<RawDeclinationMatrixEntry> calculateRawDeclinationMatrix(List<PlanetPosition> planets, CalculationContext ctx) {
         List<RawDeclinationMatrixEntry> matrix = new ArrayList<>();
         for (int i = 0; i < planets.size(); i++) {
             PlanetPosition pointA = planets.get(i);

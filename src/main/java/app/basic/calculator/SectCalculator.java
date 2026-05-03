@@ -3,7 +3,7 @@ package app.basic.calculator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.Calculator;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
 import app.basic.model.BasicSect;
 import app.basic.model.PlanetPosition;
@@ -15,7 +15,7 @@ import app.basic.data.SolarOrientation;
 
 public class SectCalculator implements Calculator {
 
-    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+    public void calculate(BasicChart basicChart, CalculationContext ctx) {
         PlanetPosition sun = requiredPlanet(Planet.SUN, basicChart, ctx);
         PlanetPosition moon = requiredPlanet(Planet.MOON, basicChart, ctx);
         PlanetPosition mercury = requiredPlanet(Planet.MERCURY, basicChart, ctx);
@@ -41,7 +41,7 @@ public class SectCalculator implements Calculator {
         basicChart.setSect(data);
     }
 
-    private PlanetPosition requiredPlanet(Planet planet, BasicChart basicChart, BasicCalculationContext ctx) {
+    private PlanetPosition requiredPlanet(Planet planet, BasicChart basicChart, CalculationContext ctx) {
         PlanetPosition position = ctx.planet(basicChart.getPlanets(), planet);
         if (position == null) {
             throw new IllegalArgumentException("Calculation failed: missing required planet " + planet);
@@ -49,7 +49,7 @@ public class SectCalculator implements Calculator {
         return position;
     }
 
-    private Map<Planet, PlanetSectInfo> planetSects(boolean chartDiurnal, PlanetPosition mercury, PlanetPosition sun, BasicCalculationContext ctx) {
+    private Map<Planet, PlanetSectInfo> planetSects(boolean chartDiurnal, PlanetPosition mercury, PlanetPosition sun, CalculationContext ctx) {
         Map<Planet, PlanetSectInfo> planets = new LinkedHashMap<>();
         addPlanetSect(planets, Planet.SUN, Sect.DIURNAL, chartDiurnal);
         addPlanetSect(planets, Planet.JUPITER, Sect.DIURNAL, chartDiurnal);
@@ -70,7 +70,7 @@ public class SectCalculator implements Calculator {
         planets.put(planet, new PlanetSectInfo(planetSect, ofSect ? SectCondition.OF_SECT : SectCondition.CONTRARY_TO_SECT));
     }
 
-    private Sect mercurySect(PlanetPosition mercury, PlanetPosition sun, BasicCalculationContext ctx) {
+    private Sect mercurySect(PlanetPosition mercury, PlanetPosition sun, CalculationContext ctx) {
         double delta = ctx.normalize(mercury.getLongitude() - sun.getLongitude());
         return delta > 180.0 ? Sect.DIURNAL : Sect.NOCTURNAL;
     }

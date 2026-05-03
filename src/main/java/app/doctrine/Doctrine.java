@@ -1,11 +1,12 @@
 package app.doctrine;
 
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
+import app.basic.model.CalculationDefinition;
 
-public interface Doctrine extends DoctrineDefinition {
+public interface Doctrine extends CalculationDefinition {
 
 
 
-    DescriptiveResult describe(BasicCalculationContext ctx, BasicChart chart);
+    DescriptiveResult describe(CalculationContext ctx, BasicChart chart);
 }

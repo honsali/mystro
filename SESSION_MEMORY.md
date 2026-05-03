@@ -50,7 +50,7 @@ It is not a settings file, not a doctrine profile, and not a partial universal s
 - Doctrine selection is explicit through `--doctrines ...`.
 - No doctrine is selected by default.
 - Current placeholder doctrines: `dorotheus`, `ptolemy`, `valens`.
-- Current report metadata contains only `engineVersion`.
+- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, `basicChart`, and `descriptive` fields.
 - Current implemented output path: `output/descriptive/{subjectId}/{doctrineId}.json`.
 - Execution-level status is written to `output/run-manifest.json`.
 - Basic calculators keep full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`.
@@ -59,7 +59,9 @@ It is not a settings file, not a doctrine profile, and not a partial universal s
 - Basic output POJOs have been moved from `app.model.basic` to `app.basic.model`; basic/shared astrology enums have been moved from `app.model.data` to `app.basic.data` before Stage 2 descriptive work.
 - Stage 2 descriptive packages now start under `app.descriptive`; common descriptive calculators/POJOs/enums live under `app.descriptive.common.calculator` / `app.descriptive.common.model` / `app.descriptive.common.data`, and doctrine-owned calculators/results live under packages such as `app.descriptive.valens` and `app.descriptive.ptolemy`.
 - `DescriptiveResult` is a typed marker interface. Doctrine-specific descriptive records implement it directly and are serialized without converting to `Map<String,Object>` at the doctrine boundary.
-- Prenatal syzygy search lives in `app.descriptive.common.calculator.SyzygyCalculator`, uses the existing `BasicCalculationContext`, and returns `PrenatalSyzygyEntry` directly.
+- `CalculationContext` replaced the former `BasicCalculationContext`/`Input` wrapper pattern. It carries the subject, doctrine-derived `CalculationDefinition` values, calculation settings, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and shared helpers through basic and descriptive calculation.
+- `DoctrineDefinition` was replaced by `app.basic.model.CalculationDefinition`; `Doctrine` extends that definition and `BasicCalculator` receives `CalculationContext` directly.
+- Prenatal syzygy search lives in `app.descriptive.common.calculator.SyzygyCalculator`, uses the existing `CalculationContext`, and returns `PrenatalSyzygyEntry` directly.
 - Current Valens descriptive output includes prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction among traditional planets, essential dignity/debility assessment, and solar condition.
 - Current Ptolemy descriptive output intentionally has a different shape: prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and Ptolemaic dignity/debility assessment; no lots or solar-condition sections are emitted.
 
@@ -83,7 +85,7 @@ Version prompt:
 .pi/prompts/version.md saves durable knowledge, commits all intended project files except input/output/build artifacts, runs mvn compile, stops on compile failure, commits successful changes as "version $v: $desc", pushes, then bumps the minor version in pom.xml for the next development cycle. Major version bumps are manual.
 ```
 
-Current Maven version for the next development cycle is `0.10.0`.
+Current Maven version for the next development cycle is `0.11.0`.
 
 ## Read first in future sessions
 

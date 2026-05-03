@@ -3,7 +3,7 @@ package app.basic.calculator;
 import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
 import app.basic.model.PlanetPosition;
 import app.basic.data.Angularity;
@@ -17,7 +17,7 @@ public class PlanetCalculator implements Calculator {
     private record EquatorialPosition(double rightAscension, double declination) {
     }
 
-    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+    public void calculate(BasicChart basicChart, CalculationContext ctx) {
         double julianDay = ctx.getFullJulianDay();
         double ascendant = ctx.normalize(ctx.getAscmc()[0]);
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
@@ -49,19 +49,19 @@ public class PlanetCalculator implements Calculator {
         basicChart.setPlanets(planets);
     }
 
-    private void addPlanet(List<PlanetPosition> planets, Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, BasicCalculationContext ctx) {
+    private void addPlanet(List<PlanetPosition> planets, Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, CalculationContext ctx) {
         PlanetPosition position = calculatePlanet(planet, swissPlanetId, julianDay, ascendant, sunLongitude, ctx);
         if (position != null) {
             planets.add(position);
         }
     }
 
-    private PlanetPosition calculatePlanet(Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, BasicCalculationContext ctx) {
+    private PlanetPosition calculatePlanet(Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, CalculationContext ctx) {
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
         int result = ctx.getSwissEph().swe_calc_ut(julianDay, swissPlanetId, ctx.planetFlags(), values, error);
         if (result < 0 || Double.isNaN(values[0])) {
-            Logger.instance.error(ctx.getInput(), "Swiss Ephemeris failed for " + planet + ": " + error);
+            Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris failed for " + planet + ": " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         double longitude = ctx.normalize(values[0]);
@@ -76,20 +76,20 @@ public class PlanetCalculator implements Calculator {
                 ctx.contraAntiscia(longitude));
     }
 
-    private EquatorialPosition equatorialPosition(int swissPlanetId, double julianDay, BasicCalculationContext ctx) {
+    private EquatorialPosition equatorialPosition(int swissPlanetId, double julianDay, CalculationContext ctx) {
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
         int result = ctx.getSwissEph().swe_calc_ut(julianDay, swissPlanetId, ctx.planetFlags() | SweConst.SEFLG_EQUATORIAL, values, error);
         if (result < 0 || Double.isNaN(values[0]) || Double.isNaN(values[1])) {
-            Logger.instance.error(ctx.getInput(), "Swiss Ephemeris failed to calculate equatorial position: " + error);
+            Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris failed to calculate equatorial position: " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         return new EquatorialPosition(ctx.normalize(values[0]), values[1]);
     }
 
 
-    private int nodeSwissPlanetId(BasicCalculationContext ctx) {
-        return ctx.getInput().getDoctrine().getNodeType() == NodeType.TRUE ? SweConst.SE_TRUE_NODE : SweConst.SE_MEAN_NODE;
+    private int nodeSwissPlanetId(CalculationContext ctx) {
+        return ctx.getNodeType() == NodeType.TRUE ? SweConst.SE_TRUE_NODE : SweConst.SE_MEAN_NODE;
     }
 
     private double meanDailySpeed(Planet planet) {
@@ -115,7 +115,7 @@ public class PlanetCalculator implements Calculator {
         };
     }
 
-    private double angularDistance(double longitude, Double sunLongitude, BasicCalculationContext ctx) {
+    private double angularDistance(double longitude, Double sunLongitude, CalculationContext ctx) {
         if (sunLongitude == null) {
             return 0.0;
         }

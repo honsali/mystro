@@ -1,6 +1,6 @@
 package app.descriptive.valens.calculator;
 
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.data.Triplicity;
 import app.basic.model.BasicChart;
 import app.descriptive.common.calculator.SyzygyCalculator;
@@ -17,7 +17,7 @@ public final class ValensDescriptiveCalculator {
         this.dignityCalculator = new ValensDignityCalculator(triplicity);
     }
 
-    public ValensDescriptiveData calculate(BasicCalculationContext ctx, BasicChart chart) {
+    public ValensDescriptiveData calculate(CalculationContext ctx, BasicChart chart) {
         return new ValensDescriptiveData(
                 syzygyCalculator.calculate(ctx),
                 lotCalculator.calculate(chart),

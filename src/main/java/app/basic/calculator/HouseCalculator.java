@@ -3,13 +3,13 @@ package app.basic.calculator;
 import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.model.BasicChart;
 import app.basic.model.HousePosition;
 
 public class HouseCalculator implements Calculator {
 
-    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+    public void calculate(BasicChart basicChart, CalculationContext ctx) {
 
         List<HousePosition> houses = new ArrayList<>();
 

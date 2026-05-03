@@ -1,6 +1,6 @@
 package app.descriptive.ptolemy.calculator;
 
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.data.Triplicity;
 import app.basic.model.BasicChart;
 import app.descriptive.common.calculator.SyzygyCalculator;
@@ -15,7 +15,7 @@ public final class PtolemyDescriptiveCalculator {
         this.dignityCalculator = new PtolemyDignityCalculator(triplicity);
     }
 
-    public PtolemyDescriptiveData calculate(BasicCalculationContext ctx, BasicChart chart) {
+    public PtolemyDescriptiveData calculate(CalculationContext ctx, BasicChart chart) {
         return new PtolemyDescriptiveData(
                 syzygyCalculator.calculate(ctx),
                 aspectCalculator.calculate(chart),

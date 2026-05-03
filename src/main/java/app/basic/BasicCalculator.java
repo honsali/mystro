@@ -10,17 +10,11 @@ import app.basic.calculator.SectCalculator;
 import app.basic.calculator.SimpleCalculator;
 import app.basic.calculator.SolarPhaseCalculator;
 import app.basic.model.BasicChart;
-import app.input.model.Input;
 
 public final class BasicCalculator {
 
 
-
-    public BasicChart calculate(Input input) {
-        return calculate(new BasicCalculationContext(input));
-    }
-
-    public BasicChart calculate(BasicCalculationContext ctx) {
+    public BasicChart calculate(CalculationContext ctx) {
         BasicChart basicChart = new BasicChart();
 
         (new SimpleCalculator()).calculate(basicChart, ctx);

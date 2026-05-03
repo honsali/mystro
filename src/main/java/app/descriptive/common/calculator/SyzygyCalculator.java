@@ -1,7 +1,7 @@
 package app.descriptive.common.calculator;
 
 import java.time.Instant;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.data.Planet;
 import app.basic.data.SyzygyType;
 import app.descriptive.common.model.PrenatalSyzygyEntry;
@@ -13,14 +13,14 @@ import app.swisseph.core.SweConst;
  *
  * <p>The event search itself is astronomical geometry. The selected point of the
  * syzygy is doctrine-sensitive, so doctrines can subclass and override
- * {@link #syzygyLongitude(SyzygyType, double, double, double, BasicCalculationContext)}.
+ * {@link #syzygyLongitude(SyzygyType, double, double, double, CalculationContext)}.
  */
 public class SyzygyCalculator {
 
     private record SyzygyCandidate(SyzygyType type, double julianDay) {
     }
 
-    public PrenatalSyzygyEntry calculate(BasicCalculationContext ctx) {
+    public PrenatalSyzygyEntry calculate(CalculationContext ctx) {
         SyzygyCandidate syzygy = previousSyzygyCandidate(ctx.getFullJulianDay(), ctx);
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, syzygy.julianDay());
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, syzygy.julianDay());
@@ -35,11 +35,11 @@ public class SyzygyCalculator {
      * Default Hellenistic selection: conjunction uses the shared Sun/Moon
      * longitude; opposition uses the Moon's longitude.
      */
-    protected double syzygyLongitude(SyzygyType type, double sunLongitude, double moonLongitude, double julianDay, BasicCalculationContext ctx) {
+    protected double syzygyLongitude(SyzygyType type, double sunLongitude, double moonLongitude, double julianDay, CalculationContext ctx) {
         return type == SyzygyType.FULL_MOON ? moonLongitude : sunLongitude;
     }
 
-    private SyzygyCandidate previousSyzygyCandidate(double birthJulianDay, BasicCalculationContext ctx) {
+    private SyzygyCandidate previousSyzygyCandidate(double birthJulianDay, CalculationContext ctx) {
         double step = 0.25;
         double maximumLookbackDays = 35.0;
         double laterJulianDay = birthJulianDay;
@@ -54,7 +54,7 @@ public class SyzygyCalculator {
             laterJulianDay = earlierJulianDay;
             laterElongation = earlierElongation;
         }
-        Logger.instance.error(ctx.getInput(), "Could not find previous syzygy within " + maximumLookbackDays + " days");
+        Logger.instance.error(ctx.getSubject().getId(), "Could not find previous syzygy within " + maximumLookbackDays + " days");
         throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
     }
 
@@ -66,7 +66,7 @@ public class SyzygyCalculator {
         return targetElongation >= earlierElongation && targetElongation <= laterElongation ? targetElongation : null;
     }
 
-    private double refineSyzygy(double earlierJulianDay, double laterJulianDay, double targetElongation, BasicCalculationContext ctx) {
+    private double refineSyzygy(double earlierJulianDay, double laterJulianDay, double targetElongation, CalculationContext ctx) {
         double low = earlierJulianDay;
         double high = laterJulianDay;
         double lowValue = unwrappedLunarElongation(low, targetElongation, ctx) - targetElongation;
@@ -96,7 +96,7 @@ public class SyzygyCalculator {
         return Math.floorMod(halfCycle, 2) == 0 ? SyzygyType.NEW_MOON : SyzygyType.FULL_MOON;
     }
 
-    private double unwrappedLunarElongation(double julianDay, double referenceElongation, BasicCalculationContext ctx) {
+    private double unwrappedLunarElongation(double julianDay, double referenceElongation, CalculationContext ctx) {
         double elongation = lunarElongation(julianDay, ctx);
         while (elongation - referenceElongation > 180.0) {
             elongation -= 360.0;
@@ -114,7 +114,7 @@ public class SyzygyCalculator {
         return earlierElongation;
     }
 
-    private double lunarElongation(double julianDay, BasicCalculationContext ctx) {
+    private double lunarElongation(double julianDay, CalculationContext ctx) {
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, julianDay);
         return ctx.normalize(moonLongitude - sunLongitude);

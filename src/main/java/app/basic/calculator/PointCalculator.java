@@ -3,7 +3,7 @@ package app.basic.calculator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.Calculator;
-import app.basic.BasicCalculationContext;
+import app.basic.CalculationContext;
 import app.basic.TraditionalTables;
 import app.basic.model.AnglePointEntry;
 import app.basic.model.BasicChart;
@@ -18,7 +18,7 @@ import app.basic.data.ZodiacSign;
 
 public class PointCalculator implements Calculator {
 
-    public void calculate(BasicChart basicChart, BasicCalculationContext ctx) {
+    public void calculate(BasicChart basicChart, CalculationContext ctx) {
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
         for (PlanetPosition planet : basicChart.getPlanets()) {
             points.put(PointKey.of(planet.getPlanet()), planetEntry(planet, ctx));
@@ -33,7 +33,7 @@ public class PointCalculator implements Calculator {
         basicChart.setPoints(points);
     }
 
-    private PointEntry planetEntry(PlanetPosition planet, BasicCalculationContext ctx) {
+    private PointEntry planetEntry(PlanetPosition planet, CalculationContext ctx) {
         Planet domicileRuler = null;
         Planet exaltationRuler = null;
         TriplicityRulers triplicityRulers = null;
@@ -99,7 +99,7 @@ public class PointCalculator implements Calculator {
         return TraditionalTables.faceRuler(sign, degreeInSign);
     }
 
-    private TriplicityRulers triplicityRulers(ZodiacSign sign, BasicCalculationContext ctx) {
-        return TraditionalTables.triplicityRulers(sign, ctx.getInput().getDoctrine().getTriplicity());
+    private TriplicityRulers triplicityRulers(ZodiacSign sign, CalculationContext ctx) {
+        return TraditionalTables.triplicityRulers(sign, ctx.getTriplicity());
     }
 }
