@@ -14,7 +14,7 @@ import app.basic.model.PlanetPosition;
 import app.basic.model.RawAspectMatrixEntry;
 import app.basic.model.RawDeclinationMatrixEntry;
 import app.basic.model.RawSignDistanceMatrixEntry;
-import app.basic.data.PointType;
+import app.basic.data.PointKey;
 import app.basic.data.ZodiacSign;
 
 public class ChartPointCalculator implements Calculator {
@@ -23,10 +23,10 @@ public class ChartPointCalculator implements Calculator {
     public void calculate(NatalChart natalChart, CalculationContext ctx) {
         List<ChartPoint> chartPoints = new ArrayList<>();
         for (PlanetPosition planet : natalChart.getPlanets()) {
-            chartPoints.add(new ChartPoint(PointType.PLANET, planet.getPlanet().name(), planet.getLongitude(), planet.getSign(), planet.getDegreeInSign(), planet.getHouse()));
+            chartPoints.add(new ChartPoint(PointKey.of(planet.getPlanet()), planet.getLongitude(), planet.getSign(), planet.getDegreeInSign(), planet.getHouse()));
         }
         for (ChartAngle angle : natalChart.getAngles()) {
-            chartPoints.add(new ChartPoint(PointType.ANGLE, angle.getName().name(), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
+            chartPoints.add(new ChartPoint(PointKey.of(angle.getName()), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
         }
 
 
@@ -51,7 +51,7 @@ public class ChartPointCalculator implements Calculator {
             ChartPoint pointA = points.get(i);
             for (int j = i + 1; j < points.size(); j++) {
                 ChartPoint pointB = points.get(j);
-                matrix.add(new RawAspectMatrixEntry(pointA.getType(), pointA.getName(), pointA.getLongitude(), pointB.getType(), pointB.getName(), pointB.getLongitude(), ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude())));
+                matrix.add(new RawAspectMatrixEntry(pointA.getType(), pointA.getKey(), pointA.getLongitude(), pointB.getType(), pointB.getKey(), pointB.getLongitude(), ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude())));
             }
         }
         return matrix;
@@ -60,9 +60,9 @@ public class ChartPointCalculator implements Calculator {
 
 
     private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets, CalculationContext ctx) {
-        Map<String, PlanetPosition> planetByName = new LinkedHashMap<>();
+        Map<PointKey, PlanetPosition> planetByKey = new LinkedHashMap<>();
         for (PlanetPosition planet : planets) {
-            planetByName.put(planet.getPlanet().name(), planet);
+            planetByKey.put(PointKey.of(planet.getPlanet()), planet);
         }
         List<PairwiseRelation> relations = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
@@ -70,14 +70,15 @@ public class ChartPointCalculator implements Calculator {
             for (int j = i + 1; j < points.size(); j++) {
                 ChartPoint pointB = points.get(j);
                 PairwiseRelation.EquatorialRelation equatorial = null;
-                PlanetPosition planetA = planetByName.get(pointA.getName());
-                PlanetPosition planetB = planetByName.get(pointB.getName());
+                PlanetPosition planetA = planetByKey.get(pointA.getKey());
+                PlanetPosition planetB = planetByKey.get(pointB.getKey());
                 if (planetA != null && planetB != null) {
                     double declinationDifference = Math.abs(planetA.getDeclination() - planetB.getDeclination());
+                    double contraParallelSeparation = Math.abs(planetA.getDeclination() + planetB.getDeclination());
                     boolean sameHemisphere = (planetA.getDeclination() >= 0.0 && planetB.getDeclination() >= 0.0) || (planetA.getDeclination() < 0.0 && planetB.getDeclination() < 0.0);
-                    equatorial = new PairwiseRelation.EquatorialRelation(declinationDifference, sameHemisphere);
+                    equatorial = new PairwiseRelation.EquatorialRelation(declinationDifference, contraParallelSeparation, sameHemisphere);
                 }
-                relations.add(new PairwiseRelation(pointA.getName(), pointB.getName(), new PairwiseRelation.EclipticRelation(ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude()), signDistance(pointA.getSign(), pointB.getSign())), equatorial));
+                relations.add(new PairwiseRelation(pointA.getKey(), pointB.getKey(), new PairwiseRelation.EclipticRelation(ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude()), signDistance(pointA.getSign(), pointB.getSign())), equatorial));
             }
         }
         return relations;
@@ -90,8 +91,9 @@ public class ChartPointCalculator implements Calculator {
             for (int j = i + 1; j < planets.size(); j++) {
                 PlanetPosition pointB = planets.get(j);
                 double difference = Math.abs(pointA.getDeclination() - pointB.getDeclination());
+                double contraParallelSeparation = Math.abs(pointA.getDeclination() + pointB.getDeclination());
                 boolean sameHemisphere = (pointA.getDeclination() >= 0.0 && pointB.getDeclination() >= 0.0) || (pointA.getDeclination() < 0.0 && pointB.getDeclination() < 0.0);
-                matrix.add(new RawDeclinationMatrixEntry(pointA.getPlanet().name(), pointA.getDeclination(), pointB.getPlanet().name(), pointB.getDeclination(), difference, sameHemisphere));
+                matrix.add(new RawDeclinationMatrixEntry(pointA.getPlanet().name(), pointA.getDeclination(), pointB.getPlanet().name(), pointB.getDeclination(), difference, contraParallelSeparation, sameHemisphere));
             }
         }
         return matrix;
@@ -103,7 +105,7 @@ public class ChartPointCalculator implements Calculator {
             ChartPoint pointA = points.get(i);
             for (int j = i + 1; j < points.size(); j++) {
                 ChartPoint pointB = points.get(j);
-                matrix.add(new RawSignDistanceMatrixEntry(pointA.getName(), pointA.getSign(), pointB.getName(), pointB.getSign(), signDistance(pointA.getSign(), pointB.getSign())));
+                matrix.add(new RawSignDistanceMatrixEntry(pointA.getKey(), pointA.getSign(), pointB.getKey(), pointB.getSign(), signDistance(pointA.getSign(), pointB.getSign())));
             }
         }
         return matrix;

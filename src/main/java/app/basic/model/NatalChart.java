@@ -273,10 +273,10 @@ public class NatalChart {
     }
 
     private boolean matchesAspect(PairwiseRelation relation, AspectEntry aspect) {
-        String planetA = aspect.planetA().name();
-        String planetB = aspect.planetB().name();
-        return (relation.getPointAName().equals(planetA) && relation.getPointBName().equals(planetB))
-                || (relation.getPointAName().equals(planetB) && relation.getPointBName().equals(planetA));
+        PointKey planetA = PointKey.of(aspect.planetA());
+        PointKey planetB = PointKey.of(aspect.planetB());
+        return (relation.getPointAName() == planetA && relation.getPointBName() == planetB)
+                || (relation.getPointAName() == planetB && relation.getPointBName() == planetA);
     }
 
     public void applyDignityAssessments(Map<Planet, PlanetDignityEntry> dignityAssessments) {

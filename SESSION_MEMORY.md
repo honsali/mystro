@@ -52,12 +52,14 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - No doctrine is selected by default.
 - Current doctrine modules: `dorotheus`, `ptolemy`, `valens`.
 - Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, and `natalChart` fields.
+- The currently implemented zodiac is tropical only; sidereal calculation is intentionally absent until an explicit ayanamsa model and doctrine requirement are introduced.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - `NatalChart` contains mechanical chart facts and doctrine-poured descriptive facts.
 - Doctrine calculators pour data directly into `NatalChart`; there is no `DescriptiveResult` boundary and no doctrine-specific descriptive data record.
-- `natalChart.points` is keyed by point name. Planet points carry point-specific dignities/debilities, solar phase, planet sect info, and doctrine solar condition when calculated.
+- `natalChart.points` is keyed by point name. Planet points carry point-specific dignities/debilities, solar phase, planet sect info, and doctrine solar condition when calculated. Planet sect and dignity/debility assessment are intentionally limited to the seven traditional planets; lunar nodes remain positional points without point-level sect or dignity/debility assessment.
+- Basic chart sect is currently an altitude-based mechanical baseline: Sun above horizon is diurnal, Sun below horizon is nocturnal, using `altitude >= 0.0` as the baseline above-horizon rule. Twilight/refraction/author-specific refinements belong to doctrine descriptive calculation, not silent shared-basic changes.
 - `natalChart.pairwiseRelations` contains raw geometry for point pairs; doctrine-recognized aspects are injected as optional `aspect` objects.
-- `CalculationContext` carries the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and shared helpers through basic and descriptive calculation.
+- `CalculationContext` carries the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and shared helpers through basic and descriptive calculation. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant share one source of truth.
 - `BasicCalculator` keeps full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`.
 - Current Valens output pours prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction, dignity/debility assessments, and solar condition into `NatalChart`.
 - Current Ptolemy output pours prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and dignity/debility assessments into `NatalChart`.

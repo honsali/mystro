@@ -1,22 +1,23 @@
 package app.basic.model;
 
+import app.basic.data.PointKey;
 import app.basic.data.PointType;
 
 public final class RawAspectMatrixEntry {
     private final PointType pointAType;
-    private final String pointAName;
+    private final PointKey pointAName;
     private final double pointALongitude;
     private final PointType pointBType;
-    private final String pointBName;
+    private final PointKey pointBName;
     private final double pointBLongitude;
     private final double angularSeparation;
 
     public RawAspectMatrixEntry(
         PointType pointAType,
-        String pointAName,
+        PointKey pointAName,
         double pointALongitude,
         PointType pointBType,
-        String pointBName,
+        PointKey pointBName,
         double pointBLongitude,
         double angularSeparation
     ) {
@@ -30,10 +31,10 @@ public final class RawAspectMatrixEntry {
     }
 
     public PointType getPointAType() { return pointAType; }
-    public String getPointAName() { return pointAName; }
+    public PointKey getPointAName() { return pointAName; }
     public double getPointALongitude() { return pointALongitude; }
     public PointType getPointBType() { return pointBType; }
-    public String getPointBName() { return pointBName; }
+    public PointKey getPointBName() { return pointBName; }
     public double getPointBLongitude() { return pointBLongitude; }
     public double getAngularSeparation() { return angularSeparation; }
 }

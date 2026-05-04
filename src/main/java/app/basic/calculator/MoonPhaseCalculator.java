@@ -12,11 +12,8 @@ public class MoonPhaseCalculator implements Calculator {
 
 
     public void calculate(NatalChart natalChart, CalculationContext ctx) {
-        PlanetPosition sun = ctx.planet(natalChart.getPlanets(), Planet.SUN);
-        PlanetPosition moon = ctx.planet(natalChart.getPlanets(), Planet.MOON);
-        if (sun == null || moon == null) {
-            return;
-        }
+        PlanetPosition sun = natalChart.requirePlanet(Planet.SUN);
+        PlanetPosition moon = natalChart.requirePlanet(Planet.MOON);
         double elongation = ctx.rawAngularSeparation(moon.getLongitude(), sun.getLongitude());
         double directedElongation = ctx.normalize(moon.getLongitude() - sun.getLongitude());
         boolean waxing = directedElongation <= 180.0;
@@ -28,14 +25,13 @@ public class MoonPhaseCalculator implements Calculator {
 
 
     private MoonPhaseName moonPhaseName(double directedElongation) {
-        double epsilon = 1e-9;
-        if (directedElongation < 45.0 || directedElongation >= 360.0 - epsilon)
+        if (directedElongation < 45.0)
             return MoonPhaseName.NEW_TO_CRESCENT;
         if (directedElongation < 90.0)
             return MoonPhaseName.CRESCENT_TO_FIRST_QUARTER;
         if (directedElongation < 135.0)
             return MoonPhaseName.FIRST_QUARTER_TO_GIBBOUS;
-        if (directedElongation <= 180.0 + epsilon)
+        if (directedElongation <= 180.0)
             return MoonPhaseName.GIBBOUS_TO_FULL;
         if (directedElongation < 225.0)
             return MoonPhaseName.FULL_TO_DISSEMINATING;

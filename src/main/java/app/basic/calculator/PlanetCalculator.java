@@ -32,28 +32,24 @@ public class PlanetCalculator implements Calculator {
         addPlanet(planets, Planet.SATURN, SweConst.SE_SATURN, julianDay, ascendant, sunLongitude, ctx);
 
         PlanetPosition northNode = calculatePlanet(Planet.NORTH_NODE, nodeSwissPlanetId(ctx), julianDay, ascendant, sunLongitude, ctx);
-        if (northNode != null) {
-            planets.add(northNode);
-            double southNodeLongitude = ctx.normalize(northNode.getLongitude() + 180.0);
-            int house = ctx.houseOf(southNodeLongitude, ascendant);
-            int wholeSignHouse = ctx.wholeSignHouseOf(southNodeLongitude, ascendant);
-            Integer quadrantHouse = ctx.quadrantHouseOf(southNodeLongitude);
-            double southNodeLatitude = -northNode.getLatitude();
-            double southNodeAltitude = ctx.horizontalAltitude(southNodeLongitude, southNodeLatitude);
-            PlanetPosition southNodePlanet = new PlanetPosition(Planet.SOUTH_NODE, southNodeLongitude, ctx.signOf(southNodeLongitude), ctx.degreeInSign(southNodeLongitude), southNodeLatitude,
-                    ctx.normalize(northNode.getRightAscension() + 180.0), -northNode.getDeclination(), southNodeAltitude, southNodeAltitude >= 0.0, northNode.getSpeed(), meanDailySpeed(Planet.SOUTH_NODE),
-                    northNode.getSpeed() / meanDailySpeed(Planet.SOUTH_NODE), northNode.getRetrograde(), house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(southNodeLongitude, ctx.getTerms()),
-                    angularDistance(southNodeLongitude, sunLongitude, ctx), ctx.antiscia(southNodeLongitude), ctx.contraAntiscia(southNodeLongitude));
-            planets.add(southNodePlanet);
-        }
+        planets.add(northNode);
+        double southNodeLongitude = ctx.normalize(northNode.getLongitude() + 180.0);
+        int house = ctx.houseOf(southNodeLongitude, ascendant);
+        int wholeSignHouse = ctx.wholeSignHouseOf(southNodeLongitude, ascendant);
+        Integer quadrantHouse = ctx.quadrantHouseOf(southNodeLongitude);
+        double southNodeLatitude = -northNode.getLatitude();
+        double southNodeAltitude = ctx.horizontalAltitude(southNodeLongitude, southNodeLatitude);
+        double southNodeMeanDailySpeed = meanDailySpeed(Planet.SOUTH_NODE);
+        PlanetPosition southNodePlanet = new PlanetPosition(Planet.SOUTH_NODE, southNodeLongitude, ctx.signOf(southNodeLongitude), ctx.degreeInSign(southNodeLongitude), southNodeLatitude,
+                ctx.normalize(northNode.getRightAscension() + 180.0), -northNode.getDeclination(), southNodeAltitude, southNodeAltitude >= 0.0, northNode.getSpeed(), southNodeMeanDailySpeed,
+                Math.abs(northNode.getSpeed()) / southNodeMeanDailySpeed, northNode.getRetrograde(), house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(southNodeLongitude, ctx.getTerms()),
+                angularDistance(southNodeLongitude, sunLongitude, ctx), ctx.antiscia(southNodeLongitude), ctx.contraAntiscia(southNodeLongitude));
+        planets.add(southNodePlanet);
         natalChart.setPlanets(planets);
     }
 
     private void addPlanet(List<PlanetPosition> planets, Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, CalculationContext ctx) {
-        PlanetPosition position = calculatePlanet(planet, swissPlanetId, julianDay, ascendant, sunLongitude, ctx);
-        if (position != null) {
-            planets.add(position);
-        }
+        planets.add(calculatePlanet(planet, swissPlanetId, julianDay, ascendant, sunLongitude, ctx));
     }
 
     private PlanetPosition calculatePlanet(Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, CalculationContext ctx) {
@@ -72,7 +68,7 @@ public class PlanetCalculator implements Calculator {
         double altitude = ctx.horizontalAltitude(longitude, values[1]);
         double meanDailySpeed = meanDailySpeed(planet);
         return new PlanetPosition(planet, longitude, ctx.signOf(longitude), ctx.degreeInSign(longitude), values[1], equatorial.rightAscension(), equatorial.declination(), altitude, altitude >= 0.0, values[3], meanDailySpeed,
-                values[3] / meanDailySpeed, values[3] < 0, house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(longitude, ctx.getTerms()), angularDistance(longitude, sunLongitude, ctx), ctx.antiscia(longitude),
+                Math.abs(values[3]) / meanDailySpeed, values[3] < 0, house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(longitude, ctx.getTerms()), angularDistance(longitude, sunLongitude, ctx), ctx.antiscia(longitude),
                 ctx.contraAntiscia(longitude));
     }
 
@@ -101,7 +97,7 @@ public class PlanetCalculator implements Calculator {
             case MARS -> 0.5240;
             case JUPITER -> 0.0831;
             case SATURN -> 0.0335;
-            case NORTH_NODE, SOUTH_NODE -> -0.05295;
+            case NORTH_NODE, SOUTH_NODE -> 0.05295;
         };
     }
 
@@ -115,10 +111,7 @@ public class PlanetCalculator implements Calculator {
         };
     }
 
-    private double angularDistance(double longitude, Double sunLongitude, CalculationContext ctx) {
-        if (sunLongitude == null) {
-            return 0.0;
-        }
+    private double angularDistance(double longitude, double sunLongitude, CalculationContext ctx) {
         return ctx.rawAngularSeparation(longitude, sunLongitude);
     }
 }

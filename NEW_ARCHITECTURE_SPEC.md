@@ -153,7 +153,9 @@ public interface Doctrine extends CalculationDefinition {
 - node type
 ```
 
-`CalculationContext` is the per-run internal context. It owns the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, Julian day, house cusps, `ascmc`, ARMC, and shared helpers.
+The currently implemented zodiac is tropical only. Sidereal calculation is intentionally absent until an explicit ayanamsa model and doctrine requirement are introduced.
+
+`CalculationContext` is the per-run internal context. It owns the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, Julian day, house cusps, `ascmc`, ARMC, and shared helpers. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant have one source of truth.
 
 ---
 
@@ -248,6 +250,14 @@ Current planet point fields include:
 
 `solarPhase` and planet-specific sect information are injected into planet points. Chart-level `sect` remains for whole-chart sect facts.
 
+Basic chart sect is currently altitude-based: Sun above horizon is diurnal, Sun below horizon is nocturnal. This is a mechanical baseline only. Doctrine modules may refine sect interpretation for twilight births, apparent/refraction-adjusted horizon, or author-specific treatment of the Sun slightly below the horizon. Such refinements belong to doctrine descriptive calculation and should be poured into `NatalChart` explicitly rather than changing the shared baseline silently. Altitude uses `>= 0.0` as the baseline above-horizon rule; exact horizon edge cases can be refined by doctrine logic if needed.
+
+Planet-specific sect membership is intentionally limited to the seven traditional planets. The lunar nodes are chart points, but they do not have planetary sect, so `NORTH_NODE` and `SOUTH_NODE` do not receive a point-level `sect` object.
+
+Essential dignity/debility assessment is likewise limited to the seven traditional planets; nodes remain positional points and intentionally do not receive dignity/debility assessment.
+
+`angularDistanceFromSun` is stored as `0.0` for the Sun itself because the Sun is measured against its own longitude. Doctrine solar-condition calculators must special-case the Sun; `0.0` for the Sun does not mean the Sun has a solar condition such as cazimi or combustion.
+
 `solarCondition` is doctrine-poured. Currently Valens calculates it; Ptolemy does not.
 
 ---
@@ -268,10 +278,13 @@ Every relation has raw geometry:
   },
   "equatorial": {
     "declinationDifference": 0.799742,
+    "contraParallelSeparation": 0.799742,
     "sameHemisphere": true
   }
 }
 ```
+
+`declinationDifference` is the parallel-distance primitive. `contraParallelSeparation` is the contraparallel-distance primitive. Both are emitted to avoid forcing downstream code to infer contraparallel distance from asymmetric fields.
 
 Doctrine aspect calculators annotate matching pairwise relations with an `aspect` object when that doctrine recognizes a meaningful aspect/configuration for that pair:
 

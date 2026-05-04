@@ -1,15 +1,16 @@
 package app.basic.model;
 
+import app.basic.data.PointKey;
 import app.basic.data.ZodiacSign;
 
 public final class RawSignDistanceMatrixEntry {
-    private final String pointAName;
+    private final PointKey pointAName;
     private final ZodiacSign pointASign;
-    private final String pointBName;
+    private final PointKey pointBName;
     private final ZodiacSign pointBSign;
     private final int signDistance;
 
-    public RawSignDistanceMatrixEntry(String pointAName, ZodiacSign pointASign, String pointBName, ZodiacSign pointBSign, int signDistance) {
+    public RawSignDistanceMatrixEntry(PointKey pointAName, ZodiacSign pointASign, PointKey pointBName, ZodiacSign pointBSign, int signDistance) {
         this.pointAName = pointAName;
         this.pointASign = pointASign;
         this.pointBName = pointBName;
@@ -17,9 +18,9 @@ public final class RawSignDistanceMatrixEntry {
         this.signDistance = signDistance;
     }
 
-    public String getPointAName() { return pointAName; }
+    public PointKey getPointAName() { return pointAName; }
     public ZodiacSign getPointASign() { return pointASign; }
-    public String getPointBName() { return pointBName; }
+    public PointKey getPointBName() { return pointBName; }
     public ZodiacSign getPointBSign() { return pointBSign; }
     public int getSignDistance() { return signDistance; }
 }

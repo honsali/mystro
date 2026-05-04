@@ -1,7 +1,6 @@
 package app.basic;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.List;
 import app.basic.data.HouseSystem;
 import app.basic.data.NodeType;
@@ -44,9 +43,7 @@ public class CalculationContext {
         this.nodeType = definition.getNodeType();
         this.calculationSetting = calculationSetting;
 
-        OffsetDateTime utcDateTime = subject.getLocalBirthDateTime().withOffsetSameInstant(ZoneOffset.UTC);
-        double hour = utcDateTime.getHour() + utcDateTime.getMinute() / 60.0 + (utcDateTime.getSecond() + utcDateTime.getNano() / 1_000_000_000.0) / 3600.0;
-        fullJulianDay = getSwissEph().swe_julday(utcDateTime.getYear(), utcDateTime.getMonthValue(), utcDateTime.getDayOfMonth(), hour, SweConst.SE_GREG_CAL);
+        fullJulianDay = julianDayFromInstant(subject.getResolvedUtcInstant());
 
         int result = calculateSwissHouses(fullJulianDay, cusps, ascmc);
         if (result < 0 || Double.isNaN(ascmc[0]) || Double.isNaN(ascmc[1]) || Double.isNaN(ascmc[2])) {
@@ -54,6 +51,10 @@ public class CalculationContext {
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         armc = normalize(ascmc[2]);
+    }
+
+    private double julianDayFromInstant(Instant instant) {
+        return 2440587.5 + instant.getEpochSecond() / 86400.0 + instant.getNano() / 86_400_000_000_000.0;
     }
 
     public Subject getSubject() {
@@ -118,16 +119,15 @@ public class CalculationContext {
     }
 
     public double normalize(double degrees) {
-        double value = degrees % 360.0;
-        return value < 0 ? value + 360.0 : value;
+        return AstroMath.normalize(degrees);
     }
 
     public ZodiacSign signOf(double longitude) {
-        return ZodiacSign.values()[(int) Math.floor(normalize(longitude) / 30.0)];
+        return AstroMath.signOf(longitude);
     }
 
     public double degreeInSign(double longitude) {
-        return normalize(longitude) % 30.0;
+        return AstroMath.degreeInSign(longitude);
     }
 
     public double longitudeFor(Planet planet, int swissPlanetId, double julianDay) {
@@ -192,8 +192,7 @@ public class CalculationContext {
     }
 
     public double rawAngularSeparation(double longitudeA, double longitudeB) {
-        double distance = Math.abs(normalize(longitudeA) - normalize(longitudeB));
-        return distance > 180.0 ? 360.0 - distance : distance;
+        return AstroMath.rawAngularSeparation(longitudeA, longitudeB);
     }
 
     public double antiscia(double longitude) {
@@ -221,11 +220,7 @@ public class CalculationContext {
     }
 
     public int planetFlags() {
-        int flags = SweConst.SEFLG_SPEED;
-        if (zodiac == Zodiac.SIDEREAL) {
-            flags |= SweConst.SEFLG_SIDEREAL;
-        }
-        return flags;
+        return SweConst.SEFLG_SPEED;
     }
 
     private int calculateSwissHouses(double julianDay, double[] cusps, double[] ascmc) {
@@ -233,9 +228,6 @@ public class CalculationContext {
     }
 
     private int houseFlags() {
-        if (zodiac == Zodiac.SIDEREAL) {
-            return SweConst.SEFLG_SIDEREAL;
-        }
         return 0;
     }
 

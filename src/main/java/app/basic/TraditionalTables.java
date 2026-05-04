@@ -95,8 +95,8 @@ public final class TraditionalTables {
         if (terms == Terms.NONE) {
             return null;
         }
-        double degree = degreeInSign(longitude);
-        ZodiacSign sign = signOf(longitude);
+        double degree = AstroMath.degreeInSign(longitude);
+        ZodiacSign sign = AstroMath.signOf(longitude);
         TermBoundary[] boundaries = terms == Terms.PTOLEMAIC ? ptolemaicTerms(sign) : egyptianTerms(sign);
         for (TermBoundary boundary : boundaries) {
             if (degree < boundary.upperDegreeExclusive()) {
@@ -104,19 +104,6 @@ public final class TraditionalTables {
             }
         }
         return boundaries[boundaries.length - 1].ruler();
-    }
-
-    public static ZodiacSign signOf(double longitude) {
-        return ZodiacSign.values()[(int) Math.floor(normalize(longitude) / 30.0)];
-    }
-
-    public static double degreeInSign(double longitude) {
-        return normalize(longitude) % 30.0;
-    }
-
-    public static double normalize(double degrees) {
-        double value = degrees % 360.0;
-        return value < 0 ? value + 360.0 : value;
     }
 
     private static TermBoundary[] egyptianTerms(ZodiacSign sign) {

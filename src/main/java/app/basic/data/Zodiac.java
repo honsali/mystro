@@ -1,8 +1,7 @@
 package app.basic.data;
 
 public enum Zodiac {
-    TROPICAL,
-    SIDEREAL;
+    TROPICAL;
 
     public static Zodiac parse(String value) {
         if (value == null || value.isBlank()) {
@@ -10,7 +9,6 @@ public enum Zodiac {
         }
         return switch (value.trim().toUpperCase()) {
             case "TROPICAL" -> TROPICAL;
-            case "SIDEREAL" -> SIDEREAL;
             default -> throw new IllegalArgumentException("Unknown zodiac: " + value);
         };
     }

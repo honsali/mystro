@@ -50,114 +50,22 @@ public record PlanetPointEntry(
     }
 
     public PlanetPointEntry withDignityAssessment(List<DignityType> dignities, List<DignityType> debilities) {
-        return new PlanetPointEntry(
-                longitude,
-                sign,
-                degreeInSign,
-                latitude,
-                rightAscension,
-                declination,
-                altitude,
-                aboveHorizon,
-                speed,
-                meanDailySpeed,
-                speedRatio,
-                retrograde,
-                house,
-                wholeSignHouse,
-                quadrantHouse,
-                angularity,
-                antisciaLongitude,
-                contraAntisciaLongitude,
-                domicileRuler,
-                exaltationRuler,
-                triplicityRuler,
-                participatingTriplicityRuler,
-                termRuler,
-                faceRuler,
-                detrimentRuler,
-                fallRuler,
-                List.copyOf(dignities),
-                List.copyOf(debilities),
-                solarPhase,
-                sect,
-                solarCondition
-        );
+        return withAssessments(List.copyOf(dignities), List.copyOf(debilities), solarPhase, sect, solarCondition);
     }
 
     public PlanetPointEntry withSolarPhase(SolarOrientation solarPhase) {
-        return new PlanetPointEntry(
-                longitude,
-                sign,
-                degreeInSign,
-                latitude,
-                rightAscension,
-                declination,
-                altitude,
-                aboveHorizon,
-                speed,
-                meanDailySpeed,
-                speedRatio,
-                retrograde,
-                house,
-                wholeSignHouse,
-                quadrantHouse,
-                angularity,
-                antisciaLongitude,
-                contraAntisciaLongitude,
-                domicileRuler,
-                exaltationRuler,
-                triplicityRuler,
-                participatingTriplicityRuler,
-                termRuler,
-                faceRuler,
-                detrimentRuler,
-                fallRuler,
-                dignities,
-                debilities,
-                solarPhase,
-                sect,
-                solarCondition
-        );
+        return withAssessments(dignities, debilities, solarPhase, sect, solarCondition);
     }
 
     public PlanetPointEntry withSect(PlanetSectInfo sect) {
-        return new PlanetPointEntry(
-                longitude,
-                sign,
-                degreeInSign,
-                latitude,
-                rightAscension,
-                declination,
-                altitude,
-                aboveHorizon,
-                speed,
-                meanDailySpeed,
-                speedRatio,
-                retrograde,
-                house,
-                wholeSignHouse,
-                quadrantHouse,
-                angularity,
-                antisciaLongitude,
-                contraAntisciaLongitude,
-                domicileRuler,
-                exaltationRuler,
-                triplicityRuler,
-                participatingTriplicityRuler,
-                termRuler,
-                faceRuler,
-                detrimentRuler,
-                fallRuler,
-                dignities,
-                debilities,
-                solarPhase,
-                sect,
-                solarCondition
-        );
+        return withAssessments(dignities, debilities, solarPhase, sect, solarCondition);
     }
 
     public PlanetPointEntry withSolarCondition(SolarCondition solarCondition) {
+        return withAssessments(dignities, debilities, solarPhase, sect, solarCondition);
+    }
+
+    private PlanetPointEntry withAssessments(List<DignityType> dignities, List<DignityType> debilities, SolarOrientation solarPhase, PlanetSectInfo sect, SolarCondition solarCondition) {
         return new PlanetPointEntry(
                 longitude,
                 sign,

@@ -2,6 +2,7 @@ package app.descriptive.valens.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
+import app.basic.AstroMath;
 import app.basic.TraditionalTables;
 import app.basic.data.Planet;
 import app.basic.model.NatalChart;
@@ -57,7 +58,6 @@ public final class ValensAspectCalculator {
     }
 
     private double rawAngularSeparation(double longitudeA, double longitudeB) {
-        double distance = Math.abs(TraditionalTables.normalize(longitudeA) - TraditionalTables.normalize(longitudeB));
-        return distance > 180.0 ? 360.0 - distance : distance;
+        return AstroMath.rawAngularSeparation(longitudeA, longitudeB);
     }
 }

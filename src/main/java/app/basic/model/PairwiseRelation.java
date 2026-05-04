@@ -1,20 +1,21 @@
 package app.basic.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import app.basic.data.PointKey;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class PairwiseRelation {
-    private final String pointAName;
-    private final String pointBName;
+    private final PointKey pointAName;
+    private final PointKey pointBName;
     private final EclipticRelation ecliptic;
     private final EquatorialRelation equatorial;
     private final AspectRelation aspect;
 
-    public PairwiseRelation(String pointAName, String pointBName, EclipticRelation ecliptic, EquatorialRelation equatorial) {
+    public PairwiseRelation(PointKey pointAName, PointKey pointBName, EclipticRelation ecliptic, EquatorialRelation equatorial) {
         this(pointAName, pointBName, ecliptic, equatorial, null);
     }
 
-    public PairwiseRelation(String pointAName, String pointBName, EclipticRelation ecliptic, EquatorialRelation equatorial, AspectRelation aspect) {
+    public PairwiseRelation(PointKey pointAName, PointKey pointBName, EclipticRelation ecliptic, EquatorialRelation equatorial, AspectRelation aspect) {
         this.pointAName = pointAName;
         this.pointBName = pointBName;
         this.ecliptic = ecliptic;
@@ -22,8 +23,8 @@ public final class PairwiseRelation {
         this.aspect = aspect;
     }
 
-    public String getPointAName() { return pointAName; }
-    public String getPointBName() { return pointBName; }
+    public PointKey getPointAName() { return pointAName; }
+    public PointKey getPointBName() { return pointBName; }
     public EclipticRelation getEcliptic() { return ecliptic; }
     public EquatorialRelation getEquatorial() { return equatorial; }
     public AspectRelation getAspect() { return aspect; }
@@ -47,14 +48,17 @@ public final class PairwiseRelation {
 
     public static final class EquatorialRelation {
         private final double declinationDifference;
+        private final double contraParallelSeparation;
         private final boolean sameHemisphere;
 
-        public EquatorialRelation(double declinationDifference, boolean sameHemisphere) {
+        public EquatorialRelation(double declinationDifference, double contraParallelSeparation, boolean sameHemisphere) {
             this.declinationDifference = declinationDifference;
+            this.contraParallelSeparation = contraParallelSeparation;
             this.sameHemisphere = sameHemisphere;
         }
 
         public double getDeclinationDifference() { return declinationDifference; }
+        public double getContraParallelSeparation() { return contraParallelSeparation; }
         public boolean isSameHemisphere() { return sameHemisphere; }
     }
 

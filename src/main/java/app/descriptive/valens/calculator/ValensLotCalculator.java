@@ -2,6 +2,7 @@ package app.descriptive.valens.calculator;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import app.basic.AstroMath;
 import app.basic.TraditionalTables;
 import app.basic.data.AngleType;
 import app.basic.data.Planet;
@@ -20,11 +21,11 @@ public final class ValensLotCalculator {
 
         Map<LotName, LotEntry> lots = new LinkedHashMap<>();
         double fortune = diurnal
-                ? TraditionalTables.normalize(asc + moon.getLongitude() - sun.getLongitude())
-                : TraditionalTables.normalize(asc + sun.getLongitude() - moon.getLongitude());
+                ? AstroMath.normalize(asc + moon.getLongitude() - sun.getLongitude())
+                : AstroMath.normalize(asc + sun.getLongitude() - moon.getLongitude());
         double spirit = diurnal
-                ? TraditionalTables.normalize(asc + sun.getLongitude() - moon.getLongitude())
-                : TraditionalTables.normalize(asc + moon.getLongitude() - sun.getLongitude());
+                ? AstroMath.normalize(asc + sun.getLongitude() - moon.getLongitude())
+                : AstroMath.normalize(asc + moon.getLongitude() - sun.getLongitude());
         lots.put(LotName.FORTUNE, lot(LotName.FORTUNE, fortune, chart, diurnal ? "ASC + Moon - Sun" : "ASC + Sun - Moon"));
         lots.put(LotName.SPIRIT, lot(LotName.SPIRIT, spirit, chart, diurnal ? "ASC + Sun - Moon" : "ASC + Moon - Sun"));
         return lots;
@@ -34,18 +35,18 @@ public final class ValensLotCalculator {
         return new LotEntry(
                 name,
                 longitude,
-                TraditionalTables.signOf(longitude),
-                TraditionalTables.degreeInSign(longitude),
+                AstroMath.signOf(longitude),
+                AstroMath.degreeInSign(longitude),
                 houseOf(longitude, chart),
-                TraditionalTables.domicileRuler(TraditionalTables.signOf(longitude)),
+                TraditionalTables.domicileRuler(AstroMath.signOf(longitude)),
                 formula
         );
     }
 
     private int houseOf(double longitude, NatalChart chart) {
         double ascendant = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
-        int ascSign = TraditionalTables.signOf(ascendant).ordinal();
-        int sign = TraditionalTables.signOf(longitude).ordinal();
+        int ascSign = AstroMath.signOf(ascendant).ordinal();
+        int sign = AstroMath.signOf(longitude).ordinal();
         return Math.floorMod(sign - ascSign, 12) + 1;
     }
 
