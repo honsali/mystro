@@ -30,7 +30,6 @@ Input loading
 → Doctrine descriptive calculation
 → Doctrine predictive calculation
 → Formatting / printing
-→ Reference validation
 ```
 
 Basic chart calculation is not a separate report stage. It is shared infrastructure used inside doctrine-owned descriptive and predictive calculation.
@@ -93,7 +92,7 @@ Absent concepts are simply absent from that doctrine's output. Execution-level e
 
 ## 4. Current inputs
 
-Natal input records contain birth data only.
+Natal input records contain birth data only. The current native input file is `input/subject-list.json`.
 
 Current native input shape:
 
@@ -153,9 +152,19 @@ public interface Doctrine extends CalculationDefinition {
 - node type
 ```
 
-The currently implemented zodiac is tropical only. Sidereal calculation is intentionally absent until an explicit ayanamsa model and doctrine requirement are introduced.
+The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 
 `CalculationContext` is the per-run internal context. It owns the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, Julian day, house cusps, `ascmc`, ARMC, and shared helpers. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant have one source of truth.
+
+### Intentional calculation conventions
+
+These are current calculation choices, not accidental omissions:
+
+- Planet positions are geocentric, matching pre-modern practice.
+- Planet positions use Swiss Ephemeris apparent positions; light-time, aberration, and gravitational deflection are retained.
+- Lunar parallax is not corrected by converting the Moon to a topocentric position.
+- Placidus failures, including polar-region failures from Swiss Ephemeris, fail fast and are logged; there is no silent fallback house system.
+- A Moon exactly 180° ahead of the Sun is treated as waxing by convention.
 
 ---
 
@@ -169,7 +178,7 @@ Current top-level report shape:
 
 ```json
 {
-  "engineVersion": "0.1.0",
+  "engineVersion": "0.14.0",
   "subject": {},
   "doctrine": {},
   "calculationSetting": {},
@@ -325,6 +334,10 @@ Dorotheus is present as a doctrine module but has no descriptive doctrine-poured
 
 Fixed stars are not implemented. If added, the star set must be explicitly parameterized; no doctrine-free canonical star list should be assumed.
 
+### Adding a doctrine module
+
+To add a doctrine, implement `app.doctrine.Doctrine` under `app.doctrine.impl.<doctrineId>`, choose its `CalculationDefinition` values, register it in `DoctrineLoader`, and add doctrine-specific descriptive calculators under `app.descriptive.<doctrineId>.calculator` when the doctrine has descriptive concepts to pour into `NatalChart`.
+
 ---
 
 ## 10. Output and logging
@@ -348,6 +361,8 @@ output/run-logger.json
 ```
 
 Execution-level statuses are not astrological results and do not belong inside doctrine report data.
+
+The report `engineVersion` is loaded from the first project `<version>` in `pom.xml`.
 
 JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision.
 
@@ -387,14 +402,18 @@ app.descriptive.valens.calculator
 app.descriptive.ptolemy.calculator
 ```
 
+Doctrine implementations live under:
+
+```text
+app.doctrine.impl.<doctrineId>
+```
+
 Shared descriptive data atoms currently live under:
 
 ```text
 app.descriptive.common.data
 app.descriptive.common.model
 ```
-
-`app.old` is migration/reference material only.
 
 ---
 

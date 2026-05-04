@@ -14,7 +14,6 @@ Input loading
 → Doctrine descriptive calculation, including doctrine-owned natal chart calculation
 → Doctrine predictive calculation
 → Formatting / printing
-→ Reference validation
 ```
 
 Current output families:
@@ -30,7 +29,7 @@ A doctrine is a hardcoded Java knowledge module, not a settings profile.
 
 Implemented now:
 
-- natal input loading from `input/native-list.json`
+- natal input loading from `input/subject-list.json`
 - explicit CLI subject/doctrine selection
 - doctrine-owned descriptive calculation
 - shared Swiss Ephemeris-backed `BasicCalculator`
@@ -49,7 +48,7 @@ There is no top-level `basicChart` key and no top-level `descriptive` key.
 
 ## Input
 
-`input/native-list.json` contains natal data only.
+`input/subject-list.json` contains natal data only.
 
 Current natal entry shape:
 
@@ -63,6 +62,12 @@ Current natal entry shape:
   "utcOffset": "+01:00"
 }
 ```
+
+## Environment
+
+- Java 17 is required.
+- Swiss Ephemeris data files under `ephe/` are required runtime data.
+- `input/settings.properties` is optional; `calculation.precision` defaults to `STANDARD`.
 
 ## Run
 

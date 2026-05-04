@@ -20,14 +20,13 @@ Input loading
 → Doctrine descriptive calculation, including doctrine-owned natal chart calculation
 → Doctrine predictive calculation
 → Formatting / printing
-→ Reference validation
 ```
 
 Basic chart calculation is not a separate report stage. `BasicCalculator` is shared infrastructure called through `Doctrine.calculateNatalChart(...)`.
 
 ## Current implementation facts
 
-- `input/native-list.json` contains natal data only.
+- `input/subject-list.json` contains natal data only.
 - Natal records use `id` as the subject identifier.
 - Doctrine modules are selected explicitly with `--doctrines ...`.
 - Current descriptive output path is `output/{subjectId}/{doctrineId}-descriptive.json`.

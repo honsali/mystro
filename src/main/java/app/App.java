@@ -1,6 +1,10 @@
 package app;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import app.basic.BasicCalculator;
 import app.basic.model.NatalChart;
 import app.doctrine.Doctrine;
@@ -14,7 +18,7 @@ import app.output.Logger;
 import app.output.LoggerWriter;
 
 public final class App {
-    private static final String ENGINE_VERSION = "0.1.0";
+    private static final String ENGINE_VERSION = readProjectVersion();
 
     public static void main(String[] args) throws Exception {
         InputLoader loader = new InputLoader();
@@ -38,6 +42,18 @@ public final class App {
         }
     }
 
+    private static String readProjectVersion() {
+        try {
+            String pom = Files.readString(Path.of("pom.xml"));
+            Matcher matcher = Pattern.compile("<version>([^<]+)</version>").matcher(pom);
+            if (matcher.find()) {
+                return matcher.group(1).trim();
+            }
+        } catch (IOException e) {
+            Logger.instance.info("app", "Could not read pom.xml for engine version: " + e.getMessage());
+        }
+        return "unknown";
+    }
 
     private App() {}
 }

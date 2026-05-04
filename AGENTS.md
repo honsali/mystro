@@ -48,7 +48,6 @@ Input loading
 → Doctrine descriptive calculation, including doctrine-owned natal chart calculation
 → Doctrine predictive calculation
 → Formatting / printing
-→ Reference validation
 ```
 
 Basic chart calculation is not a separate report stage. `BasicCalculator` is shared infrastructure called through `Doctrine.calculateNatalChart(...)`.
@@ -56,13 +55,12 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 ## Current implementation facts
 
 - Fresh app code lives under `src/main/java/app/`.
-- `app.old` is migration/reference material only.
-- `input/native-list.json` contains natal data only.
+- `input/subject-list.json` contains natal data only.
 - The current CLI subject selector is `--subjects`.
 - Doctrine selection is explicit through CLI `--doctrines ...`.
 - No hidden default doctrine should be introduced.
 - Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, and `natalChart` fields.
-- The currently implemented zodiac is tropical only; sidereal calculation is intentionally absent until an explicit ayanamsa model and doctrine requirement are introduced.
+- The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - `NatalChart` contains mechanical chart facts and doctrine-poured descriptive facts.
 - `natalChart.points` is a map keyed by point name; planet points carry point-specific dignities, debilities, solar phase, planet sect info, and doctrine solar condition when calculated. Planet sect and dignity/debility assessment are intentionally limited to the seven traditional planets; lunar nodes remain positional points without point-level sect or dignity/debility assessment.
@@ -76,6 +74,11 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Dorotheus is present as a doctrine module but has no doctrine-poured descriptive sections yet.
 - Fixed stars are not implemented. If added, the star set must be explicitly parameterized.
 - JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision.
+- Intentional calculation conventions: geocentric apparent planet positions, no topocentric lunar parallax correction, fail-fast Placidus errors with no silent fallback, and exactly 180° Moon-Sun elongation treated as waxing.
+- Doctrine implementations live under `src/main/java/app/doctrine/impl/<doctrineId>/`; register new doctrine modules in `DoctrineLoader` and place doctrine-specific descriptive calculators under `src/main/java/app/descriptive/<doctrineId>/calculator/`.
+- Java 17 is required.
+- Swiss Ephemeris data under `ephe/` is required runtime data; do not delete it as generated output.
+- Optional `input/settings.properties` may set `calculation.precision`.
 - `Logger.instance` is intentionally retained for the short-term CLI.
 
 ## Commands
