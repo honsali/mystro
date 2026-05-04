@@ -2,68 +2,68 @@
 
 ## Current state
 
-Mystro is being restarted from a clean architecture.
+Mystro is a self-contained Java traditional astrology calculation engine.
 
-The authoritative document is:
+Authoritative specification:
 
 - `NEW_ARCHITECTURE_SPEC.md`
 
-## Durable direction
-
-The application is a self-contained Java traditional astrology calculation engine.
-
-Main flow:
+## Current architecture
 
 ```text
 Input loading
 → Input validation / normalization
-→ Basic calculation
-→ Descriptive calculation
-→ Predictive calculation
-→ Comparative calculation
+→ Doctrine descriptive calculation, including doctrine-owned natal chart calculation
+→ Doctrine predictive calculation
 → Formatting / printing
 → Reference validation
 ```
 
-Output families:
+Current output families:
 
 ```text
 descriptive
 predictive
-comparative
 ```
 
-Doctrine concept:
+Current implemented output:
 
 ```text
-A doctrine is a hardcoded knowledge module.
-It is not a settings file, not a doctrine profile, and not a partial universal schema implementation.
+output/{subjectId}/{doctrineId}-descriptive.json
+output/run-logger.json
 ```
+
+Predictive is an architectural target and is not implemented yet.
+
+## Durable direction
+
+A doctrine is a hardcoded Java knowledge module.
+
+It is not a settings file, not a doctrine profile, and not a partial universal schema implementation.
+
+Basic chart calculation is not a separate report stage. `BasicCalculator` is shared infrastructure called by the doctrine through `Doctrine.calculateNatalChart(...)`.
 
 ## Current implementation facts
 
-- Fresh Java skeleton exists under `src/main/java/app/`.
+- Fresh Java app code exists under `src/main/java/app/`.
 - `app.old` is reference/migration material only.
 - `input/native-list.json` contains natal data only.
-- Natal entries use ISO-style fields: `id`, `birthDate`, `birthTime`, `latitude`, `longitude`, `utcOffset`.
-- `NatalInput` keeps `id` only; no separate subject name is used.
 - Doctrine selection is explicit through `--doctrines ...`.
 - No doctrine is selected by default.
-- Current placeholder doctrines: `dorotheus`, `ptolemy`, `valens`.
-- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, `basicChart`, and `descriptive` fields.
-- Current implemented output path: `output/descriptive/{subjectId}/{doctrineId}.json`.
-- Execution-level status is written to `output/run-manifest.json`.
-- Basic calculators keep full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`.
-- Current stage 1 basic output includes UT/TT Julian days, delta T, ARMC, local apparent sidereal time, true/mean obliquity, nutation, planet longitude/latitude/right ascension/declination/altitude/above-horizon facts, houses, essential dignity rulers, antiscia/contra-antiscia, solar phase, moon phase, pairwise relations, and sect.
-- Input POJOs have been moved from `app.model.input` to `app.input.model`.
-- Basic output POJOs have been moved from `app.model.basic` to `app.basic.model`; basic/shared astrology enums have been moved from `app.model.data` to `app.basic.data` before Stage 2 descriptive work.
-- Stage 2 descriptive packages now start under `app.descriptive`; common descriptive calculators/POJOs/enums live under `app.descriptive.common.calculator` / `app.descriptive.common.model` / `app.descriptive.common.data`, and doctrine-owned calculators/results live under packages such as `app.descriptive.valens` and `app.descriptive.ptolemy`.
-- `DescriptiveResult` is a typed marker interface. Doctrine-specific descriptive records implement it directly and are serialized without converting to `Map<String,Object>` at the doctrine boundary.
-- `CalculationContext` replaced the former `BasicCalculationContext`/`Input` wrapper pattern. It carries the subject, doctrine-derived `CalculationDefinition` values, calculation settings, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and shared helpers through basic and descriptive calculation.
-- `DoctrineDefinition` was replaced by `app.basic.model.CalculationDefinition`; `Doctrine` extends that definition and `BasicCalculator` receives `CalculationContext` directly.
-- Prenatal syzygy search lives in `app.descriptive.common.calculator.SyzygyCalculator`, uses the existing `CalculationContext`, and returns `PrenatalSyzygyEntry` directly.
-- Current Valens descriptive output includes prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction among traditional planets, essential dignity/debility assessment, and solar condition.
-- Current Ptolemy descriptive output intentionally has a different shape: prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and Ptolemaic dignity/debility assessment; no lots or solar-condition sections are emitted.
+- Current doctrine modules: `dorotheus`, `ptolemy`, `valens`.
+- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, and `natalChart` fields.
+- There is no top-level `basicChart` key and no top-level `descriptive` key.
+- `NatalChart` contains mechanical chart facts and doctrine-poured descriptive facts.
+- Doctrine calculators pour data directly into `NatalChart`; there is no `DescriptiveResult` boundary and no doctrine-specific descriptive data record.
+- `natalChart.points` is keyed by point name. Planet points carry point-specific dignities/debilities, solar phase, planet sect info, and doctrine solar condition when calculated.
+- `natalChart.pairwiseRelations` contains raw geometry for point pairs; doctrine-recognized aspects are injected as optional `aspect` objects.
+- `CalculationContext` carries the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and shared helpers through basic and descriptive calculation.
+- `BasicCalculator` keeps full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`.
+- Current Valens output pours prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction, dignity/debility assessments, and solar condition into `NatalChart`.
+- Current Ptolemy output pours prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and dignity/debility assessments into `NatalChart`.
+- Dorotheus is present but has no doctrine-poured descriptive sections yet.
+- Fixed stars are not implemented.
+- `Logger.instance` is intentionally retained for the short-term CLI.
 
 ## Commands
 
@@ -79,13 +79,7 @@ Representative runtime check:
 mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
 ```
 
-Version prompt:
-
-```text
-.pi/prompts/version.md saves durable knowledge, commits all intended project files except input/output/build artifacts, runs mvn compile, stops on compile failure, commits successful changes as "version $v: $desc", pushes, then bumps the minor version in pom.xml for the next development cycle. Major version bumps are manual.
-```
-
-Current Maven version for the next development cycle is `0.11.0`.
+Current Maven version for the next development cycle is `0.12.0`.
 
 ## Read first in future sessions
 

@@ -2,14 +2,14 @@ package app.basic.calculator;
 
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 
 public class SimpleCalculator implements Calculator {
 
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
 
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
@@ -22,16 +22,16 @@ public class SimpleCalculator implements Calculator {
         double julianDayUt = ctx.getFullJulianDay();
         double deltaTSeconds = ctx.getSwissEph().swe_deltat(julianDayUt) * 86400.0;
 
-        basicChart.setResolvedUtcInstant(ctx.getSubject().getResolvedUtcInstant());
-        basicChart.setJulianDayUt(julianDayUt);
-        basicChart.setJulianDayTt(julianDayUt + deltaTSeconds / 86400.0);
-        basicChart.setDeltaTSeconds(deltaTSeconds);
-        basicChart.setArmc(ctx.getArmc());
-        basicChart.setLocalApparentSiderealTimeHours(ctx.getArmc() / 15.0);
-        basicChart.setTrueObliquity(values[0]);
-        basicChart.setMeanObliquity(values[1]);
-        basicChart.setNutationLongitude(values[2]);
-        basicChart.setNutationObliquity(values[3]);
+        natalChart.setResolvedUtcInstant(ctx.getSubject().getResolvedUtcInstant());
+        natalChart.setJulianDayUt(julianDayUt);
+        natalChart.setJulianDayTt(julianDayUt + deltaTSeconds / 86400.0);
+        natalChart.setDeltaTSeconds(deltaTSeconds);
+        natalChart.setArmc(ctx.getArmc());
+        natalChart.setLocalApparentSiderealTimeHours(ctx.getArmc() / 15.0);
+        natalChart.setTrueObliquity(values[0]);
+        natalChart.setMeanObliquity(values[1]);
+        natalChart.setNutationLongitude(values[2]);
+        natalChart.setNutationObliquity(values[3]);
     }
 
 

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.TraditionalTables;
 import app.basic.data.Planet;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.PlanetPosition;
 import app.descriptive.common.data.AspectType;
 import app.descriptive.common.model.AspectEntry;
 
 public final class ValensAspectCalculator {
-    public List<AspectEntry> calculate(BasicChart chart) {
+    public List<AspectEntry> calculate(NatalChart chart) {
         List<PlanetPosition> planets = chart.getPlanets().stream()
                 .filter(planet -> TraditionalTables.isTraditionalPlanet(planet.getPlanet()))
                 .toList();

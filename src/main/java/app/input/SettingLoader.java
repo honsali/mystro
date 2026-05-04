@@ -21,8 +21,7 @@ public final class SettingLoader {
         }
 
         CalculationPrecision precision = parsePrecision(properties);
-        boolean includeReferenceTables = parseIncludeReferenceTables(properties);
-        input.setCalculationSetting(new CalculationSetting(precision, includeReferenceTables));
+        input.setCalculationSetting(new CalculationSetting(precision));
     }
 
     private CalculationPrecision parsePrecision(Properties properties) {
@@ -33,9 +32,5 @@ public final class SettingLoader {
             Logger.instance.error("settings", "Unknown calculation.precision: " + value);
             return CalculationPrecision.STANDARD;
         }
-    }
-
-    private boolean parseIncludeReferenceTables(Properties properties) {
-        return Boolean.parseBoolean(properties.getProperty("includeReferenceTables", "false").trim());
     }
 }

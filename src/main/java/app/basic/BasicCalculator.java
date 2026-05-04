@@ -9,26 +9,27 @@ import app.basic.calculator.PointCalculator;
 import app.basic.calculator.SectCalculator;
 import app.basic.calculator.SimpleCalculator;
 import app.basic.calculator.SolarPhaseCalculator;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 
 public final class BasicCalculator {
 
 
-    public BasicChart calculate(CalculationContext ctx) {
-        BasicChart basicChart = new BasicChart();
+    public NatalChart calculate(CalculationContext ctx) {
+        NatalChart natalChart = new NatalChart();
 
-        (new SimpleCalculator()).calculate(basicChart, ctx);
-        (new PlanetCalculator()).calculate(basicChart, ctx);
-        (new HouseCalculator()).calculate(basicChart, ctx);
-        (new AngleCalculator()).calculate(basicChart, ctx);
-        (new PointCalculator()).calculate(basicChart, ctx);
-        (new ChartPointCalculator()).calculate(basicChart, ctx);
-        (new SolarPhaseCalculator()).calculate(basicChart, ctx);
-        (new MoonPhaseCalculator()).calculate(basicChart, ctx);
-        (new SectCalculator()).calculate(basicChart, ctx);
+        (new SimpleCalculator()).calculate(natalChart, ctx);
+        (new PlanetCalculator()).calculate(natalChart, ctx);
+        (new HouseCalculator()).calculate(natalChart, ctx);
+        (new AngleCalculator()).calculate(natalChart, ctx);
+        (new SectCalculator()).calculate(natalChart, ctx);
+        (new PointCalculator()).calculate(natalChart, ctx);
+        (new ChartPointCalculator()).calculate(natalChart, ctx);
+        (new SolarPhaseCalculator()).calculate(natalChart, ctx);
+        natalChart.applyPlanetSects();
+        (new MoonPhaseCalculator()).calculate(natalChart, ctx);
 
 
-        return basicChart;
+        return natalChart;
     }
 
 

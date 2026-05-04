@@ -1,9 +1,8 @@
 package app.doctrine.impl.ptolemy;
 
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.descriptive.ptolemy.calculator.PtolemyDescriptiveCalculator;
-import app.doctrine.DescriptiveResult;
 import app.doctrine.Doctrine;
 import app.basic.data.HouseSystem;
 import app.basic.data.NodeType;
@@ -50,7 +49,7 @@ public final class PtolemyDoctrine implements Doctrine {
     }
 
     @Override
-    public DescriptiveResult describe(CalculationContext ctx, BasicChart chart) {
-        return descriptiveCalculator.calculate(ctx, chart);
+    public void describe(CalculationContext ctx, NatalChart chart) {
+        descriptiveCalculator.calculate(ctx, chart);
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.PlanetPosition;
 import app.basic.data.Angularity;
 import app.basic.data.NodeType;
@@ -17,7 +17,7 @@ public class PlanetCalculator implements Calculator {
     private record EquatorialPosition(double rightAscension, double declination) {
     }
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
         double julianDay = ctx.getFullJulianDay();
         double ascendant = ctx.normalize(ctx.getAscmc()[0]);
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
@@ -46,7 +46,7 @@ public class PlanetCalculator implements Calculator {
                     angularDistance(southNodeLongitude, sunLongitude, ctx), ctx.antiscia(southNodeLongitude), ctx.contraAntiscia(southNodeLongitude));
             planets.add(southNodePlanet);
         }
-        basicChart.setPlanets(planets);
+        natalChart.setPlanets(planets);
     }
 
     private void addPlanet(List<PlanetPosition> planets, Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, CalculationContext ctx) {

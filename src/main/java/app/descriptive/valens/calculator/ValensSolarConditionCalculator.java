@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.TraditionalTables;
 import app.basic.data.Planet;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.PlanetPosition;
 import app.descriptive.common.data.SolarCondition;
 import app.descriptive.common.model.SolarConditionEntry;
@@ -14,7 +14,7 @@ public final class ValensSolarConditionCalculator {
     private static final double COMBUST_DEGREES = 8.5;
     private static final double UNDER_BEAMS_DEGREES = 15.0;
 
-    public Map<Planet, SolarConditionEntry> calculate(BasicChart chart) {
+    public Map<Planet, SolarConditionEntry> calculate(NatalChart chart) {
         Map<Planet, SolarConditionEntry> result = new LinkedHashMap<>();
         for (PlanetPosition position : chart.getPlanets()) {
             Planet planet = position.getPlanet();

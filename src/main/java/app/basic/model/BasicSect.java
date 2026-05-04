@@ -1,6 +1,7 @@
 package app.basic.model;
 
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import app.basic.data.Planet;
 import app.basic.data.Sect;
 
@@ -44,5 +45,6 @@ public final class BasicSect {
     public boolean isMoonAboveHorizon() { return moonAboveHorizon; }
     public double getSunAltitude() { return sunAltitude; }
     public double getMoonAltitude() { return moonAltitude; }
+    @JsonIgnore
     public Map<Planet, PlanetSectInfo> getPlanetSects() { return planetSects; }
 }

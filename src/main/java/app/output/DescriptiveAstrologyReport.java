@@ -1,8 +1,6 @@
 package app.output;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import app.basic.model.BasicChart;
-import app.doctrine.DescriptiveResult;
+import app.basic.model.NatalChart;
 import app.doctrine.Doctrine;
 import app.input.model.CalculationSetting;
 import app.input.model.Subject;
@@ -12,16 +10,14 @@ public class DescriptiveAstrologyReport implements AstrologyReport {
     private final Subject subject;
     private final Doctrine doctrine;
     private final CalculationSetting calculationSetting;
-    private final BasicChart basicChart;
-    private final DescriptiveResult descriptive;
+    private final NatalChart natalChart;
 
-    public DescriptiveAstrologyReport(String engineVersion, Subject subject, Doctrine doctrine, CalculationSetting calculationSetting, BasicChart basicChart, DescriptiveResult descriptive) {
+    public DescriptiveAstrologyReport(String engineVersion, Subject subject, Doctrine doctrine, CalculationSetting calculationSetting, NatalChart natalChart) {
         this.engineVersion = engineVersion;
         this.subject = subject;
         this.doctrine = doctrine;
         this.calculationSetting = calculationSetting;
-        this.basicChart = basicChart;
-        this.descriptive = descriptive;
+        this.natalChart = natalChart;
     }
 
     public String getEngineVersion() {
@@ -40,12 +36,7 @@ public class DescriptiveAstrologyReport implements AstrologyReport {
         return calculationSetting;
     }
 
-    public BasicChart getBasicChart() {
-        return basicChart;
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public DescriptiveResult getDescriptive() {
-        return descriptive;
+    public NatalChart getNatalChart() {
+        return natalChart;
     }
 }

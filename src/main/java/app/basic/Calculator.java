@@ -1,7 +1,7 @@
 package app.basic;
 
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 
 public interface Calculator {
-    void calculate(BasicChart basicChart, CalculationContext ctx);
+    void calculate(NatalChart natalChart, CalculationContext ctx);
 }

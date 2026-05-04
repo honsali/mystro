@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.HousePosition;
 
 public class HouseCalculator implements Calculator {
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
 
         List<HousePosition> houses = new ArrayList<>();
 
@@ -17,6 +17,6 @@ public class HouseCalculator implements Calculator {
             double cuspLongitude = ctx.normalize(ctx.getCusps()[house]);
             houses.add(new HousePosition(house, cuspLongitude, ctx.signOf(cuspLongitude), ctx.degreeInSign(cuspLongitude)));
         }
-        basicChart.setHouses(houses);
+        natalChart.setHouses(houses);
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.PlanetPosition;
 import app.basic.model.SolarPhaseEntry;
 import app.basic.data.Planet;
@@ -12,19 +12,19 @@ import app.basic.data.SolarOrientation;
 
 public class SolarPhaseCalculator implements Calculator {
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
         List<SolarPhaseEntry> solarPhase = new ArrayList<>();
-        PlanetPosition sun = ctx.planet(basicChart.getPlanets(), Planet.SUN);
+        PlanetPosition sun = ctx.planet(natalChart.getPlanets(), Planet.SUN);
         if (sun == null) {
             return;
         }
-        for (PlanetPosition planet : basicChart.getPlanets()) {
+        for (PlanetPosition planet : natalChart.getPlanets()) {
             if (planet.getPlanet() == Planet.SUN || planet.getPlanet() == Planet.NORTH_NODE || planet.getPlanet() == Planet.SOUTH_NODE) {
                 continue;
             }
             solarPhase.add(new SolarPhaseEntry(planet.getPlanet(), orientationToSun(planet.getLongitude(), sun.getLongitude(), ctx)));
         }
-        basicChart.setSolarPhase(solarPhase);
+        natalChart.setSolarPhase(solarPhase);
     }
 
 

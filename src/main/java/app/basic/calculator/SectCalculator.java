@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.BasicSect;
 import app.basic.model.PlanetPosition;
 import app.basic.model.PlanetSectInfo;
@@ -15,10 +15,10 @@ import app.basic.data.SolarOrientation;
 
 public class SectCalculator implements Calculator {
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
-        PlanetPosition sun = requiredPlanet(Planet.SUN, basicChart, ctx);
-        PlanetPosition moon = requiredPlanet(Planet.MOON, basicChart, ctx);
-        PlanetPosition mercury = requiredPlanet(Planet.MERCURY, basicChart, ctx);
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
+        PlanetPosition sun = requiredPlanet(Planet.SUN, natalChart, ctx);
+        PlanetPosition moon = requiredPlanet(Planet.MOON, natalChart, ctx);
+        PlanetPosition mercury = requiredPlanet(Planet.MERCURY, natalChart, ctx);
         double sunAltitude = sun.getAltitude();
         double moonAltitude = moon.getAltitude();
         boolean sunAboveHorizon = sun.getAboveHorizon();
@@ -38,11 +38,11 @@ public class SectCalculator implements Calculator {
                 moonAltitude,
                 planetSects(diurnal, mercury, sun, ctx)
         );
-        basicChart.setSect(data);
+        natalChart.setSect(data);
     }
 
-    private PlanetPosition requiredPlanet(Planet planet, BasicChart basicChart, CalculationContext ctx) {
-        PlanetPosition position = ctx.planet(basicChart.getPlanets(), planet);
+    private PlanetPosition requiredPlanet(Planet planet, NatalChart natalChart, CalculationContext ctx) {
+        PlanetPosition position = ctx.planet(natalChart.getPlanets(), planet);
         if (position == null) {
             throw new IllegalArgumentException("Calculation failed: missing required planet " + planet);
         }

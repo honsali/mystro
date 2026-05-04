@@ -2,7 +2,7 @@ package app.basic.calculator;
 
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.MoonPhase;
 import app.basic.model.PlanetPosition;
 import app.basic.data.MoonPhaseName;
@@ -11,9 +11,9 @@ import app.basic.data.Planet;
 public class MoonPhaseCalculator implements Calculator {
 
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
-        PlanetPosition sun = ctx.planet(basicChart.getPlanets(), Planet.SUN);
-        PlanetPosition moon = ctx.planet(basicChart.getPlanets(), Planet.MOON);
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
+        PlanetPosition sun = ctx.planet(natalChart.getPlanets(), Planet.SUN);
+        PlanetPosition moon = ctx.planet(natalChart.getPlanets(), Planet.MOON);
         if (sun == null || moon == null) {
             return;
         }
@@ -22,7 +22,7 @@ public class MoonPhaseCalculator implements Calculator {
         boolean waxing = directedElongation <= 180.0;
         double illumination = (1.0 - Math.cos(Math.toRadians(elongation))) / 2.0;
         MoonPhase moonPhase = new MoonPhase(illumination, moonPhaseName(directedElongation), waxing);
-        basicChart.setMoonPhase(moonPhase);
+        natalChart.setMoonPhase(moonPhase);
     }
 
 

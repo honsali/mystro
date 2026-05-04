@@ -6,13 +6,13 @@ import app.basic.TraditionalTables;
 import app.basic.data.AngleType;
 import app.basic.data.Planet;
 import app.basic.data.Sect;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.PlanetPosition;
 import app.descriptive.common.data.LotName;
 import app.descriptive.common.model.LotEntry;
 
 public final class ValensLotCalculator {
-    public Map<LotName, LotEntry> calculate(BasicChart chart) {
+    public Map<LotName, LotEntry> calculate(NatalChart chart) {
         double asc = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
         PlanetPosition sun = chart.requirePlanet(Planet.SUN);
         PlanetPosition moon = chart.requirePlanet(Planet.MOON);
@@ -30,7 +30,7 @@ public final class ValensLotCalculator {
         return lots;
     }
 
-    private LotEntry lot(LotName name, double longitude, BasicChart chart, String formula) {
+    private LotEntry lot(LotName name, double longitude, NatalChart chart, String formula) {
         return new LotEntry(
                 name,
                 longitude,
@@ -42,7 +42,7 @@ public final class ValensLotCalculator {
         );
     }
 
-    private int houseOf(double longitude, BasicChart chart) {
+    private int houseOf(double longitude, NatalChart chart) {
         double ascendant = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
         int ascSign = TraditionalTables.signOf(ascendant).ordinal();
         int sign = TraditionalTables.signOf(longitude).ordinal();

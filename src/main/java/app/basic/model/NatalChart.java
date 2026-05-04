@@ -4,11 +4,19 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import app.basic.data.AngleType;
 import app.basic.data.Planet;
 import app.basic.data.PointKey;
+import app.descriptive.common.data.LotName;
+import app.descriptive.common.model.AspectEntry;
+import app.descriptive.common.model.LotEntry;
+import app.descriptive.common.model.PlanetDignityEntry;
+import app.descriptive.common.model.PrenatalSyzygyEntry;
+import app.descriptive.common.model.SolarConditionEntry;
 
-public class BasicChart {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class NatalChart {
 
     private Instant resolvedUtcInstant;
     private double julianDayUt;
@@ -28,9 +36,11 @@ public class BasicChart {
     private List<RawDeclinationMatrixEntry> rawDeclinationMatrix;
     private List<RawSignDistanceMatrixEntry> rawSignDistanceMatrix;
     private List<PairwiseRelation> pairwiseRelations;
-    private List<SolarPhaseEntry> solarPhase;
     private MoonPhase moonPhase;
     private BasicSect sect;
+    private PrenatalSyzygyEntry syzygy;
+    private Map<LotName, LotEntry> lots;
+    private Map<Planet, SolarConditionEntry> solarConditions;
 
     public Instant getResolvedUtcInstant() {
         return resolvedUtcInstant;
@@ -195,12 +205,14 @@ public class BasicChart {
         this.pairwiseRelations = pairwiseRelations;
     }
 
-    public List<SolarPhaseEntry> getSolarPhase() {
-        return solarPhase;
-    }
-
-    public void setSolarPhase(List<SolarPhaseEntry> solarPhase) {
-        this.solarPhase = solarPhase;
+    public void setSolarPhase(List<SolarPhaseEntry> solarPhases) {
+        for (SolarPhaseEntry solarPhase : solarPhases) {
+            PointKey pointKey = PointKey.of(solarPhase.getPlanet());
+            PointEntry point = points.get(pointKey);
+            if (point instanceof PlanetPointEntry planetPoint) {
+                points.put(pointKey, planetPoint.withSolarPhase(solarPhase.getOrientationToSun()));
+            }
+        }
     }
 
     public MoonPhase getMoonPhase() {
@@ -219,5 +231,73 @@ public class BasicChart {
         this.sect = sect;
     }
 
+    public void applyPlanetSects() {
+        if (sect == null || sect.getPlanetSects() == null) {
+            return;
+        }
+        for (Map.Entry<Planet, PlanetSectInfo> planetSect : sect.getPlanetSects().entrySet()) {
+            PointKey pointKey = PointKey.of(planetSect.getKey());
+            PointEntry point = points.get(pointKey);
+            if (point instanceof PlanetPointEntry planetPoint) {
+                points.put(pointKey, planetPoint.withSect(planetSect.getValue()));
+            }
+        }
+    }
+
+    public PrenatalSyzygyEntry getSyzygy() {
+        return syzygy;
+    }
+
+    public void setSyzygy(PrenatalSyzygyEntry syzygy) {
+        this.syzygy = syzygy;
+    }
+
+    public Map<LotName, LotEntry> getLots() {
+        return lots;
+    }
+
+    public void setLots(Map<LotName, LotEntry> lots) {
+        this.lots = lots;
+    }
+
+    public void applyAspects(List<AspectEntry> aspects) {
+        for (AspectEntry aspect : aspects) {
+            for (int i = 0; i < pairwiseRelations.size(); i++) {
+                PairwiseRelation relation = pairwiseRelations.get(i);
+                if (matchesAspect(relation, aspect)) {
+                    pairwiseRelations.set(i, relation.withAspect(new PairwiseRelation.AspectRelation(aspect.type().name(), aspect.orbFromExact())));
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean matchesAspect(PairwiseRelation relation, AspectEntry aspect) {
+        String planetA = aspect.planetA().name();
+        String planetB = aspect.planetB().name();
+        return (relation.getPointAName().equals(planetA) && relation.getPointBName().equals(planetB))
+                || (relation.getPointAName().equals(planetB) && relation.getPointBName().equals(planetA));
+    }
+
+    public void applyDignityAssessments(Map<Planet, PlanetDignityEntry> dignityAssessments) {
+        for (Map.Entry<Planet, PlanetDignityEntry> assessment : dignityAssessments.entrySet()) {
+            PointKey pointKey = PointKey.of(assessment.getKey());
+            PointEntry point = points.get(pointKey);
+            if (point instanceof PlanetPointEntry planetPoint) {
+                PlanetDignityEntry dignity = assessment.getValue();
+                points.put(pointKey, planetPoint.withDignityAssessment(dignity.dignities(), dignity.debilities()));
+            }
+        }
+    }
+
+    public void setSolarConditions(Map<Planet, SolarConditionEntry> solarConditions) {
+        for (Map.Entry<Planet, SolarConditionEntry> solarCondition : solarConditions.entrySet()) {
+            PointKey pointKey = PointKey.of(solarCondition.getKey());
+            PointEntry point = points.get(pointKey);
+            if (point instanceof PlanetPointEntry planetPoint) {
+                points.put(pointKey, planetPoint.withSolarCondition(solarCondition.getValue().condition()));
+            }
+        }
+    }
 
 }

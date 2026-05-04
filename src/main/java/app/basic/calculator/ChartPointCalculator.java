@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.ChartAngle;
 import app.basic.model.ChartPoint;
 import app.basic.model.PairwiseRelation;
@@ -20,20 +20,20 @@ import app.basic.data.ZodiacSign;
 public class ChartPointCalculator implements Calculator {
 
 
-    public void calculate(BasicChart basicChart, CalculationContext ctx) {
+    public void calculate(NatalChart natalChart, CalculationContext ctx) {
         List<ChartPoint> chartPoints = new ArrayList<>();
-        for (PlanetPosition planet : basicChart.getPlanets()) {
+        for (PlanetPosition planet : natalChart.getPlanets()) {
             chartPoints.add(new ChartPoint(PointType.PLANET, planet.getPlanet().name(), planet.getLongitude(), planet.getSign(), planet.getDegreeInSign(), planet.getHouse()));
         }
-        for (ChartAngle angle : basicChart.getAngles()) {
+        for (ChartAngle angle : natalChart.getAngles()) {
             chartPoints.add(new ChartPoint(PointType.ANGLE, angle.getName().name(), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
         }
 
 
-        basicChart.setRawAspectMatrix(calculateRawAspectMatrix(chartPoints, ctx));
-        basicChart.setRawDeclinationMatrix(calculateRawDeclinationMatrix(basicChart.getPlanets(), ctx));
-        basicChart.setRawSignDistanceMatrix(calculateRawSignDistanceMatrix(chartPoints));
-        basicChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, basicChart.getPlanets(), ctx));
+        natalChart.setRawAspectMatrix(calculateRawAspectMatrix(chartPoints, ctx));
+        natalChart.setRawDeclinationMatrix(calculateRawDeclinationMatrix(natalChart.getPlanets(), ctx));
+        natalChart.setRawSignDistanceMatrix(calculateRawSignDistanceMatrix(chartPoints));
+        natalChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, natalChart.getPlanets(), ctx));
     }
 
 

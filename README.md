@@ -2,7 +2,7 @@
 
 Mystro is a self-contained Java traditional astrology calculation engine.
 
-The authoritative project specification is:
+The authoritative architecture specification is:
 
 - [`NEW_ARCHITECTURE_SPEC.md`](NEW_ARCHITECTURE_SPEC.md)
 
@@ -11,44 +11,45 @@ The authoritative project specification is:
 ```text
 Input loading
 → Input validation / normalization
-→ Basic calculation
-→ Descriptive calculation
-→ Predictive calculation
-→ Comparative calculation
+→ Doctrine descriptive calculation, including doctrine-owned natal chart calculation
+→ Doctrine predictive calculation
 → Formatting / printing
 → Reference validation
 ```
 
-Core principle:
+Current output families:
 
 ```text
 Natal data × Doctrine modules → descriptive output
 Natal data × Doctrine modules × inquiry periods → predictive output
-Natal data × Doctrine modules × comparison inputs → comparative output
 ```
 
-A doctrine is a hardcoded knowledge module, not a settings profile and not a partial implementation of a universal astrology schema.
+A doctrine is a hardcoded Java knowledge module, not a settings profile.
 
 ## Current implementation status
 
-The fresh app skeleton is implemented under `src/main/java/app/`.
-
 Implemented now:
 
-- `input`, `common`, `basic`, `doctrine`, and `output` package skeletons
-- `NatalInput` with one subject identifier: `id`
 - natal input loading from `input/native-list.json`
-- CLI doctrine selection through `--doctrines ...`
-- basic calculation placeholder with resolved UTC instant and Julian Day
-- descriptive report writing
-- run manifest writing
-- placeholder doctrine modules for `dorotheus`, `ptolemy`, and `valens`
+- explicit CLI subject/doctrine selection
+- doctrine-owned descriptive calculation
+- shared Swiss Ephemeris-backed `BasicCalculator`
+- unified `NatalChart` descriptive output
+- Valens and Ptolemy descriptive doctrine calculations
+- JSON report writing
+- run logging
 
-Code under `app.old` is migration/reference material only.
+Current descriptive reports expose top-level:
+
+```text
+engineVersion, subject, doctrine, calculationSetting, natalChart
+```
+
+There is no top-level `basicChart` key and no top-level `descriptive` key.
 
 ## Input
 
-`input/native-list.json` contains natal data only. Doctrine choices do not live in natal input.
+`input/native-list.json` contains natal data only.
 
 Current natal entry shape:
 
@@ -77,21 +78,17 @@ Run a subject with explicit doctrine modules:
 mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
 ```
 
-`--subjects` is also accepted as an alias for `--subjects`.
-
-If no doctrines are passed, the app writes an execution-level error to `output/run-manifest.json`.
+No hidden default doctrine should be introduced.
 
 ## Current output
 
 ```text
-output/descriptive/{subjectId}/{doctrineId}.json
-output/run-manifest.json
+output/{subjectId}/{doctrineId}-descriptive.json
+output/run-logger.json
 ```
 
-Report metadata currently contains only:
+Target predictive output path:
 
-```json
-{
-  "engineVersion": "0.1.0"
-}
+```text
+output/{subjectId}/{doctrineId}-predictive.json
 ```

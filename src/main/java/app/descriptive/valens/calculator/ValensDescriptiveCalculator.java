@@ -2,9 +2,8 @@ package app.descriptive.valens.calculator;
 
 import app.basic.CalculationContext;
 import app.basic.data.Triplicity;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.descriptive.common.calculator.SyzygyCalculator;
-import app.descriptive.valens.model.ValensDescriptiveData;
 
 public final class ValensDescriptiveCalculator {
     private final SyzygyCalculator syzygyCalculator = new SyzygyCalculator();
@@ -17,13 +16,11 @@ public final class ValensDescriptiveCalculator {
         this.dignityCalculator = new ValensDignityCalculator(triplicity);
     }
 
-    public ValensDescriptiveData calculate(CalculationContext ctx, BasicChart chart) {
-        return new ValensDescriptiveData(
-                syzygyCalculator.calculate(ctx),
-                lotCalculator.calculate(chart),
-                aspectCalculator.calculate(chart),
-                dignityCalculator.calculate(chart),
-                solarConditionCalculator.calculate(chart)
-        );
+    public void calculate(CalculationContext ctx, NatalChart chart) {
+        chart.setSyzygy(syzygyCalculator.calculate(ctx));
+        chart.setLots(lotCalculator.calculate(chart));
+        chart.applyAspects(aspectCalculator.calculate(chart));
+        chart.applyDignityAssessments(dignityCalculator.calculate(chart));
+        chart.setSolarConditions(solarConditionCalculator.calculate(chart));
     }
 }

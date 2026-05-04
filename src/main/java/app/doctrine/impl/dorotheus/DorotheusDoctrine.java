@@ -1,8 +1,7 @@
 package app.doctrine.impl.dorotheus;
 
 import app.basic.CalculationContext;
-import app.basic.model.BasicChart;
-import app.doctrine.DescriptiveResult;
+import app.basic.model.NatalChart;
 import app.doctrine.Doctrine;
 import app.basic.data.HouseSystem;
 import app.basic.data.NodeType;
@@ -47,7 +46,6 @@ public final class DorotheusDoctrine implements Doctrine {
     }
 
     @Override
-    public DescriptiveResult describe(CalculationContext ctx, BasicChart chart) {
-        return null;
+    public void describe(CalculationContext ctx, NatalChart chart) {
     }
 }

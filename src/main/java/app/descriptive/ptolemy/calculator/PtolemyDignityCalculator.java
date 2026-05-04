@@ -8,7 +8,7 @@ import app.basic.TraditionalTables;
 import app.basic.data.Planet;
 import app.basic.data.Sect;
 import app.basic.data.Triplicity;
-import app.basic.model.BasicChart;
+import app.basic.model.NatalChart;
 import app.basic.model.PlanetPosition;
 import app.basic.model.TriplicityRulers;
 import app.descriptive.common.data.DignityType;
@@ -21,7 +21,7 @@ public final class PtolemyDignityCalculator {
         this.triplicity = triplicity;
     }
 
-    public Map<Planet, PlanetDignityEntry> calculate(BasicChart chart) {
+    public Map<Planet, PlanetDignityEntry> calculate(NatalChart chart) {
         Map<Planet, PlanetDignityEntry> result = new LinkedHashMap<>();
         boolean diurnal = chart.getSect().getSect() == Sect.DIURNAL;
         for (PlanetPosition position : chart.getPlanets()) {
