@@ -2,6 +2,7 @@ package app.basic.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
+import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
@@ -15,17 +16,17 @@ public class AngleCalculator implements Calculator {
 
         List<ChartAngle> angles = new ArrayList<>();
 
-        double ascendant = ctx.normalize(ctx.getAscmc()[0]);
-        double midheaven = ctx.normalize(ctx.getAscmc()[1]);
-        addAngle(angles, AngleType.ASCENDANT, ascendant, ctx);
-        addAngle(angles, AngleType.MIDHEAVEN, midheaven, ctx);
-        addAngle(angles, AngleType.DESCENDANT, ctx.normalize(ascendant + 180.0), ctx);
-        addAngle(angles, AngleType.IMUM_COELI, ctx.normalize(midheaven + 180.0), ctx);
+        double ascendant = AstroMath.normalize(ctx.getAscmc()[0]);
+        double midheaven = AstroMath.normalize(ctx.getAscmc()[1]);
+        addAngle(angles, AngleType.ASCENDANT, ascendant);
+        addAngle(angles, AngleType.MIDHEAVEN, midheaven);
+        addAngle(angles, AngleType.DESCENDANT, AstroMath.normalize(ascendant + 180.0));
+        addAngle(angles, AngleType.IMUM_COELI, AstroMath.normalize(midheaven + 180.0));
         natalChart.setAngles(angles);
     }
 
-    private void addAngle(List<ChartAngle> angles, AngleType name, double longitude, CalculationContext ctx) {
-        angles.add(new ChartAngle(name, longitude, ctx.signOf(longitude), ctx.degreeInSign(longitude)));
+    private void addAngle(List<ChartAngle> angles, AngleType name, double longitude) {
+        angles.add(new ChartAngle(name, longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude)));
     }
 
 }

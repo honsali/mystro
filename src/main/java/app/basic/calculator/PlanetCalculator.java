@@ -2,6 +2,7 @@ package app.basic.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
+import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
@@ -19,7 +20,7 @@ public class PlanetCalculator implements Calculator {
 
     public void calculate(NatalChart natalChart, CalculationContext ctx) {
         double julianDay = ctx.getFullJulianDay();
-        double ascendant = ctx.normalize(ctx.getAscmc()[0]);
+        double ascendant = AstroMath.normalize(ctx.getAscmc()[0]);
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
 
         List<PlanetPosition> planets = new ArrayList<>();
@@ -33,17 +34,17 @@ public class PlanetCalculator implements Calculator {
 
         PlanetPosition northNode = calculatePlanet(Planet.NORTH_NODE, nodeSwissPlanetId(ctx), julianDay, ascendant, sunLongitude, ctx);
         planets.add(northNode);
-        double southNodeLongitude = ctx.normalize(northNode.getLongitude() + 180.0);
+        double southNodeLongitude = AstroMath.normalize(northNode.getLongitude() + 180.0);
         int house = ctx.houseOf(southNodeLongitude, ascendant);
         int wholeSignHouse = ctx.wholeSignHouseOf(southNodeLongitude, ascendant);
         Integer quadrantHouse = ctx.quadrantHouseOf(southNodeLongitude);
         double southNodeLatitude = -northNode.getLatitude();
         double southNodeAltitude = ctx.horizontalAltitude(southNodeLongitude, southNodeLatitude);
         double southNodeMeanDailySpeed = meanDailySpeed(Planet.SOUTH_NODE);
-        PlanetPosition southNodePlanet = new PlanetPosition(Planet.SOUTH_NODE, southNodeLongitude, ctx.signOf(southNodeLongitude), ctx.degreeInSign(southNodeLongitude), southNodeLatitude,
-                ctx.normalize(northNode.getRightAscension() + 180.0), -northNode.getDeclination(), southNodeAltitude, southNodeAltitude >= 0.0, northNode.getSpeed(), southNodeMeanDailySpeed,
+        PlanetPosition southNodePlanet = new PlanetPosition(Planet.SOUTH_NODE, southNodeLongitude, AstroMath.signOf(southNodeLongitude), AstroMath.degreeInSign(southNodeLongitude), southNodeLatitude,
+                AstroMath.normalize(northNode.getRightAscension() + 180.0), -northNode.getDeclination(), southNodeAltitude, southNodeAltitude >= 0.0, northNode.getSpeed(), southNodeMeanDailySpeed,
                 Math.abs(northNode.getSpeed()) / southNodeMeanDailySpeed, northNode.getRetrograde(), house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(southNodeLongitude, ctx.getTerms()),
-                angularDistance(southNodeLongitude, sunLongitude, ctx), ctx.antiscia(southNodeLongitude), ctx.contraAntiscia(southNodeLongitude));
+                angularDistance(southNodeLongitude, sunLongitude), ctx.antiscia(southNodeLongitude), ctx.contraAntiscia(southNodeLongitude));
         planets.add(southNodePlanet);
         natalChart.setPlanets(planets);
     }
@@ -61,15 +62,15 @@ public class PlanetCalculator implements Calculator {
             Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris returned invalid values for " + planet + ": " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
-        double longitude = ctx.normalize(values[0]);
+        double longitude = AstroMath.normalize(values[0]);
         EquatorialPosition equatorial = equatorialPosition(planet, swissPlanetId, julianDay, ctx);
         int house = ctx.houseOf(longitude, ascendant);
         int wholeSignHouse = ctx.wholeSignHouseOf(longitude, ascendant);
         Integer quadrantHouse = ctx.quadrantHouseOf(longitude);
         double altitude = ctx.horizontalAltitude(longitude, values[1]);
         double meanDailySpeed = meanDailySpeed(planet);
-        return new PlanetPosition(planet, longitude, ctx.signOf(longitude), ctx.degreeInSign(longitude), values[1], equatorial.rightAscension(), equatorial.declination(), altitude, altitude >= 0.0, values[3], meanDailySpeed,
-                Math.abs(values[3]) / meanDailySpeed, values[3] < 0, house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(longitude, ctx.getTerms()), angularDistance(longitude, sunLongitude, ctx), ctx.antiscia(longitude),
+        return new PlanetPosition(planet, longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude), values[1], equatorial.rightAscension(), equatorial.declination(), altitude, altitude >= 0.0, values[3], meanDailySpeed,
+                Math.abs(values[3]) / meanDailySpeed, values[3] < 0, house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(longitude, ctx.getTerms()), angularDistance(longitude, sunLongitude), ctx.antiscia(longitude),
                 ctx.contraAntiscia(longitude));
     }
 
@@ -82,7 +83,7 @@ public class PlanetCalculator implements Calculator {
             Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris returned invalid equatorial values for " + planet + ": " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
-        return new EquatorialPosition(ctx.normalize(values[0]), values[1]);
+        return new EquatorialPosition(AstroMath.normalize(values[0]), values[1]);
     }
 
     private int nodeSwissPlanetId(CalculationContext ctx) {
@@ -112,7 +113,7 @@ public class PlanetCalculator implements Calculator {
         };
     }
 
-    private double angularDistance(double longitude, double sunLongitude, CalculationContext ctx) {
-        return ctx.rawAngularSeparation(longitude, sunLongitude);
+    private double angularDistance(double longitude, double sunLongitude) {
+        return AstroMath.rawAngularSeparation(longitude, sunLongitude);
     }
 }

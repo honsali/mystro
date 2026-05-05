@@ -10,7 +10,6 @@ public final class InputLoader {
 
     public InputListBundle load(String[] args) throws IOException {
         InputListBundle input = (new ArgParser()).parse(args);
-        (new SettingLoader()).load(input);
         (new SubjectListParser()).parse(input);
         (new DoctrineLoader()).load(input);
 

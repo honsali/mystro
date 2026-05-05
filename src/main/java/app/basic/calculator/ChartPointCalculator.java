@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
@@ -26,7 +27,7 @@ public class ChartPointCalculator implements Calculator {
             chartPoints.add(new ChartPoint(PointKey.of(angle.getName()), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
         }
 
-        natalChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, natalChart.getPlanets(), ctx));
+        natalChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, natalChart.getPlanets()));
     }
 
     private int signDistance(ZodiacSign signA, ZodiacSign signB) {
@@ -34,7 +35,7 @@ public class ChartPointCalculator implements Calculator {
         return Math.min(distance, 12 - distance);
     }
 
-    private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets, CalculationContext ctx) {
+    private List<PairwiseRelation> calculatePairwiseRelations(List<ChartPoint> points, List<PlanetPosition> planets) {
         Map<PointKey, PlanetPosition> planetByKey = new LinkedHashMap<>();
         for (PlanetPosition planet : planets) {
             planetByKey.put(PointKey.of(planet.getPlanet()), planet);
@@ -53,7 +54,7 @@ public class ChartPointCalculator implements Calculator {
                     boolean sameHemisphere = (planetA.getDeclination() >= 0.0 && planetB.getDeclination() >= 0.0) || (planetA.getDeclination() < 0.0 && planetB.getDeclination() < 0.0);
                     equatorial = new PairwiseRelation.EquatorialRelation(declinationDifference, contraParallelSeparation, sameHemisphere);
                 }
-                relations.add(new PairwiseRelation(pointA.getKey(), pointB.getKey(), new PairwiseRelation.EclipticRelation(ctx.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude()), signDistance(pointA.getSign(), pointB.getSign())), equatorial));
+                relations.add(new PairwiseRelation(pointA.getKey(), pointB.getKey(), new PairwiseRelation.EclipticRelation(AstroMath.rawAngularSeparation(pointA.getLongitude(), pointB.getLongitude()), signDistance(pointA.getSign(), pointB.getSign())), equatorial));
             }
         }
         return relations;

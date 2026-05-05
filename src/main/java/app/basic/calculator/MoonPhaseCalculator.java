@@ -1,5 +1,6 @@
 package app.basic.calculator;
 
+import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
@@ -14,8 +15,8 @@ public class MoonPhaseCalculator implements Calculator {
     public void calculate(NatalChart natalChart, CalculationContext ctx) {
         PlanetPosition sun = natalChart.requirePlanet(Planet.SUN);
         PlanetPosition moon = natalChart.requirePlanet(Planet.MOON);
-        double elongation = ctx.rawAngularSeparation(moon.getLongitude(), sun.getLongitude());
-        double directedElongation = ctx.normalize(moon.getLongitude() - sun.getLongitude());
+        double elongation = AstroMath.rawAngularSeparation(moon.getLongitude(), sun.getLongitude());
+        double directedElongation = AstroMath.normalize(moon.getLongitude() - sun.getLongitude());
         boolean waxing = directedElongation <= 180.0;
         double illumination = (1.0 - Math.cos(Math.toRadians(elongation))) / 2.0;
         MoonPhase moonPhase = new MoonPhase(illumination, moonPhaseName(directedElongation), waxing);

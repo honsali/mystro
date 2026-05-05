@@ -41,7 +41,7 @@ Implemented now:
 Current descriptive reports expose top-level:
 
 ```text
-engineVersion, subject, doctrine, calculationSetting, natalChart
+engineVersion, subject, doctrine, natalChart
 ```
 
 There is no top-level `basicChart` key and no top-level `descriptive` key.
@@ -67,7 +67,6 @@ Current natal entry shape:
 
 - Java 17 is required.
 - Swiss Ephemeris data files under `ephe/` are required runtime data.
-- `input/settings.properties` is optional; `calculation.precision` defaults to `STANDARD`.
 
 ## Run
 

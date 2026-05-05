@@ -2,21 +2,18 @@ package app.output;
 
 import app.chart.model.NatalChart;
 import app.doctrine.Doctrine;
-import app.input.model.CalculationSetting;
 import app.input.model.Subject;
 
 public class DescriptiveAstrologyReport implements AstrologyReport {
     private final String engineVersion;
     private final Subject subject;
     private final Doctrine doctrine;
-    private final CalculationSetting calculationSetting;
     private final NatalChart natalChart;
 
-    public DescriptiveAstrologyReport(String engineVersion, Subject subject, Doctrine doctrine, CalculationSetting calculationSetting, NatalChart natalChart) {
+    public DescriptiveAstrologyReport(String engineVersion, Subject subject, Doctrine doctrine, NatalChart natalChart) {
         this.engineVersion = engineVersion;
         this.subject = subject;
         this.doctrine = doctrine;
-        this.calculationSetting = calculationSetting;
         this.natalChart = natalChart;
     }
 
@@ -30,10 +27,6 @@ public class DescriptiveAstrologyReport implements AstrologyReport {
 
     public Doctrine getDoctrine() {
         return doctrine;
-    }
-
-    public CalculationSetting getCalculationSetting() {
-        return calculationSetting;
     }
 
     public NatalChart getNatalChart() {

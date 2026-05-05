@@ -1,6 +1,7 @@
 package app.descriptive.common.calculator;
 
 import java.time.Instant;
+import app.basic.AstroMath;
 import app.basic.CalculationContext;
 import app.chart.data.Planet;
 import app.descriptive.common.data.SyzygyType;
@@ -25,10 +26,10 @@ public class SyzygyCalculator {
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, syzygy.julianDay());
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, syzygy.julianDay());
         double syzygyLongitude = syzygyLongitude(syzygy.type(), sunLongitude, moonLongitude, syzygy.julianDay(), ctx);
-        double natalAscendant = ctx.normalize(ctx.getAscmc()[0]);
-        return new PrenatalSyzygyEntry(syzygy.type(), syzygy.julianDay(), instantFromJulianDay(syzygy.julianDay()), syzygyLongitude, ctx.signOf(syzygyLongitude),
-                ctx.degreeInSign(syzygyLongitude), ctx.houseOf(syzygyLongitude, natalAscendant), sunLongitude, moonLongitude, ctx.rawAngularSeparation(sunLongitude, moonLongitude), ctx.signOf(sunLongitude),
-                ctx.signOf(moonLongitude));
+        double natalAscendant = AstroMath.normalize(ctx.getAscmc()[0]);
+        return new PrenatalSyzygyEntry(syzygy.type(), syzygy.julianDay(), instantFromJulianDay(syzygy.julianDay()), syzygyLongitude, AstroMath.signOf(syzygyLongitude),
+                AstroMath.degreeInSign(syzygyLongitude), ctx.houseOf(syzygyLongitude, natalAscendant), sunLongitude, moonLongitude, AstroMath.rawAngularSeparation(sunLongitude, moonLongitude), AstroMath.signOf(sunLongitude),
+                AstroMath.signOf(moonLongitude));
     }
 
     /**
@@ -117,7 +118,7 @@ public class SyzygyCalculator {
     private double lunarElongation(double julianDay, CalculationContext ctx) {
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, julianDay);
-        return ctx.normalize(moonLongitude - sunLongitude);
+        return AstroMath.normalize(moonLongitude - sunLongitude);
     }
 
     private Instant instantFromJulianDay(double julianDay) {

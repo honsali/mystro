@@ -9,9 +9,7 @@ import app.chart.data.Planet;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.data.Zodiac;
-import app.chart.data.ZodiacSign;
 import app.chart.model.CalculationDefinition;
-import app.input.model.CalculationSetting;
 import app.input.model.Subject;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
@@ -29,13 +27,12 @@ public class CalculationContext {
     private final Terms terms;
     private final Triplicity triplicity;
     private final NodeType nodeType;
-    private final CalculationSetting calculationSetting;
     private final double fullJulianDay;
     private final double[] cusps = new double[13];
     private final double[] ascmc = new double[10];
     private final double armc;
 
-    public CalculationContext(Subject subject, CalculationDefinition definition, CalculationSetting calculationSetting) {
+    public CalculationContext(Subject subject, CalculationDefinition definition) {
         this.subject = subject;
         configureEphemerisPath(subject);
         this.doctrineId = definition.getId();
@@ -44,7 +41,6 @@ public class CalculationContext {
         this.terms = definition.getTerms();
         this.triplicity = definition.getTriplicity();
         this.nodeType = definition.getNodeType();
-        this.calculationSetting = calculationSetting;
 
         fullJulianDay = julianDayFromInstant(subject.getResolvedUtcInstant());
 
@@ -53,7 +49,7 @@ public class CalculationContext {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris failed to calculate houses");
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
-        armc = normalize(ascmc[2]);
+        armc = AstroMath.normalize(ascmc[2]);
     }
 
     private void configureEphemerisPath(Subject subject) {
@@ -96,10 +92,6 @@ public class CalculationContext {
         return nodeType;
     }
 
-    public CalculationSetting getCalculationSetting() {
-        return calculationSetting;
-    }
-
     public double getArmc() {
         return armc;
     }
@@ -120,21 +112,9 @@ public class CalculationContext {
         return ascmc.clone();
     }
 
-    public double normalize(double degrees) {
-        return AstroMath.normalize(degrees);
-    }
-
-    public ZodiacSign signOf(double longitude) {
-        return AstroMath.signOf(longitude);
-    }
-
-    public double degreeInSign(double longitude) {
-        return AstroMath.degreeInSign(longitude);
-    }
-
     public double longitudeFor(Planet planet, int swissPlanetId, double julianDay) {
         double[] values = eclipticCoordinatesFor(planet, swissPlanetId, julianDay);
-        return normalize(values[0]);
+        return AstroMath.normalize(values[0]);
     }
 
     public double latitudeFor(Planet planet, int swissPlanetId, double julianDay) {
@@ -173,8 +153,8 @@ public class CalculationContext {
     }
 
     public int wholeSignHouseOf(double longitude, double ascendant) {
-        int ascSignIndex = (int) Math.floor(normalize(ascendant) / 30.0);
-        int planetSignIndex = (int) Math.floor(normalize(longitude) / 30.0);
+        int ascSignIndex = (int) Math.floor(AstroMath.normalize(ascendant) / 30.0);
+        int planetSignIndex = (int) Math.floor(AstroMath.normalize(longitude) / 30.0);
         return Math.floorMod(planetSignIndex - ascSignIndex, 12) + 1;
     }
 
@@ -182,10 +162,10 @@ public class CalculationContext {
         if (houseSystem == HouseSystem.WHOLE_SIGN) {
             return null;
         }
-        double normalizedLongitude = normalize(longitude);
+        double normalizedLongitude = AstroMath.normalize(longitude);
         for (int house = 1; house <= 12; house++) {
-            double start = normalize(cusps[house]);
-            double end = normalize(cusps[house == 12 ? 1 : house + 1]);
+            double start = AstroMath.normalize(cusps[house]);
+            double end = AstroMath.normalize(cusps[house == 12 ? 1 : house + 1]);
             if (isWithinZodiacalArc(normalizedLongitude, start, end)) {
                 return house;
             }
@@ -205,16 +185,12 @@ public class CalculationContext {
         return TraditionalTables.termRuler(longitude, terms);
     }
 
-    public double rawAngularSeparation(double longitudeA, double longitudeB) {
-        return AstroMath.rawAngularSeparation(longitudeA, longitudeB);
-    }
-
     public double antiscia(double longitude) {
-        return normalize(180.0 - longitude);
+        return AstroMath.normalize(180.0 - longitude);
     }
 
     public double contraAntiscia(double longitude) {
-        return normalize(360.0 - longitude);
+        return AstroMath.normalize(360.0 - longitude);
     }
 
     public double horizontalAltitude(double longitude, double latitude) {

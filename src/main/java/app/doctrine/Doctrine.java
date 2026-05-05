@@ -4,13 +4,12 @@ import app.basic.BasicCalculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
 import app.chart.model.CalculationDefinition;
-import app.input.model.CalculationSetting;
 import app.input.model.Subject;
 
 public interface Doctrine extends CalculationDefinition {
 
-    default NatalChart calculateDescriptive(Subject subject, CalculationSetting calculationSetting, BasicCalculator basicCalculator) {
-        CalculationContext ctx = new CalculationContext(subject, this, calculationSetting);
+    default NatalChart calculateDescriptive(Subject subject, BasicCalculator basicCalculator) {
+        CalculationContext ctx = new CalculationContext(subject, this);
         NatalChart natalChart = calculateNatalChart(ctx, basicCalculator);
         describe(ctx, natalChart);
         return natalChart;

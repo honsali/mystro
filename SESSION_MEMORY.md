@@ -49,7 +49,7 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Doctrine selection is explicit through `--doctrines ...`.
 - No doctrine is selected by default.
 - Current doctrine modules: `dorotheus`, `ptolemy`, `valens`.
-- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, and `natalChart` fields.
+- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
 - The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Shared chart data/model classes live under `app.chart.data` and `app.chart.model`; they are not owned by `app.basic` or `app.descriptive`.
@@ -58,13 +58,12 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - `natalChart.points` is keyed by point name. Planet points carry point-specific dignities/debilities, solar phase, planet sect info, and doctrine solar condition when calculated. Planet sect and dignity/debility assessment are intentionally limited to the seven traditional planets; lunar nodes remain positional points without point-level sect or dignity/debility assessment.
 - Basic chart sect is currently an altitude-based mechanical baseline: Sun above horizon is diurnal, Sun below horizon is nocturnal, using `altitude >= 0.0` as the baseline above-horizon rule. Twilight/refraction/author-specific refinements belong to doctrine descriptive calculation, not silent shared-basic changes.
 - `natalChart.pairwiseRelations` contains raw geometry for point pairs; doctrine-recognized aspects are injected as optional `aspect` objects. Older hidden raw matrix scaffolding was removed; use `pairwiseRelations` for shared pair geometry.
-- `CalculationContext` carries the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and shared helpers through basic and descriptive calculation. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant share one source of truth. Public cusp/`ascmc` accessors return defensive copies.
+- `CalculationContext` carries the subject, doctrine-derived calculation choices, Swiss Ephemeris state, full Julian day, cusps, `ascmc`, ARMC, and stateful helpers through basic and descriptive calculation. Pure math helpers are called directly through `AstroMath`, not passed through `CalculationContext`. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant share one source of truth. Public cusp/`ascmc` accessors return defensive copies.
 - `BasicCalculator` keeps full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`. `BasicCalculator` ordering is dependency-bearing and documented in code; planet sect injection is now a dedicated calculator step.
 - Intentional calculation conventions: geocentric apparent planet positions, no topocentric lunar parallax correction, fail-fast Placidus errors with no silent fallback, and exactly 180° Moon-Sun elongation treated as waxing.
 - Doctrine implementations live under `src/main/java/app/doctrine/impl/<doctrineId>/`; register new doctrine modules in `DoctrineLoader` and place doctrine-specific descriptive calculators under `src/main/java/app/descriptive/<doctrineId>/calculator/`.
 - Java 17 is required.
 - Swiss Ephemeris data under `ephe/` is required runtime data. `CalculationContext` explicitly sets the ephemeris path to `ephe`, requests file-backed Swiss Ephemeris (`SEFLG_SWIEPH`), and rejects Moshier fallback for planet positions.
-- Optional `input/settings.properties` may set `calculation.precision`.
 - Current Valens output pours prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction, dignity/debility assessments, and solar condition into `NatalChart`.
 - Current Ptolemy output pours prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and dignity/debility assessments into `NatalChart`.
 - Dorotheus is present but has no doctrine-poured descriptive sections yet.

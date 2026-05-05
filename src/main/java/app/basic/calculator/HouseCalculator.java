@@ -2,6 +2,7 @@ package app.basic.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
+import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
@@ -14,8 +15,8 @@ public class HouseCalculator implements Calculator {
         List<HousePosition> houses = new ArrayList<>();
 
         for (int house = 1; house <= 12; house++) {
-            double cuspLongitude = ctx.normalize(ctx.getCusps()[house]);
-            houses.add(new HousePosition(house, cuspLongitude, ctx.signOf(cuspLongitude), ctx.degreeInSign(cuspLongitude)));
+            double cuspLongitude = AstroMath.normalize(ctx.getCusps()[house]);
+            houses.add(new HousePosition(house, cuspLongitude, AstroMath.signOf(cuspLongitude), AstroMath.degreeInSign(cuspLongitude)));
         }
         natalChart.setHouses(houses);
     }

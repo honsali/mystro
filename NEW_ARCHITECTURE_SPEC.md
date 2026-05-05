@@ -39,12 +39,12 @@ Current descriptive runtime flow:
 ```text
 InputLoader
   ↓
-InputListBundle(subjects, doctrines, calculationSetting)
+InputListBundle(subjects, doctrines)
   ↓
 for each subject × doctrine:
-    doctrine.calculateDescriptive(subject, calculationSetting, BasicCalculator)
+    doctrine.calculateDescriptive(subject, BasicCalculator)
       ↓
-    CalculationContext(subject, doctrine calculation choices, calculationSetting)
+    CalculationContext(subject, doctrine calculation choices)
       ↓
     doctrine.calculateNatalChart(ctx, BasicCalculator)
       ↓
@@ -115,7 +115,7 @@ mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
 
 No hidden default doctrine should be introduced.
 
-`CalculationSetting` should only contain settings currently wired into calculation/reporting behavior.
+There is currently no calculation settings object. Do not add settings until they are wired into calculation or reporting behavior.
 
 ---
 
@@ -127,7 +127,6 @@ Current doctrine contract:
 public interface Doctrine extends CalculationDefinition {
     default NatalChart calculateDescriptive(
         Subject subject,
-        CalculationSetting calculationSetting,
         BasicCalculator basicCalculator
     );
 
@@ -182,7 +181,6 @@ Current top-level report shape:
   "engineVersion": "0.14.0",
   "subject": {},
   "doctrine": {},
-  "calculationSetting": {},
   "natalChart": {}
 }
 ```

@@ -9,7 +9,6 @@ public final class InputListBundle {
     private List<String> doctrineIds;
     private List<Subject> subjects;
     private List<Doctrine> doctrines;
-    private CalculationSetting calculationSetting;
 
     public InputListBundle(List<String> subjectIds, List<String> doctrineIds) {
         this.subjectIds = subjectIds;
@@ -48,11 +47,4 @@ public final class InputListBundle {
         this.doctrines = doctrines;
     }
 
-    public CalculationSetting getCalculationSetting() {
-        return calculationSetting;
-    }
-
-    public void setCalculationSetting(CalculationSetting calculationSetting) {
-        this.calculationSetting = calculationSetting;
-    }
 }
