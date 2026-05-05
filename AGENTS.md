@@ -65,7 +65,8 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - REST descriptive calls are single-doctrine by design. A frontend should call once per selected doctrine and save one local JSON file per doctrine. Do not reintroduce hidden defaults or plural REST doctrine selection unless explicitly requested.
 - REST descriptive calls do not write server output files. CLI runs still write `output/{subjectId}/{doctrineId}-descriptive.json` and `output/run-logger.json`.
 - REST responses use the shared `MystroObjectMapper`/`RoundedDoubleSerializer` conventions and set `Cache-Control: no-store` on descriptive responses/errors. CORS for `/api/**` is configurable via `mystro.cors.allowed-origins` with local React defaults.
-- REST calculation logging uses thread-isolated ephemeral logging; CLI logging continues through global `Logger.instance` and `LoggerWriter`.
+- REST `/api/**` request logging uses lifecycle-wide thread-isolated ephemeral logging via `LoggerIsolationFilter`; CLI logging continues through global `Logger.instance` and `LoggerWriter`.
+- `src/test/resources/snapshots/descriptive/ilia-valens-response.json` is the committed full REST response snapshot for the representative `ilia`/Valens descriptive calculation. Keep it in sync only when calculation/report changes are intentional.
 - The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Shared chart data/model classes live under `app.chart.data` and `app.chart.model`; they are not owned by `app.basic` or `app.descriptive`.
@@ -85,7 +86,7 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Doctrine implementations live under `src/main/java/app/doctrine/impl/<doctrineId>/`; register new doctrine modules in `DoctrineLoader` and place doctrine-specific descriptive calculators under `src/main/java/app/descriptive/<doctrineId>/calculator/`.
 - Java 17 is required.
 - Swiss Ephemeris data under `ephe/` is required runtime data; do not delete it as generated output. `CalculationContext` explicitly sets the ephemeris path to `ephe`, requests file-backed Swiss Ephemeris (`SEFLG_SWIEPH`), and rejects Moshier fallback for planet positions.
-- `Logger.instance` is intentionally retained for the short-term CLI. REST calculations must use logger isolation so request log entries do not accumulate globally.
+- `Logger.instance` is intentionally retained for the short-term CLI. REST `/api/**` requests must use lifecycle-wide logger isolation so request log entries do not accumulate globally.
 
 ## Commands
 

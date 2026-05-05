@@ -409,7 +409,7 @@ output/run-logger.json
 
 Execution-level statuses are not astrological results and do not belong inside doctrine report data.
 
-REST descriptive calculations use thread-isolated ephemeral logging so per-request calculator log entries do not accumulate in the global CLI logger. REST does not return execution logs in report JSON.
+REST `/api/**` requests use lifecycle-wide thread-isolated ephemeral logging via `LoggerIsolationFilter` so per-request log entries do not accumulate in the global CLI logger. REST does not return execution logs in report JSON.
 
 The report `engineVersion` is resolved from package implementation metadata, Maven `pom.properties`, or the first project `<version>` in `pom.xml` for development runs.
 

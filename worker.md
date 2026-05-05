@@ -773,3 +773,238 @@ Consider adding predictive endpoint support, `@WebMvcTest`-scoped tests for fast
 
 ### Suggested Next Step
 Consider adding predictive endpoint support, `@WebMvcTest`-scoped tests for faster feedback, or the React frontend implementation.
+
+## Iteration 15 Feedback — 2026-05-05
+
+### Completed
+- Generated a committed JSON snapshot at `src/test/resources/snapshots/descriptive/ilia-valens-response.json` (38KB) containing the full `POST /api/descriptive` response for the ilia/Valens representative calculation.
+- The snapshot was generated from the current code using MockMvc with `MystroObjectMapper` conventions (six-decimal rounding, Java time strings).
+- Created `DescriptiveSnapshotTest` with a single test `iliaValensDescriptiveMatchesSnapshot` that POSTs the ilia/Valens request and compares the full response JSON against the committed snapshot using `JsonNode` comparison.
+- The test verifies HTTP 200 and `Cache-Control: no-store`.
+- Comparison is JSON-tree-based, not raw-text, so formatting and field order differences do not cause false failures.
+- Deleted the temporary `SnapshotGenerator` test class after generating the snapshot.
+- Did not implement Iteration 14 (nested logger isolation) as instructed.
+
+### Changed Files
+- `src/test/resources/snapshots/descriptive/ilia-valens-response.json` — new; committed snapshot (38KB)
+- `src/test/java/app/web/DescriptiveSnapshotTest.java` — new; snapshot regression test
+
+### Verification
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS (186 source files)
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+    - LoggerTest: 6 tests passed
+    - EngineVersionTest: 2 tests passed
+    - DescriptiveControllerTest: 14 tests passed
+    - DescriptiveSnapshotTest: 1 test passed
+    - GlobalExceptionHandlerTest: 1 test passed
+    - WebConfigTest: 5 tests passed
+- Command: `mvn package -DskipTests`
+  - Result: BUILD SUCCESS
+- Command: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`
+  - Result: BUILD SUCCESS
+
+### Snapshot Generation and Comparison
+- **Generation**: A temporary `SnapshotGenerator` test class was created, which used MockMvc to POST the ilia/Valens request, captured the response, and wrote it as pretty-printed JSON using `MystroObjectMapper` conventions to `src/test/resources/snapshots/descriptive/ilia-valens-response.json`. The generator was then deleted.
+- **Comparison**: `DescriptiveSnapshotTest` loads the committed snapshot as a `JsonNode`, parses the actual response as a `JsonNode`, and asserts equality. Both sides are re-serialized and re-parsed to normalize field ordering.
+- **Update process**: If intentional calculation changes are made, regenerate the snapshot by running the request against the updated code and commit the new file.
+
+### REST API Shape Confirmation
+- `POST /api/descriptive` still uses singular `doctrine`.
+- Response is still `{ "report": {...}, "suggestedFilename": "..." }`.
+- `Cache-Control: no-store` still present.
+- `GET /api/doctrines` unchanged.
+- No plural `doctrines` request field was reintroduced.
+
+### Calculation/Doctrine/Model Confirmation
+- No doctrine implementations, chart model/data classes, input file format, CLI flags, or astrology calculation behavior were changed.
+- The snapshot captures the current state of the ilia/Valens calculation output including natal chart points, houses, pairwise relations, dignities/debilities, syzygy, lots, and all nested objects.
+
+### Architectural Notes
+- The snapshot test uses `@SpringBootTest` + `MockMvc`, same as the existing controller tests. The response is parsed through the same `MystroObjectMapper` pipeline as production.
+- The `JsonNode` comparison means the test catches any change to: chart numbers, report structure, aspect data, dignities/debilities, syzygy/lots, serialization formatting, and nested object contents.
+- The snapshot file is ~38KB. This is intentional — it contains the full natal chart with all planetary data, pairwise relations, and doctrine-specific annotations.
+
+### Known Limitations / Risks
+- The snapshot will churn on any intentional calculation change (e.g. updating Swiss Ephemeris data, changing dignity/debility logic, or modifying aspect orb calculations). This is by design — the churn forces explicit review of calculation changes.
+- The `engineVersion` field in the snapshot reflects the current pom.xml version (`1.1.0`). If the version changes, the snapshot will need regeneration. This is acceptable since version changes are intentional.
+- No snapshot test exists yet for other doctrines (Ptolemy, Dorotheus). Could be added in a future iteration.
+
+### Suggested Next Step
+Consider addressing audit findings such as object-mapper scoping, service splitting, or adding snapshot tests for other doctrines. The snapshot safety net is now in place for safe refactoring.
+
+## Iteration 16 Feedback — 2026-05-05
+
+### Completed
+- Hardened nested logger isolation in `Logger`: `runIsolated(Callable<T>)` and `runIsolatedVoid(Runnable)` now save and restore the previous thread-local isolated context before/after the block. If an outer isolated context exists, it is preserved; if not, the thread-local is removed.
+- Created `LoggerIsolationFilter` (`OncePerRequestFilter`): wraps all `/api/**` requests in `Logger.instance.runIsolated(...)`. All `Logger.info/error` calls during REST request lifecycle go to ephemeral thread-local entries that are cleared after the response.
+- Cleaned up `DescriptiveController`: removed the controller-level `Logger.instance.runIsolated(...)` wrapper (now redundant due to the filter). Removed `throws Exception` from the controller method. Controller is now thinner: null check, mapper/service delegation, response construction.
+- Added 2 nested isolation tests to `LoggerTest` (8 total): `nestedIsolatedPreservesOuterContext` and `nestedIsolatedRestoresOuterContextAfterException`.
+- Created `LoggerIsolationFilterTest` with 2 unit-style tests: `filterPreventsLoggingPollution` and `filterRestoresAfterChainException`.
+- Updated `reports/spring-boot-conversion-summary.md` to describe lifecycle-wide request isolation.
+- Did not change the snapshot, REST API shape, or calculation behavior.
+
+### Changed Files
+- `src/main/java/app/output/Logger.java` — hardened nested `runIsolated`/`runIsolatedVoid` to save/restore previous context
+- `src/main/java/app/web/LoggerIsolationFilter.java` — new; `OncePerRequestFilter` for `/api/**` request isolation
+- `src/main/java/app/web/DescriptiveController.java` — removed controller-level `runIsolated` wrapper and `throws Exception`
+- `src/test/java/app/output/LoggerTest.java` — added 2 nested isolation tests (8 total)
+- `src/test/java/app/web/LoggerIsolationFilterTest.java` — new; 2 filter isolation tests
+- `reports/spring-boot-conversion-summary.md` — updated logging description
+
+### Verification
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS (187 source files)
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 33, Failures: 0, Errors: 0, Skipped: 0
+    - LoggerTest: 8 tests passed
+    - EngineVersionTest: 2 tests passed
+    - DescriptiveControllerTest: 14 tests passed
+    - DescriptiveSnapshotTest: 1 test passed
+    - GlobalExceptionHandlerTest: 1 test passed
+    - LoggerIsolationFilterTest: 2 tests passed
+    - WebConfigTest: 5 tests passed
+- Command: `mvn package -DskipTests`
+  - Result: BUILD SUCCESS
+- Command: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`
+  - Result: BUILD SUCCESS
+- CLI `output/run-logger.json` still written with expected entry: "Wrote descriptive report for doctrine valens"
+- Snapshot test passed (verified as part of the 33-test suite)
+
+### Nested Logger Restoration Behavior
+- `runIsolated(Callable<T>)` now:
+  1. Saves the previous thread-local list (if any) to a local variable
+  2. Sets a new empty isolated list on the thread-local
+  3. Runs the callable
+  4. In `finally`: if a previous list existed, restores it; otherwise removes the thread-local
+- `runIsolatedVoid(Runnable)` follows the same save/restore pattern
+- This means: after an inner `runIsolated` completes (normally or exceptionally), the outer isolated context is restored, and any `Logger.info/error` calls in the outer context continue to write to the outer isolated list
+
+### Request Lifecycle Isolation Mechanism
+- `LoggerIsolationFilter` extends `OncePerRequestFilter` and is annotated `@Component` so Spring auto-registers it
+- `doFilterInternal` calls `Logger.instance.runIsolated(() -> { filterChain.doFilter(request, response); return null; })` with proper exception unwrapping for `ServletException | IOException`
+- Applied to all requests (no path restriction needed since all REST endpoints are under `/api/**` and the filter is in the web layer)
+- The filter runs before the controller, so any `Logger.info/error` during validation, mapping, calculation, or error handling is isolated
+- Since the filter handles lifecycle-wide isolation, the controller no longer needs its own `runIsolated` wrapper
+
+### CLI Logging Confirmation
+- CLI `mvn exec:java --subjects ilia --doctrines valens` still writes `output/run-logger.json`
+- Run logger contains expected INFO entry: "Wrote descriptive report for doctrine valens"
+- Global `Logger.instance` entries accumulate during CLI runs as before
+- The `LoggerIsolationFilter` only runs in the Spring Boot web context, not during CLI execution
+
+### REST API Shape and Snapshot Confirmation
+- `POST /api/descriptive` still uses singular `doctrine`
+- Response is still `{ "report": {...}, "suggestedFilename": "..." }`
+- `Cache-Control: no-store` still present
+- `GET /api/doctrines` unchanged
+- Snapshot test passed (full JSON comparison against committed ilia/valens snapshot)
+- No calculation/doctrine/model behavior was changed
+
+### Architectural Notes
+- The `DescriptiveController` is now simpler: it no longer has `throws Exception` or a `runIsolated` wrapper. The filter handles all logging isolation.
+- The filter uses `Callable<Void>` with `return null` to bridge `OncePerRequestFilter.doFilterInternal` (which throws checked exceptions) with `Logger.runIsolated(Callable<T>)`. The checked exceptions are caught and re-thrown as `ServletException` or `IOException`.
+- `Logger.isIsolated()` is package-private in `app.output`; the filter test in `app.web` cannot access it directly. The filter test instead verifies that global entries are not polluted (checking `getEntries().size()` before and after).
+
+### Known Limitations / Risks
+- `Logger.isIsolated()` is package-private, so cross-package tests cannot directly verify isolation state. The filter test uses an indirect approach (checking global entry count).
+- The `LoggerIsolationFilter` wraps the entire request lifecycle. If a future endpoint needs to write to the global CLI logger intentionally, a different mechanism would be needed.
+- `Logger.instance` global state still accumulates across CLI runs within the same JVM (acceptable for current CLI use).
+
+### Suggested Next Step
+Consider addressing audit findings such as object-mapper scoping, service splitting, shared engine assembly, dead-code deletion, or adding snapshot tests for other doctrines.
+
+## Iteration 17 Feedback — 2026-05-05
+
+### Completed
+- Added `shouldNotFilter(HttpServletRequest)` override to `LoggerIsolationFilter`: returns `true` (skip isolation) when `request.getServletPath()` does not start with `/api/`.
+- Updated filter tests from 2 to 7:
+  - `shouldNotFilterReturnsFalseForApiDescriptive` — `/api/descriptive` is isolated
+  - `shouldNotFilterReturnsFalseForApiDoctrines` — `/api/doctrines` is isolated
+  - `shouldNotFilterReturnsTrueForRootPath` — `/` is NOT isolated
+  - `shouldNotFilterReturnsTrueForNonApiPath` — `/index.html` is NOT isolated
+  - `apiRequestLoggingDoesNotPolluteGlobal` — API logging stays isolated
+  - `apiRequestLoggingRestoresAfterException` — isolation restores after chain exception
+  - `nonApiRequestLoggingPollutesGlobal` — non-API request logging goes to global entries (end-to-end via `doFilter` with `MockHttpServletRequest`)
+- Updated handoff summary test table: added `DescriptiveSnapshotTest` (1 test), `LoggerIsolationFilterTest` (7 tests), updated `LoggerTest` count (8 tests).
+
+### Changed Files
+- `src/main/java/app/web/LoggerIsolationFilter.java` — added `shouldNotFilter(...)` for `/api/` path scoping
+- `src/test/java/app/web/LoggerIsolationFilterTest.java` — expanded from 2 to 7 tests
+- `reports/spring-boot-conversion-summary.md` — updated test table
+
+### Verification
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS (187 source files)
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 38, Failures: 0, Errors: 0, Skipped: 0
+    - LoggerTest: 8 tests passed
+    - EngineVersionTest: 2 tests passed
+    - DescriptiveControllerTest: 14 tests passed
+    - DescriptiveSnapshotTest: 1 test passed
+    - GlobalExceptionHandlerTest: 1 test passed
+    - LoggerIsolationFilterTest: 7 tests passed
+    - WebConfigTest: 5 tests passed
+- Command: `mvn package -DskipTests`
+  - Result: BUILD SUCCESS
+- Command: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`
+  - Result: BUILD SUCCESS
+- CLI `output/run-logger.json` still written with expected entry: "Wrote descriptive report for doctrine valens"
+- Snapshot test passed (verified as part of the 38-test suite)
+
+### /api/** Scoping Mechanism
+- `LoggerIsolationFilter` extends `OncePerRequestFilter` and overrides `shouldNotFilter(HttpServletRequest)`.
+- `shouldNotFilter` checks `request.getServletPath().startsWith("/api/")`:
+  - `/api/descriptive` → returns `false` → filter IS applied → logging is isolated
+  - `/api/doctrines` → returns `false` → filter IS applied → logging is isolated
+  - `/` → returns `true` → filter is NOT applied → logging goes to global
+  - `/index.html` → returns `true` → filter is NOT applied → logging goes to global
+- Uses `getServletPath()` rather than `getRequestURI()` to avoid issues with context path.
+
+### Test Evidence: API Isolated vs Non-API Non-Isolated
+- API isolated: `apiRequestLoggingDoesNotPolluteGlobal` calls `doFilterInternal` with logging, verifies `getEntries().size()` unchanged.
+- API isolated after exception: `apiRequestLoggingRestoresAfterException` calls `doFilterInternal` with a throwing chain, verifies `getEntries().size()` unchanged.
+- Non-API not isolated: `nonApiRequestLoggingPollutesGlobal` calls `doFilter` (the public method) with a `MockHttpServletRequest` for `/index.html`, logs inside the chain, verifies `getEntries().size()` increased by 1.
+- Scoping: 4 `shouldNotFilter` tests verify the path-based scoping logic directly.
+
+### CLI Logging Confirmation
+- CLI `mvn exec:java --subjects ilia --doctrines valens` still writes `output/run-logger.json`
+- Run logger contains expected INFO entry: "Wrote descriptive report for doctrine valens"
+- The `LoggerIsolationFilter` only runs in the Spring Boot web context, not during CLI execution
+
+### REST API Shape and Snapshot Confirmation
+- `POST /api/descriptive` still uses singular `doctrine`
+- Response is still `{ "report": {...}, "suggestedFilename": "..." }`
+- `Cache-Control: no-store` still present
+- `GET /api/doctrines` unchanged
+- Snapshot test passed (full JSON comparison against committed ilia/valens snapshot)
+- No calculation/doctrine/model behavior was changed
+
+### Known Limitations / Risks
+- `OncePerRequestFilter` has internal state tracking (`alreadyFiltered` attribute). The `nonApiRequestLoggingPollutesGlobal` test uses `MockHttpServletRequest` which doesn't have this attribute set, so the filter processes it on first call. This is the correct test behavior.
+- `shouldNotFilter` uses `getServletPath()` which returns the path without context path. If the application is deployed with a context path (e.g. `/mystro`), `getServletPath()` still returns `/api/descriptive` for a request to `/mystro/api/descriptive`, so the scoping works correctly.
+
+### Suggested Next Step
+Consider addressing audit findings such as object-mapper scoping, service splitting, shared engine assembly, dead-code deletion, or adding snapshot tests for other doctrines.
+
+## Iteration 18 Feedback — 2026-05-05
+
+### Completed
+- Fixed stale test count in `reports/spring-boot-conversion-summary.md`: `LoggerIsolationFilterTest.java` row changed from 6 tests to 7 tests.
+- No Java files changed.
+
+### Changed Files
+- `reports/spring-boot-conversion-summary.md` — corrected test count (6 → 7)
+
+### Verification
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 38, Failures: 0, Errors: 0, Skipped: 0
+
+### Confirmation
+- No Java production or test behavior changes.
+- No REST API, CLI, doctrine, chart model, calculation, input format, or output structure changes.
+- No snapshot changes.
+
+### Suggested Next Step
+Consider addressing audit findings such as object-mapper scoping, service splitting, shared engine assembly, dead-code deletion, or adding snapshot tests for other doctrines.

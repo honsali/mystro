@@ -30,10 +30,13 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Natal records use `id` as the subject identifier.
 - Doctrine modules are selected explicitly with `--doctrines ...`.
 - Current descriptive output path is `output/{subjectId}/{doctrineId}-descriptive.json`.
-- Current reports expose top-level `engineVersion`, `subject`, `doctrine`, `calculationSetting`, and `natalChart`.
+- Current reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Doctrine calculators pour descriptive data into `NatalChart`.
 - Run logger path is `output/run-logger.json`.
+- REST endpoints are `GET /api/doctrines` and single-doctrine `POST /api/descriptive`, returning `{ "report": {...}, "suggestedFilename": "..." }` without writing server output files.
+- REST `/api/**` request logging is lifecycle-wide thread-isolated and ephemeral; CLI logging remains global and writes `output/run-logger.json`.
+- The full `ilia`/Valens REST descriptive response snapshot lives at `src/test/resources/snapshots/descriptive/ilia-valens-response.json`.
 
 ## Core rule
 

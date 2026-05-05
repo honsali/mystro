@@ -54,7 +54,8 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - REST endpoints: `GET /api/doctrines` and `POST /api/descriptive`. REST descriptive requests use one explicit singular `doctrine` field and return `{ "report": {...}, "suggestedFilename": "..." }`.
 - REST descriptive calls are stateless/local-first: they do not write server output files, set `Cache-Control: no-store`, and are intended for a frontend to download one local JSON file per doctrine.
 - REST uses configurable `/api/**` CORS defaults for local React dev origins: `http://localhost:5173` and `http://localhost:3000`.
-- REST calculation logging is thread-isolated and ephemeral. CLI logging still uses global `Logger.instance` and writes `output/run-logger.json`.
+- REST `/api/**` request logging is lifecycle-wide thread-isolated and ephemeral via `LoggerIsolationFilter`. CLI logging still uses global `Logger.instance` and writes `output/run-logger.json`.
+- A full REST response snapshot for the representative `ilia`/Valens descriptive calculation is committed at `src/test/resources/snapshots/descriptive/ilia-valens-response.json`; update it only for intentional calculation/report changes.
 - The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Shared chart data/model classes live under `app.chart.data` and `app.chart.model`; they are not owned by `app.basic` or `app.descriptive`.
@@ -73,7 +74,8 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Current Ptolemy output pours prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and dignity/debility assessments into `NatalChart`.
 - Dorotheus is present but has no doctrine-poured descriptive sections yet.
 - Fixed stars are not implemented.
-- `Logger.instance` is intentionally retained for the short-term CLI; REST paths should use isolated logging and must not retain per-request calculation logs globally.
+- `Logger.instance` is intentionally retained for the short-term CLI; REST `/api/**` paths should use lifecycle-wide isolated logging and must not retain per-request logs globally.
+- Team workflow note: when the user says "your turn", the manager reviews the latest worker feedback/work and prints only a red completion percentage; the worker executes the latest `manager.md` requirement and appends feedback to `worker.md`.
 
 ## Commands
 

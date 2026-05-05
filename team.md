@@ -115,6 +115,15 @@ Rules:
 7. Worker appends feedback to `worker.md`.
 8. Manager reviews feedback and code before issuing the next iteration.
 
+## Turn Handoff Phrase
+
+When the user says **"your turn"**, interpret it according to the active role:
+
+- **Manager**: read the latest `worker.md` feedback, review the worker's changed files and verification results, independently inspect or verify relevant work when practical, decide whether the iteration is accepted, and append the next requirement block to `manager.md` if more work is needed. After reviewing, the manager must print to the terminal **only** a red-colored percentage showing how much of the last reviewed iteration the worker achieved, so it is visually obvious to the user. Use ANSI red, for example `\u001b[31m85%\u001b[0m`.
+- **Worker**: read the latest requirement block in `manager.md`, implement that requirement, run the required verification commands sequentially, and append structured feedback to `worker.md`.
+
+If the active role is unclear, ask the user to clarify whether the current session is acting as manager or worker before making changes.
+
 ## Conversion Strategy
 
 The Spring Boot conversion should be incremental:

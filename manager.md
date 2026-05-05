@@ -1089,3 +1089,376 @@ Please append an Iteration 14 feedback block to `worker.md` with:
 - Confirmation that REST API shape did not change.
 - Any known limitations.
 - Suggested next step.
+
+## Iteration 15 — 2026-05-05
+
+### Manager Review Notes
+Iteration 14 was issued but has not been completed; there is no Iteration 14 feedback block in `worker.md`. Do not assume Iteration 14 is accepted or implemented. This latest block supersedes the old Iteration 14 task for now; do not separately work on the nested logger-isolation polish unless it is explicitly reissued later.
+
+I reviewed `audit_report.md` (Claude Opus 4.7 review). The highest-leverage audit recommendation is to add a calculation-regression snapshot before further refactors. The current Spring Boot tests verify endpoint shape and serialization, but they do not protect the actual chart contents/planetary numbers. Add that safety net first, then later iterations can address object-mapper scoping, service splitting, logger filter/request lifecycle hardening, and other audit findings with less regression risk.
+
+### Goal
+Add a full descriptive REST chart snapshot regression test for the representative `ilia` Valens calculation, without changing calculation behavior or endpoint semantics.
+
+### Scope
+- Add test-only snapshot coverage for `POST /api/descriptive`.
+- Use the current single-doctrine REST API shape: `{ "report": {...}, "suggestedFilename": "..." }`.
+- Snapshot the full JSON response for the `ilia` fixture with doctrine `valens`.
+- Do not change production calculation code, doctrine code, chart models, or REST API behavior.
+
+### Requirements
+1. Add a committed JSON snapshot resource.
+   - Suggested path: `src/test/resources/snapshots/descriptive/ilia-valens-response.json`.
+   - The snapshot must represent the full current response from:
+     ```json
+     {
+       "id": "ilia",
+       "birthDate": "1975-07-14",
+       "birthTime": "22:55:00",
+       "utcOffset": "+01:00",
+       "latitude": 50.60600755996812,
+       "longitude": 3.0333769552426793,
+       "doctrine": "valens"
+     }
+     ```
+   - Include the response wrapper, `suggestedFilename`, and the entire nested `report`, including `natalChart`.
+   - The snapshot should reflect current `MystroObjectMapper` serialization conventions, especially six-decimal double rounding and Java time strings.
+2. Add a focused snapshot regression test.
+   - Prefer a new test class such as `DescriptiveSnapshotTest`, or keep it clearly separated from controller contract/validation tests.
+   - Use `@SpringBootTest` + `MockMvc` unless a simpler existing pattern fits better.
+   - POST the request body above to `/api/descriptive`.
+   - Assert HTTP 200 and `Cache-Control: no-store`.
+   - Compare the full actual response JSON to the committed snapshot as JSON, not as raw text, so formatting and object-field order do not matter.
+   - A Jackson `JsonNode` comparison is sufficient; do not introduce a large snapshot library unless there is a clear reason.
+3. Keep the snapshot honest.
+   - Generate the initial snapshot from the current code once, then make the test compare future responses against that committed file.
+   - Do not compute expected chart values in the test from production calculators; that would compare the code to itself.
+   - Do not loosen the assertion to only a few fields. The purpose is to catch accidental changes to chart numbers, report structure, aspect data, dignities/debilities, syzygy/lots, and serialization.
+   - If the snapshot is intentionally large, that is acceptable; keep it in `src/test/resources` and document its purpose briefly in the test class.
+4. Preserve current behavior.
+   - `POST /api/descriptive` still uses singular `doctrine`.
+   - Response remains `{ "report": {...}, "suggestedFilename": "..." }`.
+   - `GET /api/doctrines` unchanged.
+   - CLI multi-doctrine behavior unchanged.
+   - REST calls still do not write output files.
+5. Documentation is optional but useful.
+   - If you add a short test comment or README/test note, describe this as a regression snapshot for calculation output, not as a new public API feature.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes.
+- `mvn package -DskipTests` passes.
+- Existing CLI check passes: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`.
+- A committed snapshot file exists for the full `ilia`/`valens` REST descriptive response.
+- A test fails if the full response JSON changes unexpectedly.
+- Existing REST API shape remains unchanged and no plural REST `doctrines` request field is reintroduced.
+- No doctrine implementations, chart model/data classes, input file format, CLI flags, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not implement the old Iteration 14 nested logger-isolation task in this iteration.
+- Do not address broader audit refactors in this iteration, including object-mapper scoping, service splitting, shared engine assembly, dead-code deletion, or `application.yml`.
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not introduce hidden default doctrine selection.
+- Keep this iteration test-only unless a tiny test helper is required.
+
+### Feedback Requested
+Please append an Iteration 15 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed files, including the snapshot resource path.
+- Exact verification commands and results.
+- How the snapshot was generated and how the comparison works.
+- Confirmation that REST API shape did not change.
+- Confirmation that no calculation/doctrine/model behavior was changed.
+- Any known limitations, especially expected snapshot churn if intentional calculation changes are made later.
+- Suggested next audit-driven step.
+
+## Iteration 16 — 2026-05-05
+
+### Manager Review Notes
+Iteration 15 is accepted. I reviewed `worker.md`, `src/test/java/app/web/DescriptiveSnapshotTest.java`, and `src/test/resources/snapshots/descriptive/ilia-valens-response.json`. The new snapshot test is appropriately separated from controller contract tests, compares full JSON as a `JsonNode`, verifies `Cache-Control: no-store`, and preserves the single-report REST shape.
+
+I independently ran the required verification commands sequentially:
+
+```bash
+mvn compile
+mvn test
+mvn package -DskipTests
+mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+```
+
+All passed. `mvn test` now reports 29 tests. The existing `GlobalExceptionHandlerTest` still emits its known intentional stack trace while passing.
+
+Now that the snapshot safety net is in place, address the highest-priority remaining logging concern from `audit_report.md`: REST logging isolation should cover the whole `/api/**` request lifecycle, not only the calculation lambda inside `DescriptiveController`. Also reissue the small nested-isolation robustness improvement that was skipped when Iteration 14 was not completed.
+
+### Goal
+Make REST request logging isolation lifecycle-wide and nest-safe, while preserving CLI run logging and the current REST API contract.
+
+### Scope
+- Add a small Spring web filter/interceptor or equivalent mechanism that wraps `/api/**` requests in `Logger.instance.runIsolated(...)`.
+- Make nested `Logger.runIsolated(...)` calls safe by restoring any previous isolated context.
+- Remove or simplify the controller-level logging wrapper if the request-level wrapper makes it redundant.
+- Keep CLI logging, report shape, chart calculation, and doctrine behavior unchanged.
+
+### Requirements
+1. Harden nested logger isolation.
+   - Update `Logger.runIsolated(...)` and `Logger.runIsolatedVoid(...)` so they preserve an existing isolated context on the same thread.
+   - Required behavior:
+     - save the previous thread-local list before installing a new isolated list,
+     - run the block,
+     - in `finally`, restore the previous list if one existed, otherwise remove the thread-local.
+   - Existing global CLI behavior for `info(...)`, `error(...)`, `hasErrors()`, `getEntries()`, and `getStartedAt()` must remain unchanged.
+2. Wrap the REST request lifecycle.
+   - Add a focused web component such as `LoggerIsolationFilter` using `OncePerRequestFilter`, or an equivalent Spring MVC mechanism.
+   - Apply it to `/api/**` only.
+   - Any `Logger.instance.info/error` call made during a REST API request should go to isolated thread-local entries and be cleared after the request, even if the request fails.
+   - REST responses must not include isolated log entries.
+   - CLI execution must not use this filter and must continue writing global entries to `output/run-logger.json`.
+3. Clean up `DescriptiveController` if appropriate.
+   - If lifecycle-wide isolation makes the current `Logger.instance.runIsolated(...)` calculation wrapper redundant, remove it from the controller.
+   - If removing it, drop the controller method's `throws Exception` if no longer needed.
+   - Keep the controller thin: request null check, mapper/service delegation, response construction.
+4. Add focused tests.
+   - Extend `LoggerTest` for nested isolation:
+     - after an inner `runIsolated(...)` completes, the outer isolated context is still active,
+     - after an inner `runIsolated(...)` throws, the outer isolated context is restored before the outer block finishes.
+   - Add a web/filter test proving that a `Logger.instance.info/error` call inside an `/api/**` request does not change global `Logger.instance.getEntries()`.
+     - Prefer a unit-style filter test with mock request/response/filter chain if that stays small.
+     - Do not add production-only endpoints just to test this.
+   - Existing snapshot and REST controller tests must continue to pass.
+5. Preserve current behavior and contracts.
+   - `POST /api/descriptive` still uses singular `doctrine`.
+   - Response remains `{ "report": {...}, "suggestedFilename": "..." }`.
+   - `Cache-Control: no-store` remains on descriptive success/error responses.
+   - `GET /api/doctrines` unchanged.
+   - REST calls still do not write output files.
+   - CLI multi-doctrine behavior and `output/run-logger.json` behavior unchanged.
+6. Documentation.
+   - Update `reports/spring-boot-conversion-summary.md` and/or `reports/react-api-contract.md` if wording needs to change from calculation-only isolation to lifecycle-wide request isolation.
+   - Keep this short; no new feature documentation is required.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes, including the Iteration 15 snapshot test.
+- `mvn package -DskipTests` passes.
+- Existing CLI check passes: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`.
+- Nested logger isolation tests pass.
+- A web/filter test proves `/api/**` request logging does not pollute global CLI logger entries.
+- REST endpoint shapes and snapshot remain unchanged.
+- CLI run logging still writes `output/run-logger.json` for the representative run.
+- No doctrine implementations, chart model/data classes, input file format, CLI flags, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not expose isolated execution logs in report JSON.
+- Do not remove the existing CLI logger.
+- Do not address broader audit refactors in this iteration, including object-mapper scoping, service splitting, shared engine assembly, dead-code deletion, or `application.yml`.
+- Keep this iteration focused on request lifecycle logger isolation and nested isolation robustness.
+
+### Feedback Requested
+Please append an Iteration 16 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed files.
+- Exact verification commands and results.
+- Explanation of nested logger restoration behavior.
+- Explanation of the request lifecycle isolation mechanism and `/api/**` scoping.
+- Confirmation that CLI logging still works.
+- Confirmation that REST API shape and the snapshot did not change.
+- Any known limitations.
+- Suggested next audit-driven step.
+
+## Iteration 17 — 2026-05-05
+
+### Manager Review Notes
+Iteration 16 is **partially accepted but not complete**. I reviewed the worker feedback and inspected `Logger`, `LoggerIsolationFilter`, `DescriptiveController`, `LoggerTest`, `LoggerIsolationFilterTest`, and the handoff summary. I also independently ran:
+
+```bash
+mvn test
+```
+
+It passed with 33 tests. The nested logger restoration work is good, the controller cleanup is good, and the snapshot still passes.
+
+However, one Iteration 16 requirement was missed: the logger isolation filter was required to apply to `/api/**` only. The implementation currently registers `LoggerIsolationFilter` as a Spring component and wraps every request that reaches the filter; it does not implement `shouldNotFilter(...)`, a URL pattern registration, or another path restriction. The worker feedback explicitly says it is "Applied to all requests", which conflicts with the requirement and handoff documentation saying `/api/**` only.
+
+### Goal
+Correct the logger isolation filter so it is actually scoped to `/api/**`, and add tests proving both API and non-API behavior.
+
+### Scope
+- Small correction to `LoggerIsolationFilter` path scoping.
+- Focused filter tests for `/api/**` and non-API requests.
+- Minor documentation/test-count cleanup.
+- No REST API, CLI, calculation, doctrine, or model behavior changes.
+
+### Requirements
+1. Scope `LoggerIsolationFilter` to `/api/**` only.
+   - Use `OncePerRequestFilter.shouldNotFilter(...)`, explicit filter registration URL patterns, or another simple Spring mechanism.
+   - If using `shouldNotFilter(...)`, ensure `/api/descriptive`, `/api/doctrines`, and nested `/api/...` paths are isolated, while non-API paths are not isolated.
+   - Be mindful of context paths; prefer a robust request path source such as `getServletPath()` or a clearly documented equivalent.
+2. Strengthen filter tests.
+   - Keep a test proving an API request log call does **not** change global `Logger.instance.getEntries()`.
+   - Add a test proving a non-API request log call **does** change global `Logger.instance.getEntries()` because the filter does not isolate that request.
+   - Add a test for failed API filter-chain execution if not already covered.
+   - Do not add production-only endpoints just to test this.
+3. Correct documentation.
+   - Update `reports/spring-boot-conversion-summary.md` so its test table reflects current tests, including:
+     - `LoggerTest` has 8 tests,
+     - `DescriptiveSnapshotTest` exists,
+     - `LoggerIsolationFilterTest` exists.
+   - Keep the logging limitation wording accurate: lifecycle-wide isolation applies to `/api/**`, not every possible web request.
+4. Preserve current behavior and contracts.
+   - `POST /api/descriptive` still uses singular `doctrine`.
+   - Response remains `{ "report": {...}, "suggestedFilename": "..." }`.
+   - The Iteration 15 snapshot must remain unchanged and pass.
+   - `GET /api/doctrines` unchanged.
+   - CLI multi-doctrine behavior and `output/run-logger.json` behavior unchanged.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes.
+- `mvn package -DskipTests` passes.
+- Existing CLI check passes: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`.
+- `LoggerIsolationFilter` is demonstrably scoped to `/api/**` only.
+- Tests prove API requests are isolated and non-API requests are not isolated.
+- REST endpoint shapes and the snapshot remain unchanged.
+- Handoff summary test counts/files are no longer stale.
+- No doctrine implementations, chart model/data classes, input file format, CLI flags, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not expose isolated execution logs in report JSON.
+- Do not remove the existing CLI logger.
+- Do not address broader audit refactors in this iteration, including object-mapper scoping, service splitting, shared engine assembly, dead-code deletion, or `application.yml`.
+- Keep this iteration limited to the missed filter scoping requirement and related docs/tests.
+
+### Feedback Requested
+Please append an Iteration 17 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed files.
+- Exact verification commands and results.
+- Explanation of the `/api/**` scoping mechanism.
+- Test evidence for API isolated vs non-API non-isolated behavior.
+- Confirmation that CLI logging still works.
+- Confirmation that REST API shape and the snapshot did not change.
+- Any known limitations.
+- Suggested next audit-driven step.
+
+## Iteration 18 — 2026-05-05
+
+### Manager Review Notes
+Iteration 17 is accepted with one minor documentation correction required. I reviewed `worker.md`, `LoggerIsolationFilter`, `LoggerIsolationFilterTest`, and `reports/spring-boot-conversion-summary.md`. I independently ran:
+
+```bash
+mvn test
+```
+
+It passed with 38 tests. The filter is now scoped through `shouldNotFilter(...)` using `getServletPath().startsWith("/api/")`, and tests prove API requests are isolated while non-API requests pass through to the global logger.
+
+One small issue remains: the handoff summary test table still says `LoggerIsolationFilterTest.java` has 6 tests, but the class now has 7 tests. Correct that stale count before moving on to broader audit refactors.
+
+### Goal
+Fix the remaining stale test-count documentation from Iteration 17.
+
+### Scope
+- Documentation-only correction in `reports/spring-boot-conversion-summary.md`.
+- No Java production or test behavior changes unless needed to verify the documentation correction.
+
+### Requirements
+1. Update `reports/spring-boot-conversion-summary.md`.
+   - Change the `LoggerIsolationFilterTest.java` row from 6 tests to 7 tests.
+   - Ensure the row still describes `/api/**` scoping, API isolation, and non-API passthrough accurately.
+2. Preserve current behavior.
+   - Do not change `LoggerIsolationFilter`, `Logger`, controllers, DTOs, snapshot, doctrine code, chart models, input format, or CLI flags.
+   - REST API shape remains unchanged.
+3. Verification.
+   - Because this is documentation-only, `mvn test` is sufficient if no Java files are changed.
+   - If any Java file changes, run the full standard verification set.
+
+### Acceptance Criteria
+- `reports/spring-boot-conversion-summary.md` no longer has the stale `LoggerIsolationFilterTest.java` count.
+- `mvn test` passes.
+- No production behavior changes.
+
+### Constraints
+- Keep this iteration documentation-only.
+- Do not address broader audit refactors yet.
+
+### Feedback Requested
+Please append an Iteration 18 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed files.
+- Exact verification command and result.
+- Confirmation that no Java/behavior/API/calculation changes were made.
+- Suggested next audit-driven step.
+
+## Iteration 19 — 2026-05-05
+
+### Manager Review Notes
+Iteration 18 is accepted. I reviewed `worker.md` and `reports/spring-boot-conversion-summary.md`; the stale `LoggerIsolationFilterTest.java` count is corrected to 7 tests. I independently ran:
+
+```bash
+mvn test
+```
+
+It passed with 38 tests. No Java behavior changed.
+
+Next, address audit finding #3 from `audit_report.md`: `MystroObjectMapper` is currently registered as an application-wide Spring `ObjectMapper` bean in `WebConfig`. That means Mystro's report-specific six-decimal double rounding becomes the default mapper for any future Spring MVC endpoint or infrastructure serialization. Keep the Mystro JSON conventions for current REST API responses, but stop exposing the Mystro mapper as the global application `ObjectMapper` bean.
+
+### Goal
+Scope Mystro's Jackson serialization configuration to REST response conversion without replacing Spring Boot's application-wide `ObjectMapper` bean.
+
+### Scope
+- Adjust Spring web JSON wiring only.
+- Preserve current REST serialization behavior, including six-decimal double rounding and Java time strings.
+- Preserve file-output serialization through `JsonReportWriter`/`MystroObjectMapper`.
+- Do not change report shape, endpoints, calculation behavior, or doctrine behavior.
+
+### Requirements
+1. Remove the global Mystro `ObjectMapper` bean from `WebConfig`.
+   - Do not expose `MystroObjectMapper.create()` via a method annotated `@Bean ObjectMapper`.
+   - Spring Boot may still auto-create its own default `ObjectMapper`; that is fine.
+2. Keep Mystro serialization for current REST API responses.
+   - Keep or replace the `MappingJackson2HttpMessageConverter` bean so it uses `MystroObjectMapper.create()` directly.
+   - Ensure `POST /api/descriptive` still serializes doubles rounded to six decimals and Java time values as strings.
+   - Ensure `GET /api/doctrines` remains unchanged.
+   - If converter ordering must be adjusted to keep Mystro responses using the Mystro mapper, do so in a small, explicit way and document it in `worker.md`.
+3. Preserve file output.
+   - `JsonReportWriter` should continue using `MystroObjectMapper.create()`.
+   - CLI file output shape and rounding must remain unchanged.
+4. Add/update tests as needed.
+   - Existing `descriptiveRoundsDoublesToSixDecimals` and the Iteration 15 snapshot test must continue to pass.
+   - Add a small test only if needed to prove the wiring no longer declares a Mystro `ObjectMapper` bean from `WebConfig` or to protect converter behavior.
+   - Do not add unrelated endpoints just to test mapper scoping.
+5. Documentation.
+   - Update `reports/spring-boot-conversion-summary.md` if it currently implies that the Mystro mapper is the application-wide `ObjectMapper` bean.
+   - The summary should say file output and REST API responses use the same Mystro Jackson conventions, while the Spring Boot global mapper is not intentionally replaced.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes, including the snapshot test and REST double-rounding test.
+- `mvn package -DskipTests` passes.
+- Existing CLI check passes: `mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"`.
+- `WebConfig` no longer exposes `MystroObjectMapper.create()` as a global `@Bean ObjectMapper`.
+- REST descriptive response shape and snapshot remain unchanged.
+- File-output serialization remains unchanged.
+- No doctrine implementations, chart model/data classes, input file format, CLI flags, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add new endpoints.
+- Do not add predictive support.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not address broader audit refactors in this iteration, including service splitting, shared engine assembly, dead-code deletion, or `application.yml`.
+- Keep this iteration focused on Jackson mapper scoping.
+
+### Feedback Requested
+Please append an Iteration 19 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed files.
+- Exact verification commands and results.
+- Explanation of the new Jackson/MVC converter wiring.
+- Confirmation that REST rounding and snapshot tests still pass.
+- Confirmation that CLI file output serialization still works.
+- Confirmation that REST API shape did not change.
+- Any known limitations.
+- Suggested next audit-driven step.

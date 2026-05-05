@@ -77,4 +77,40 @@ class LoggerTest {
         });
         assertEquals("hello", result);
     }
+
+    @Test
+    void nestedIsolatedPreservesOuterContext() {
+        Logger.instance.runIsolatedVoid(() -> {
+            Logger.instance.info("outer", "before-nested");
+
+            Logger.instance.runIsolatedVoid(() -> {
+                Logger.instance.info("inner", "nested-message");
+            });
+
+            // After inner completes, outer context should still be active
+            assertTrue(Logger.isIsolated());
+            Logger.instance.info("outer", "after-nested");
+        });
+        assertFalse(Logger.isIsolated());
+    }
+
+    @Test
+    void nestedIsolatedRestoresOuterContextAfterException() {
+        Logger.instance.runIsolatedVoid(() -> {
+            Logger.instance.info("outer", "before-nested");
+
+            try {
+                Logger.instance.runIsolated(() -> {
+                    Logger.instance.info("inner", "before-throw");
+                    throw new RuntimeException("inner boom");
+                });
+            } catch (Exception ignored) {
+            }
+
+            // After inner throws, outer context should be restored
+            assertTrue(Logger.isIsolated());
+            Logger.instance.info("outer", "after-nested-exception");
+        });
+        assertFalse(Logger.isIsolated());
+    }
 }

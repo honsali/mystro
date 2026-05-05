@@ -1,7 +1,6 @@
 package app.web;
 
 import app.output.DescriptiveAstrologyReport;
-import app.output.Logger;
 import app.runtime.DescriptiveReportService;
 
 import org.springframework.http.CacheControl;
@@ -24,7 +23,7 @@ public final class DescriptiveController {
     }
 
     @PostMapping("/descriptive")
-    public ResponseEntity<?> descriptive(@RequestBody(required = false) DescriptiveRequest request) throws Exception {
+    public ResponseEntity<?> descriptive(@RequestBody(required = false) DescriptiveRequest request) {
         if (request == null) {
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noStore())
@@ -40,9 +39,7 @@ public final class DescriptiveController {
                     .body(new ErrorResponse(e.getMessage()));
         }
 
-        DescriptiveAstrologyReport report = Logger.instance.runIsolated(() ->
-                service.generateDescriptiveReports(resolved.bundle()).get(0)
-        );
+        DescriptiveAstrologyReport report = service.generateDescriptiveReports(resolved.bundle()).get(0);
 
         String subjectId = report.getSubject().getId();
         String doctrineId = report.getDoctrine().getId();

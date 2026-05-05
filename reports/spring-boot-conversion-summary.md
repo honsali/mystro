@@ -58,10 +58,12 @@ The CLI path does not require a Spring application context.
 
 | File | Tests |
 |------|-------|
-| `LoggerTest.java` | 6 tests: global logging and thread-isolated REST logging behavior |
+| `LoggerTest.java` | 8 tests: global logging, thread-isolated REST logging, nested isolation |
 | `EngineVersionTest.java` | 2 tests: version resolution, never null |
 | `DescriptiveControllerTest.java` | 14 tests: CORS preflight, success fields, rounding, doctrines endpoint, validation edge cases |
+| `DescriptiveSnapshotTest.java` | 1 test: full ilia/valens REST response JSON snapshot |
 | `GlobalExceptionHandlerTest.java` | 1 test: generic error handler returns 500 |
+| `LoggerIsolationFilterTest.java` | 7 tests: /api/** scoping, API isolation, non-API passthrough |
 | `WebConfigTest.java` | 5 tests: CORS origin parsing (trim, blanks, defaults) |
 
 ## Verification Commands
@@ -97,7 +99,7 @@ Both file output and REST responses share the same Jackson configuration via `My
 
 ## Known Limitations
 
-- CLI uses global `Logger.instance` and writes `output/run-logger.json`. REST descriptive calculations use thread-isolated ephemeral logging; request calculation logs do not accumulate globally and are not returned in report JSON.
+- CLI uses global `Logger.instance` and writes `output/run-logger.json`. REST API requests are wrapped in lifecycle-wide isolated logging via `LoggerIsolationFilter`; all `Logger.info/error` calls during `/api/**` requests go to ephemeral thread-local entries that are cleared after the response. Nested `runIsolated` calls are safe and restore the previous context.
 - The `ephe/` directory must be available from the working directory for Swiss Ephemeris calculations, both for CLI and packaged jar execution.
 - The packaged fat jar is ~22MB (includes Spring Boot + all dependencies).
 - No predictive endpoint is implemented yet.
