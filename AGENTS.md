@@ -65,9 +65,9 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - `NatalChart` contains mechanical chart facts and doctrine-poured descriptive facts.
 - `natalChart.points` is a map keyed by point name; planet points carry point-specific dignities, debilities, solar phase, planet sect info, and doctrine solar condition when calculated. Planet sect and dignity/debility assessment are intentionally limited to the seven traditional planets; lunar nodes remain positional points without point-level sect or dignity/debility assessment.
 - Basic chart sect is currently an altitude-based mechanical baseline: Sun above horizon is diurnal, Sun below horizon is nocturnal, using `altitude >= 0.0` as the baseline above-horizon rule. Twilight/refraction/author-specific refinements belong to doctrine descriptive calculation, not silent shared-basic changes.
-- `natalChart.pairwiseRelations` contains raw geometry for point pairs; doctrine-recognized aspects are injected as optional `aspect` objects on matching relations.
-- `CalculationContext` is the per-run internal context. It owns Swiss Ephemeris state, subject, doctrine-derived calculation choices, calculation settings, full Julian day, house cusps, `ascmc`, ARMC, and shared helpers. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant share one source of truth.
-- `BasicCalculator` currently runs simple metadata, planets, houses, angles, sect, point registry, pairwise relations, solar phase injection, planet sect injection, and moon phase.
+- `natalChart.pairwiseRelations` contains raw geometry for point pairs; doctrine-recognized aspects are injected as optional `aspect` objects on matching relations. Older hidden raw matrix scaffolding has been removed; use `pairwiseRelations` for shared pair geometry.
+- `CalculationContext` is the per-run internal context. It owns Swiss Ephemeris state, subject, doctrine-derived calculation choices, calculation settings, full Julian day, house cusps, `ascmc`, ARMC, and shared helpers. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant share one source of truth. Public cusp/`ascmc` accessors return defensive copies.
+- `BasicCalculator` currently runs simple metadata, planets, houses, angles, sect, point registry, pairwise relations, solar phase injection, planet sect injection via `PlanetSectInjectionCalculator`, and moon phase. Its ordering is dependency-bearing and documented in code; do not reorder casually.
 - `NatalChart` should remain output-facing; internal fields such as full Julian day, cusps, and `ascmc` belong in `CalculationContext`.
 - Current Valens output pours prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction, dignity/debility assessments, and solar condition into `NatalChart`.
 - Current Ptolemy output pours prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and dignity/debility assessments into `NatalChart`.
@@ -77,7 +77,7 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Intentional calculation conventions: geocentric apparent planet positions, no topocentric lunar parallax correction, fail-fast Placidus errors with no silent fallback, and exactly 180° Moon-Sun elongation treated as waxing.
 - Doctrine implementations live under `src/main/java/app/doctrine/impl/<doctrineId>/`; register new doctrine modules in `DoctrineLoader` and place doctrine-specific descriptive calculators under `src/main/java/app/descriptive/<doctrineId>/calculator/`.
 - Java 17 is required.
-- Swiss Ephemeris data under `ephe/` is required runtime data; do not delete it as generated output.
+- Swiss Ephemeris data under `ephe/` is required runtime data; do not delete it as generated output. `CalculationContext` explicitly sets the ephemeris path to `ephe`, requests file-backed Swiss Ephemeris (`SEFLG_SWIEPH`), and rejects Moshier fallback for planet positions.
 - Optional `input/settings.properties` may set `calculation.precision`.
 - `Logger.instance` is intentionally retained for the short-term CLI.
 

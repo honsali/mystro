@@ -32,15 +32,11 @@ public class NatalChart {
     private List<PlanetPosition> planets;
     private List<HousePosition> houses;
     private List<ChartAngle> angles;
-    private List<RawAspectMatrixEntry> rawAspectMatrix;
-    private List<RawDeclinationMatrixEntry> rawDeclinationMatrix;
-    private List<RawSignDistanceMatrixEntry> rawSignDistanceMatrix;
     private List<PairwiseRelation> pairwiseRelations;
     private MoonPhase moonPhase;
     private BasicSect sect;
     private PrenatalSyzygyEntry syzygy;
     private Map<LotName, LotEntry> lots;
-    private Map<Planet, SolarConditionEntry> solarConditions;
 
     public Instant getResolvedUtcInstant() {
         return resolvedUtcInstant;
@@ -170,33 +166,6 @@ public class NatalChart {
                 .orElseThrow(() -> new IllegalArgumentException("Missing angle " + angle));
     }
 
-    @JsonIgnore
-    public List<RawAspectMatrixEntry> getRawAspectMatrix() {
-        return rawAspectMatrix;
-    }
-
-    public void setRawAspectMatrix(List<RawAspectMatrixEntry> rawAspectMatrix) {
-        this.rawAspectMatrix = rawAspectMatrix;
-    }
-
-    @JsonIgnore
-    public List<RawDeclinationMatrixEntry> getRawDeclinationMatrix() {
-        return rawDeclinationMatrix;
-    }
-
-    public void setRawDeclinationMatrix(List<RawDeclinationMatrixEntry> rawDeclinationMatrix) {
-        this.rawDeclinationMatrix = rawDeclinationMatrix;
-    }
-
-    @JsonIgnore
-    public List<RawSignDistanceMatrixEntry> getRawSignDistanceMatrix() {
-        return rawSignDistanceMatrix;
-    }
-
-    public void setRawSignDistanceMatrix(List<RawSignDistanceMatrixEntry> rawSignDistanceMatrix) {
-        this.rawSignDistanceMatrix = rawSignDistanceMatrix;
-    }
-
     public List<PairwiseRelation> getPairwiseRelations() {
         return pairwiseRelations;
     }
@@ -290,7 +259,7 @@ public class NatalChart {
         }
     }
 
-    public void setSolarConditions(Map<Planet, SolarConditionEntry> solarConditions) {
+    public void applySolarConditions(Map<Planet, SolarConditionEntry> solarConditions) {
         for (Map.Entry<Planet, SolarConditionEntry> solarCondition : solarConditions.entrySet()) {
             PointKey pointKey = PointKey.of(solarCondition.getKey());
             PointEntry point = points.get(pointKey);

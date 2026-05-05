@@ -162,6 +162,7 @@ These are current calculation choices, not accidental omissions:
 
 - Planet positions are geocentric, matching pre-modern practice.
 - Planet positions use Swiss Ephemeris apparent positions; light-time, aberration, and gravitational deflection are retained.
+- Planet positions require the file-backed Swiss Ephemeris data shipped under `ephe/`; Moshier fallback is rejected for runtime planet calculations.
 - Lunar parallax is not corrected by converting the Moon to a topocentric position.
 - Placidus failures, including polar-region failures from Swiss Ephemeris, fail fast and are logged; there is no silent fallback house system.
 - A Moon exactly 180° ahead of the Sun is treated as waxing by convention.

@@ -1,7 +1,8 @@
 package app.basic;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
-import java.util.List;
 import app.basic.data.HouseSystem;
 import app.basic.data.NodeType;
 import app.basic.data.Planet;
@@ -10,7 +11,6 @@ import app.basic.data.Triplicity;
 import app.basic.data.Zodiac;
 import app.basic.data.ZodiacSign;
 import app.basic.model.CalculationDefinition;
-import app.basic.model.PlanetPosition;
 import app.input.model.CalculationSetting;
 import app.input.model.Subject;
 import app.output.Logger;
@@ -18,6 +18,8 @@ import app.swisseph.core.SweConst;
 import app.swisseph.core.SwissEph;
 
 public class CalculationContext {
+
+    private static final String EPHEMERIS_PATH = "ephe";
 
     private final SwissEph swissEph = new SwissEph();
     private final Subject subject;
@@ -35,6 +37,7 @@ public class CalculationContext {
 
     public CalculationContext(Subject subject, CalculationDefinition definition, CalculationSetting calculationSetting) {
         this.subject = subject;
+        configureEphemerisPath(subject);
         this.doctrineId = definition.getId();
         this.houseSystem = definition.getHouseSystem();
         this.zodiac = definition.getZodiac();
@@ -51,6 +54,14 @@ public class CalculationContext {
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         armc = normalize(ascmc[2]);
+    }
+
+    private void configureEphemerisPath(Subject subject) {
+        if (!Files.isDirectory(Path.of(EPHEMERIS_PATH))) {
+            Logger.instance.error(subject.getId(), "Required Swiss Ephemeris directory not found: " + EPHEMERIS_PATH);
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        }
+        swissEph.swe_set_ephe_path(EPHEMERIS_PATH);
     }
 
     private double julianDayFromInstant(Instant instant) {
@@ -102,20 +113,11 @@ public class CalculationContext {
     }
 
     public double[] getCusps() {
-        return cusps;
+        return cusps.clone();
     }
 
     public double[] getAscmc() {
-        return ascmc;
-    }
-
-    public PlanetPosition planet(List<PlanetPosition> planets, Planet planet) {
-        for (PlanetPosition position : planets) {
-            if (position.getPlanet() == planet) {
-                return position;
-            }
-        }
-        return null;
+        return ascmc.clone();
     }
 
     public double normalize(double degrees) {
@@ -144,11 +146,23 @@ public class CalculationContext {
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
         int result = swissEph.swe_calc_ut(julianDay, swissPlanetId, planetFlags(), values, error);
-        if (result < 0 || Double.isNaN(values[0]) || Double.isNaN(values[1])) {
-            Logger.instance.error(subject.getId(), "Swiss Ephemeris failed for " + planet + " ecliptic coordinates: " + error);
+        requireSwissEphemerisResult(result, planet, "ecliptic coordinates", error);
+        if (Double.isNaN(values[0]) || Double.isNaN(values[1])) {
+            Logger.instance.error(subject.getId(), "Swiss Ephemeris returned invalid values for " + planet + " ecliptic coordinates: " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         return values;
+    }
+
+    public void requireSwissEphemerisResult(int result, Planet planet, String calculation, StringBuilder error) {
+        if (result < 0) {
+            Logger.instance.error(subject.getId(), "Swiss Ephemeris failed for " + planet + " " + calculation + ": " + error);
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        }
+        if ((result & SweConst.SEFLG_MOSEPH) != 0 || (result & SweConst.SEFLG_SWIEPH) == 0) {
+            Logger.instance.error(subject.getId(), "Swiss Ephemeris did not use required file-backed ephemeris for " + planet + " " + calculation + " (flags=" + result + "): " + error);
+            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        }
     }
 
     public int houseOf(double longitude, double ascendant) {
@@ -211,6 +225,8 @@ public class CalculationContext {
         double[] geopos = new double[] {subject.getLongitude(), subject.getLatitude(), 0.0};
         double[] eclipticCoordinates = new double[] {longitude, latitude, 1.0};
         double[] horizontalCoordinates = new double[3];
+        // swe_azalt returns true altitude in [1] and refracted apparent altitude in [2].
+        // Mystro's shared sect baseline intentionally uses true altitude with altitude >= 0.0.
         swissEph.swe_azalt(julianDay, SweConst.SE_ECL2HOR, geopos, 0.0, 10.0, eclipticCoordinates, horizontalCoordinates);
         if (Double.isNaN(horizontalCoordinates[1])) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris failed to calculate horizontal altitude");
@@ -219,8 +235,12 @@ public class CalculationContext {
         return horizontalCoordinates[1];
     }
 
+    /**
+     * Swiss Ephemeris flags for geocentric apparent positions with speed output.
+     * File-backed Swiss Ephemeris data is required; Moshier fallback is rejected by callers.
+     */
     public int planetFlags() {
-        return SweConst.SEFLG_SPEED;
+        return SweConst.SEFLG_SPEED | SweConst.SEFLG_SWIEPH;
     }
 
     private int calculateSwissHouses(double julianDay, double[] cusps, double[] ascmc) {

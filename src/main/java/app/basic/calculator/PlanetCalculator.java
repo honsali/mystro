@@ -56,12 +56,13 @@ public class PlanetCalculator implements Calculator {
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
         int result = ctx.getSwissEph().swe_calc_ut(julianDay, swissPlanetId, ctx.planetFlags(), values, error);
-        if (result < 0 || Double.isNaN(values[0])) {
-            Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris failed for " + planet + ": " + error);
+        ctx.requireSwissEphemerisResult(result, planet, "position", error);
+        if (Double.isNaN(values[0])) {
+            Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris returned invalid values for " + planet + ": " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         double longitude = ctx.normalize(values[0]);
-        EquatorialPosition equatorial = equatorialPosition(swissPlanetId, julianDay, ctx);
+        EquatorialPosition equatorial = equatorialPosition(planet, swissPlanetId, julianDay, ctx);
         int house = ctx.houseOf(longitude, ascendant);
         int wholeSignHouse = ctx.wholeSignHouseOf(longitude, ascendant);
         Integer quadrantHouse = ctx.quadrantHouseOf(longitude);
@@ -72,17 +73,17 @@ public class PlanetCalculator implements Calculator {
                 ctx.contraAntiscia(longitude));
     }
 
-    private EquatorialPosition equatorialPosition(int swissPlanetId, double julianDay, CalculationContext ctx) {
+    private EquatorialPosition equatorialPosition(Planet planet, int swissPlanetId, double julianDay, CalculationContext ctx) {
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
         int result = ctx.getSwissEph().swe_calc_ut(julianDay, swissPlanetId, ctx.planetFlags() | SweConst.SEFLG_EQUATORIAL, values, error);
-        if (result < 0 || Double.isNaN(values[0]) || Double.isNaN(values[1])) {
-            Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris failed to calculate equatorial position: " + error);
+        ctx.requireSwissEphemerisResult(result, planet, "equatorial position", error);
+        if (Double.isNaN(values[0]) || Double.isNaN(values[1])) {
+            Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris returned invalid equatorial values for " + planet + ": " + error);
             throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
         }
         return new EquatorialPosition(ctx.normalize(values[0]), values[1]);
     }
-
 
     private int nodeSwissPlanetId(CalculationContext ctx) {
         return ctx.getNodeType() == NodeType.TRUE ? SweConst.SE_TRUE_NODE : SweConst.SE_MEAN_NODE;

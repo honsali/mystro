@@ -1,4 +1,4 @@
-package app.basic.data;
+package app.descriptive.common.data;
 
 public enum SyzygyType {
     NEW_MOON,

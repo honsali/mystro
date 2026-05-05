@@ -21,6 +21,6 @@ public final class ValensDescriptiveCalculator {
         chart.setLots(lotCalculator.calculate(chart));
         chart.applyAspects(aspectCalculator.calculate(chart));
         chart.applyDignityAssessments(dignityCalculator.calculate(chart));
-        chart.setSolarConditions(solarConditionCalculator.calculate(chart));
+        chart.applySolarConditions(solarConditionCalculator.calculate(chart));
     }
 }
