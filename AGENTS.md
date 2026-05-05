@@ -24,7 +24,7 @@ output/{subjectId}/{doctrineId}-descriptive.json
 output/{subjectId}/{doctrineId}-predictive.json
 ```
 
-Predictive is an architectural target; current implemented runtime output is descriptive JSON plus run logging.
+Predictive is an architectural target; current implemented CLI output is descriptive JSON plus run logging, and current implemented REST output is stateless descriptive calculation JSON.
 
 ## Doctrine philosophy
 
@@ -60,6 +60,12 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Doctrine selection is explicit through CLI `--doctrines ...`.
 - No hidden default doctrine should be introduced.
 - Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
+- The Spring Boot REST adapter is present as a thin, stateless calculation API for local-first/front-end use. The CLI entrypoint remains `app.App`; the web entrypoint is `app.MystroSpringApplication`.
+- REST endpoints: `GET /api/doctrines` lists available doctrine choices; `POST /api/descriptive` accepts one natal subject plus one explicit `doctrine` id and returns `{ "report": {...}, "suggestedFilename": "..." }`.
+- REST descriptive calls are single-doctrine by design. A frontend should call once per selected doctrine and save one local JSON file per doctrine. Do not reintroduce hidden defaults or plural REST doctrine selection unless explicitly requested.
+- REST descriptive calls do not write server output files. CLI runs still write `output/{subjectId}/{doctrineId}-descriptive.json` and `output/run-logger.json`.
+- REST responses use the shared `MystroObjectMapper`/`RoundedDoubleSerializer` conventions and set `Cache-Control: no-store` on descriptive responses/errors. CORS for `/api/**` is configurable via `mystro.cors.allowed-origins` with local React defaults.
+- REST calculation logging uses thread-isolated ephemeral logging; CLI logging continues through global `Logger.instance` and `LoggerWriter`.
 - The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Shared chart data/model classes live under `app.chart.data` and `app.chart.model`; they are not owned by `app.basic` or `app.descriptive`.
@@ -79,7 +85,7 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Doctrine implementations live under `src/main/java/app/doctrine/impl/<doctrineId>/`; register new doctrine modules in `DoctrineLoader` and place doctrine-specific descriptive calculators under `src/main/java/app/descriptive/<doctrineId>/calculator/`.
 - Java 17 is required.
 - Swiss Ephemeris data under `ephe/` is required runtime data; do not delete it as generated output. `CalculationContext` explicitly sets the ephemeris path to `ephe`, requests file-backed Swiss Ephemeris (`SEFLG_SWIEPH`), and rejects Moshier fallback for planet positions.
-- `Logger.instance` is intentionally retained for the short-term CLI.
+- `Logger.instance` is intentionally retained for the short-term CLI. REST calculations must use logger isolation so request log entries do not accumulate globally.
 
 ## Commands
 
@@ -93,4 +99,10 @@ Representative runtime check:
 
 ```bash
 mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+```
+
+After Spring Boot/web changes, also run tests when practical:
+
+```bash
+mvn test
 ```

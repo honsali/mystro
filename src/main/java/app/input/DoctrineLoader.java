@@ -29,6 +29,10 @@ public final class DoctrineLoader {
         return Optional.ofNullable(doctrines.get(id));
     }
 
+    public List<Doctrine> list() {
+        return List.copyOf(doctrines.values());
+    }
+
 
     public void load(InputListBundle input) {
         List<Doctrine> doctrines = new ArrayList<>();

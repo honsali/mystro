@@ -18,7 +18,7 @@ output/{subjectId}/{doctrineId}-descriptive.json
 output/{subjectId}/{doctrineId}-predictive.json
 ```
 
-Predictive output is architectural target work; current implemented runtime output is descriptive JSON plus run logging.
+Predictive output is architectural target work; current implemented CLI output is descriptive JSON plus run logging, and current implemented REST output is stateless descriptive calculation JSON.
 
 ---
 
@@ -60,6 +60,26 @@ for each subject × doctrine:
 ```
 
 The application layer writes reports. The doctrine owns when and how `BasicCalculator` is called.
+
+Spring Boot REST adapter flow:
+
+```text
+POST /api/descriptive
+  ↓
+DescriptiveRequest(id, birth data, doctrine)
+  ↓
+DescriptiveRequestMapper validates and builds one-subject/one-doctrine InputListBundle
+  ↓
+DescriptiveController runs calculation with thread-isolated ephemeral logging
+  ↓
+DescriptiveReportService.generateDescriptiveReports(...)
+  ↓
+DescriptiveAstrologyReport
+  ↓
+{ "report": { ... }, "suggestedFilename": "{subjectId}-{doctrineId}-descriptive.json" }
+```
+
+The REST adapter is stateless and local-first: it does not write output files by default. A frontend can call once per doctrine and save one local JSON report file per doctrine. The CLI remains the file-writing path.
 
 ---
 
@@ -113,6 +133,20 @@ Doctrine selection is explicit through CLI:
 mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
 ```
 
+REST descriptive calculation also requires an explicit singular `doctrine` id:
+
+```json
+{
+  "id": "ilia",
+  "birthDate": "1975-07-14",
+  "birthTime": "22:55:00",
+  "latitude": 50.60600755996812,
+  "longitude": 3.0333769552426793,
+  "utcOffset": "+01:00",
+  "doctrine": "valens"
+}
+```
+
 No hidden default doctrine should be introduced.
 
 There is currently no calculation settings object. Do not add settings until they are wired into calculation or reporting behavior.
@@ -153,7 +187,7 @@ public interface Doctrine extends CalculationDefinition {
 
 The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 
-`CalculationContext` is the per-run internal context. It owns the subject, doctrine-derived calculation choices, calculation settings, Swiss Ephemeris state, Julian day, house cusps, `ascmc`, ARMC, and shared helpers. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant have one source of truth.
+`CalculationContext` is the per-run internal context. It owns the subject, doctrine-derived calculation choices, Swiss Ephemeris state, Julian day, house cusps, `ascmc`, ARMC, and shared helpers. Julian day is derived from the subject's resolved UTC instant so the recorded instant and calculation instant have one source of truth.
 
 ### Intentional calculation conventions
 
@@ -178,10 +212,24 @@ Current top-level report shape:
 
 ```json
 {
-  "engineVersion": "0.14.0",
+  "engineVersion": "1.0.0",
   "subject": {},
   "doctrine": {},
   "natalChart": {}
+}
+```
+
+The REST descriptive endpoint wraps exactly one such report:
+
+```json
+{
+  "report": {
+    "engineVersion": "1.0.0",
+    "subject": {},
+    "doctrine": {},
+    "natalChart": {}
+  },
+  "suggestedFilename": "ilia-valens-descriptive.json"
 }
 ```
 
@@ -353,7 +401,7 @@ Target predictive output path:
 output/{subjectId}/{doctrineId}-predictive.json
 ```
 
-Run logging currently writes:
+Run logging currently writes in the CLI path:
 
 ```text
 output/run-logger.json
@@ -361,9 +409,11 @@ output/run-logger.json
 
 Execution-level statuses are not astrological results and do not belong inside doctrine report data.
 
-The report `engineVersion` is loaded from the first project `<version>` in `pom.xml`.
+REST descriptive calculations use thread-isolated ephemeral logging so per-request calculator log entries do not accumulate in the global CLI logger. REST does not return execution logs in report JSON.
 
-JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision.
+The report `engineVersion` is resolved from package implementation metadata, Maven `pom.properties`, or the first project `<version>` in `pom.xml` for development runs.
+
+JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision. File output and REST responses share the same Mystro Jackson configuration. REST descriptive responses and errors use `Cache-Control: no-store`.
 
 ---
 
@@ -374,12 +424,15 @@ Current app code lives under:
 ```text
 src/main/java/app/
   App.java
+  MystroSpringApplication.java
   input/
   basic/
   chart/
   descriptive/
   doctrine/
   output/
+  runtime/
+  web/
   swisseph/
 ```
 
@@ -391,6 +444,8 @@ app.basic.CalculationContext
 app.chart.model.NatalChart
 app.doctrine.Doctrine
 app.output.DescriptiveAstrologyReport
+app.runtime.DescriptiveReportService
+app.MystroSpringApplication
 ```
 
 Shared chart data/model classes live under `app.chart.data` and `app.chart.model`. `NatalChart` is the shared chart container: `BasicCalculator` pours root mechanical data first, then doctrine/descriptive calculators enrich or annotate the same chart.
@@ -417,6 +472,20 @@ app.descriptive.common.data
 app.descriptive.common.model
 ```
 
+Spring Boot adapter classes live under:
+
+```text
+app.web
+```
+
+Reusable application/runtime orchestration lives under:
+
+```text
+app.runtime
+```
+
+The Spring Boot layer is an adapter only; do not duplicate astrology calculation logic in controllers or DTOs.
+
 ---
 
 ## 12. Development rules
@@ -431,6 +500,12 @@ Representative runtime check:
 
 ```bash
 mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+```
+
+After web/API changes, run:
+
+```bash
+mvn test
 ```
 
 The CLI subject selector is `--subjects`.

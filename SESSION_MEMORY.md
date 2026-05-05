@@ -32,7 +32,7 @@ output/{subjectId}/{doctrineId}-descriptive.json
 output/run-logger.json
 ```
 
-Predictive is an architectural target and is not implemented yet.
+Predictive is an architectural target and is not implemented yet. Current implemented interfaces are the CLI descriptive file output and the Spring Boot stateless descriptive REST API.
 
 ## Durable direction
 
@@ -50,6 +50,11 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - No doctrine is selected by default.
 - Current doctrine modules: `dorotheus`, `ptolemy`, `valens`.
 - Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
+- Spring Boot REST support is present as a thin adapter over the existing calculation engine. CLI entrypoint: `app.App`; web entrypoint: `app.MystroSpringApplication`.
+- REST endpoints: `GET /api/doctrines` and `POST /api/descriptive`. REST descriptive requests use one explicit singular `doctrine` field and return `{ "report": {...}, "suggestedFilename": "..." }`.
+- REST descriptive calls are stateless/local-first: they do not write server output files, set `Cache-Control: no-store`, and are intended for a frontend to download one local JSON file per doctrine.
+- REST uses configurable `/api/**` CORS defaults for local React dev origins: `http://localhost:5173` and `http://localhost:3000`.
+- REST calculation logging is thread-isolated and ephemeral. CLI logging still uses global `Logger.instance` and writes `output/run-logger.json`.
 - The engine targets the Valens-to-Lilly tropical tradition; sidereal zodiac calculation is out of scope for current doctrine modules.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Shared chart data/model classes live under `app.chart.data` and `app.chart.model`; they are not owned by `app.basic` or `app.descriptive`.
@@ -68,7 +73,7 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Current Ptolemy output pours prenatal syzygy, Ptolemaic sign configurations excluding conjunction, and dignity/debility assessments into `NatalChart`.
 - Dorotheus is present but has no doctrine-poured descriptive sections yet.
 - Fixed stars are not implemented.
-- `Logger.instance` is intentionally retained for the short-term CLI.
+- `Logger.instance` is intentionally retained for the short-term CLI; REST paths should use isolated logging and must not retain per-request calculation logs globally.
 
 ## Commands
 
@@ -76,6 +81,12 @@ Build:
 
 ```bash
 mvn compile
+```
+
+Tests:
+
+```bash
+mvn test
 ```
 
 Representative runtime check:
