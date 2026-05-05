@@ -4,11 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.AstroMath;
 import app.basic.TraditionalTables;
-import app.basic.data.AngleType;
-import app.basic.data.Planet;
-import app.basic.data.Sect;
-import app.basic.model.NatalChart;
-import app.basic.model.PlanetPosition;
+import app.chart.data.AngleType;
+import app.chart.data.Planet;
+import app.chart.data.Sect;
+import app.chart.model.NatalChart;
+import app.chart.model.PlanetPosition;
 import app.descriptive.common.data.LotName;
 import app.descriptive.common.model.LotEntry;
 

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import app.basic.BasicCalculator;
-import app.basic.model.NatalChart;
+import app.chart.model.NatalChart;
 import app.doctrine.Doctrine;
 import app.input.InputLoader;
 import app.input.model.CalculationSetting;

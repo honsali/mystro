@@ -1,6 +1,6 @@
 package app.input.model;
 
-import app.basic.data.CalculationPrecision;
+import app.chart.data.CalculationPrecision;
 
 public final class CalculationSetting {
     private CalculationPrecision precision;

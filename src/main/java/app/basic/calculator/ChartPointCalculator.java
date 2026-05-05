@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
-import app.basic.model.ChartAngle;
-import app.basic.model.ChartPoint;
-import app.basic.model.PairwiseRelation;
-import app.basic.model.PlanetPosition;
-import app.basic.data.PointKey;
-import app.basic.data.ZodiacSign;
+import app.chart.model.NatalChart;
+import app.chart.model.ChartAngle;
+import app.chart.model.ChartPoint;
+import app.chart.model.PairwiseRelation;
+import app.chart.model.PlanetPosition;
+import app.chart.data.PointKey;
+import app.chart.data.ZodiacSign;
 
 public class ChartPointCalculator implements Calculator {
 

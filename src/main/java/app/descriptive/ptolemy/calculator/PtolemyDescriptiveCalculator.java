@@ -1,8 +1,8 @@
 package app.descriptive.ptolemy.calculator;
 
 import app.basic.CalculationContext;
-import app.basic.data.Triplicity;
-import app.basic.model.NatalChart;
+import app.chart.data.Triplicity;
+import app.chart.model.NatalChart;
 import app.descriptive.common.calculator.SyzygyCalculator;
 
 public final class PtolemyDescriptiveCalculator {

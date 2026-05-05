@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.AstroMath;
 import app.basic.TraditionalTables;
-import app.basic.model.NatalChart;
-import app.basic.model.PlanetPosition;
+import app.chart.model.NatalChart;
+import app.chart.model.PlanetPosition;
 import app.descriptive.common.data.AspectType;
 import app.descriptive.common.model.AspectEntry;
 

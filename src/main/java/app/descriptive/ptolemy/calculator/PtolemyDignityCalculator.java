@@ -5,12 +5,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import app.basic.TraditionalTables;
-import app.basic.data.Planet;
-import app.basic.data.Sect;
-import app.basic.data.Triplicity;
-import app.basic.model.NatalChart;
-import app.basic.model.PlanetPosition;
-import app.basic.model.TriplicityRulers;
+import app.chart.data.Planet;
+import app.chart.data.Sect;
+import app.chart.data.Triplicity;
+import app.chart.model.NatalChart;
+import app.chart.model.PlanetPosition;
+import app.chart.model.TriplicityRulers;
 import app.descriptive.common.data.DignityType;
 import app.descriptive.common.model.PlanetDignityEntry;
 

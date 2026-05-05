@@ -1,6 +1,6 @@
 package app.descriptive.common.model;
 
-import app.basic.data.Planet;
+import app.chart.data.Planet;
 import app.descriptive.common.data.AspectType;
 
 public record AspectEntry(

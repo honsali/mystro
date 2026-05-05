@@ -2,7 +2,7 @@ package app.basic.calculator;
 
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
+import app.chart.model.NatalChart;
 
 public class PlanetSectInjectionCalculator implements Calculator {
 

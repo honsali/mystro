@@ -1,8 +1,8 @@
 package app.output;
 
-import app.basic.data.HouseSystem;
-import app.basic.data.Terms;
-import app.basic.data.Zodiac;
+import app.chart.data.HouseSystem;
+import app.chart.data.Terms;
+import app.chart.data.Zodiac;
 
 public final class DoctrineSummary {
     private final String id;

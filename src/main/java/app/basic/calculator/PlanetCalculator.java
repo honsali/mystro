@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
-import app.basic.model.PlanetPosition;
-import app.basic.data.Angularity;
-import app.basic.data.NodeType;
-import app.basic.data.Planet;
+import app.chart.model.NatalChart;
+import app.chart.model.PlanetPosition;
+import app.chart.data.Angularity;
+import app.chart.data.NodeType;
+import app.chart.data.Planet;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 

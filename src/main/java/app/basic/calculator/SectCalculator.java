@@ -5,14 +5,14 @@ import java.util.Map;
 import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
-import app.basic.model.BasicSect;
-import app.basic.model.PlanetPosition;
-import app.basic.model.PlanetSectInfo;
-import app.basic.data.Planet;
-import app.basic.data.Sect;
-import app.basic.data.SectCondition;
-import app.basic.data.SolarOrientation;
+import app.chart.model.NatalChart;
+import app.chart.model.BasicSect;
+import app.chart.model.PlanetPosition;
+import app.chart.model.PlanetSectInfo;
+import app.chart.data.Planet;
+import app.chart.data.Sect;
+import app.chart.data.SectCondition;
+import app.chart.data.SolarOrientation;
 
 public class SectCalculator implements Calculator {
 

@@ -1,7 +1,7 @@
 package app.basic;
 
-import app.basic.data.SolarOrientation;
-import app.basic.data.ZodiacSign;
+import app.chart.data.SolarOrientation;
+import app.chart.data.ZodiacSign;
 
 public final class AstroMath {
     public static double normalize(double degrees) {

@@ -2,7 +2,7 @@ package app.basic.calculator;
 
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
+import app.chart.model.NatalChart;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
 

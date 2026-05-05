@@ -5,10 +5,10 @@ import java.util.List;
 import app.basic.AstroMath;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
-import app.basic.model.PlanetPosition;
-import app.basic.model.SolarPhaseEntry;
-import app.basic.data.Planet;
+import app.chart.model.NatalChart;
+import app.chart.model.PlanetPosition;
+import app.chart.model.SolarPhaseEntry;
+import app.chart.data.Planet;
 
 public class SolarPhaseCalculator implements Calculator {
 

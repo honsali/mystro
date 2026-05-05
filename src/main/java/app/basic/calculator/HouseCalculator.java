@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import app.basic.Calculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
-import app.basic.model.HousePosition;
+import app.chart.model.NatalChart;
+import app.chart.model.HousePosition;
 
 public class HouseCalculator implements Calculator {
 

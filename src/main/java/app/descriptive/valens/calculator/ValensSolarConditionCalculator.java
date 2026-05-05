@@ -3,9 +3,9 @@ package app.descriptive.valens.calculator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import app.basic.TraditionalTables;
-import app.basic.data.Planet;
-import app.basic.model.NatalChart;
-import app.basic.model.PlanetPosition;
+import app.chart.data.Planet;
+import app.chart.model.NatalChart;
+import app.chart.model.PlanetPosition;
 import app.descriptive.common.data.SolarCondition;
 import app.descriptive.common.model.SolarConditionEntry;
 

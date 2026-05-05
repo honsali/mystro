@@ -1,14 +1,14 @@
 package app.doctrine.impl.ptolemy;
 
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
+import app.chart.model.NatalChart;
 import app.descriptive.ptolemy.calculator.PtolemyDescriptiveCalculator;
 import app.doctrine.Doctrine;
-import app.basic.data.HouseSystem;
-import app.basic.data.NodeType;
-import app.basic.data.Terms;
-import app.basic.data.Triplicity;
-import app.basic.data.Zodiac;
+import app.chart.data.HouseSystem;
+import app.chart.data.NodeType;
+import app.chart.data.Terms;
+import app.chart.data.Triplicity;
+import app.chart.data.Zodiac;
 
 public final class PtolemyDoctrine implements Doctrine {
     private final PtolemyDescriptiveCalculator descriptiveCalculator = new PtolemyDescriptiveCalculator(Triplicity.PTOLEMAIC);

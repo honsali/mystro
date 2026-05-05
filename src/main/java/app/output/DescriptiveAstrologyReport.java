@@ -1,6 +1,6 @@
 package app.output;
 
-import app.basic.model.NatalChart;
+import app.chart.model.NatalChart;
 import app.doctrine.Doctrine;
 import app.input.model.CalculationSetting;
 import app.input.model.Subject;

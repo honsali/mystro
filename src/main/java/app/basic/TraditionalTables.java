@@ -1,12 +1,12 @@
 package app.basic;
 
 import java.util.List;
-import app.basic.model.TriplicityRulers;
-import app.basic.data.Element;
-import app.basic.data.Planet;
-import app.basic.data.Terms;
-import app.basic.data.Triplicity;
-import app.basic.data.ZodiacSign;
+import app.chart.model.TriplicityRulers;
+import app.chart.data.Element;
+import app.chart.data.Planet;
+import app.chart.data.Terms;
+import app.chart.data.Triplicity;
+import app.chart.data.ZodiacSign;
 
 public final class TraditionalTables {
     private record TermBoundary(double upperDegreeExclusive, Planet ruler) {

@@ -378,6 +378,7 @@ src/main/java/app/
   App.java
   input/
   basic/
+  chart/
   descriptive/
   doctrine/
   output/
@@ -389,10 +390,12 @@ Important current classes:
 ```text
 app.basic.BasicCalculator
 app.basic.CalculationContext
-app.basic.model.NatalChart
+app.chart.model.NatalChart
 app.doctrine.Doctrine
 app.output.DescriptiveAstrologyReport
 ```
+
+Shared chart data/model classes live under `app.chart.data` and `app.chart.model`. `NatalChart` is the shared chart container: `BasicCalculator` pours root mechanical data first, then doctrine/descriptive calculators enrich or annotate the same chart.
 
 Basic calculators are focused stateless calculators under `app.basic.calculator`.
 

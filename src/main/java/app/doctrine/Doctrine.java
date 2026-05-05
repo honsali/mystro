@@ -2,8 +2,8 @@ package app.doctrine;
 
 import app.basic.BasicCalculator;
 import app.basic.CalculationContext;
-import app.basic.model.NatalChart;
-import app.basic.model.CalculationDefinition;
+import app.chart.model.NatalChart;
+import app.chart.model.CalculationDefinition;
 import app.input.model.CalculationSetting;
 import app.input.model.Subject;
 

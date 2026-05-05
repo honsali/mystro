@@ -2,7 +2,7 @@ package app.descriptive.common.calculator;
 
 import java.time.Instant;
 import app.basic.CalculationContext;
-import app.basic.data.Planet;
+import app.chart.data.Planet;
 import app.descriptive.common.data.SyzygyType;
 import app.descriptive.common.model.PrenatalSyzygyEntry;
 import app.output.Logger;

@@ -10,7 +10,7 @@ import app.basic.calculator.PointCalculator;
 import app.basic.calculator.SectCalculator;
 import app.basic.calculator.SimpleCalculator;
 import app.basic.calculator.SolarPhaseCalculator;
-import app.basic.model.NatalChart;
+import app.chart.model.NatalChart;
 
 public final class BasicCalculator {
 
