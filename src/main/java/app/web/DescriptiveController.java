@@ -1,7 +1,7 @@
 package app.web;
 
 import app.output.DescriptiveAstrologyReport;
-import app.runtime.DescriptiveReportService;
+import app.runtime.DescriptiveReportGenerator;
 
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public final class DescriptiveController {
 
-    private final DescriptiveReportService service;
+    private final DescriptiveReportGenerator generator;
     private final DescriptiveRequestMapper requestMapper;
 
-    public DescriptiveController(DescriptiveReportService service, DescriptiveRequestMapper requestMapper) {
-        this.service = service;
+    public DescriptiveController(DescriptiveReportGenerator generator, DescriptiveRequestMapper requestMapper) {
+        this.generator = generator;
         this.requestMapper = requestMapper;
     }
 
@@ -39,7 +39,7 @@ public final class DescriptiveController {
                     .body(new ErrorResponse(e.getMessage()));
         }
 
-        DescriptiveAstrologyReport report = service.generateDescriptiveReports(resolved.bundle()).get(0);
+        DescriptiveAstrologyReport report = generator.generate(resolved.subject(), resolved.doctrine());
 
         String subjectId = report.getSubject().getId();
         String doctrineId = report.getDoctrine().getId();

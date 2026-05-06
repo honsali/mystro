@@ -47,7 +47,7 @@ public class CalculationContext {
         int result = calculateSwissHouses(fullJulianDay, cusps, ascmc);
         if (result < 0 || Double.isNaN(ascmc[0]) || Double.isNaN(ascmc[1]) || Double.isNaN(ascmc[2])) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris failed to calculate houses");
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         armc = AstroMath.normalize(ascmc[2]);
     }
@@ -55,7 +55,7 @@ public class CalculationContext {
     private void configureEphemerisPath(Subject subject) {
         if (!Files.isDirectory(Path.of(EPHEMERIS_PATH))) {
             Logger.instance.error(subject.getId(), "Required Swiss Ephemeris directory not found: " + EPHEMERIS_PATH);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         swissEph.swe_set_ephe_path(EPHEMERIS_PATH);
     }
@@ -129,7 +129,7 @@ public class CalculationContext {
         requireSwissEphemerisResult(result, planet, "ecliptic coordinates", error);
         if (Double.isNaN(values[0]) || Double.isNaN(values[1])) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris returned invalid values for " + planet + " ecliptic coordinates: " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         return values;
     }
@@ -137,11 +137,11 @@ public class CalculationContext {
     public void requireSwissEphemerisResult(int result, Planet planet, String calculation, StringBuilder error) {
         if (result < 0) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris failed for " + planet + " " + calculation + ": " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         if ((result & SweConst.SEFLG_MOSEPH) != 0 || (result & SweConst.SEFLG_SWIEPH) == 0) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris did not use required file-backed ephemeris for " + planet + " " + calculation + " (flags=" + result + "): " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
     }
 
@@ -171,7 +171,7 @@ public class CalculationContext {
             }
         }
         Logger.instance.error(subject.getId(), "Could not assign quadrant house for longitude " + normalizedLongitude);
-        throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        throw new IllegalArgumentException("Calculation failed. See application logs.");
     }
 
     private boolean isWithinZodiacalArc(double longitude, double start, double end) {
@@ -206,7 +206,7 @@ public class CalculationContext {
         swissEph.swe_azalt(julianDay, SweConst.SE_ECL2HOR, geopos, 0.0, 10.0, eclipticCoordinates, horizontalCoordinates);
         if (Double.isNaN(horizontalCoordinates[1])) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris failed to calculate horizontal altitude");
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         return horizontalCoordinates[1];
     }

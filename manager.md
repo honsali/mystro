@@ -1462,3 +1462,436 @@ Please append an Iteration 19 feedback block to `worker.md` with:
 - Confirmation that REST API shape did not change.
 - Any known limitations.
 - Suggested next audit-driven step.
+
+## Iteration 20 — 2026-05-06 (Revised: REST-only Spring Boot application)
+
+### Manager Review Notes
+This revised Iteration 20 **supersedes the earlier Iteration 20 block**. The user has explicitly changed the target architecture: Mystro should now be an exclusively Spring Boot REST application, not a dual CLI + REST application. Treat this as an intentional architecture/spec change approved by the user.
+
+The earlier Iteration 20 asked for a generator/file-writer split while preserving CLI file output. Do **not** implement that older scope as written. Instead, remove the CLI path and its file-output/run-logger responsibilities, while keeping the pure descriptive generation seam for the REST API.
+
+Baseline from Iteration 19:
+- Spring Boot REST endpoints are already present: `GET /api/doctrines`, `POST /api/descriptive`.
+- `POST /api/descriptive` uses singular explicit `doctrine` and returns `{ "report": {...}, "suggestedFilename": "..." }`.
+- REST responses use Mystro Jackson conventions through the MVC converter, not a global `ObjectMapper` bean.
+- `/api/**` request logging is thread-isolated and ephemeral.
+- Current project version is `1.2.0`; do not change it unless specifically required.
+
+### Goal
+Convert the application to a Spring Boot REST-only application by removing the CLI entrypoint, CLI argument/input-file loading path, server-side descriptive file output path, and CLI run-logger writing, while preserving calculation behavior and existing REST API contracts.
+
+### Scope
+- Remove CLI application entrypoint and Maven CLI execution wiring.
+- Remove or retire CLI-only input loading, report writing, and run-logger writing code that is no longer used.
+- Replace the combined descriptive service with a pure in-memory descriptive report generator for REST.
+- Update documentation and architecture notes to describe REST-only operation.
+- Preserve existing REST endpoints, response shapes, serialization conventions, logging isolation, and calculation output.
+
+### Requirements
+1. Remove the CLI entrypoint and Maven CLI wiring.
+   - Delete `src/main/java/app/App.java`.
+   - Remove `exec-maven-plugin` configuration that points to `app.App` from `pom.xml`.
+   - Ensure `spring-boot-maven-plugin` remains explicitly configured for `app.MystroSpringApplication`.
+   - `mvn exec:java -Dexec.args=...` is no longer a supported verification command.
+2. Remove CLI-only input loading and output-writing code where safe.
+   - Delete CLI argument/input-file loader classes if they are no longer referenced, such as `ArgParser`, `InputLoader`, and `SubjectListParser`.
+   - Delete `JsonReportWriter` and `LoggerWriter` if they become unused after removing CLI file output.
+   - Keep domain/runtime classes still needed by REST, such as `Subject`, `DoctrineLoader`, and `InputListBundle` if still used by `DescriptiveRequestMapper` or the generator.
+   - Do not delete Swiss Ephemeris runtime data under `ephe/`.
+   - Do not delete doctrine modules, chart models, calculators, or REST DTOs/controllers.
+3. Replace `DescriptiveReportService` with pure in-memory generation.
+   - Create or rename to a focused `app.runtime.DescriptiveReportGenerator`.
+   - It should depend on `BasicCalculator` only, or the minimal calculation dependency needed.
+   - It should expose an in-memory method such as `generate(InputListBundle)` returning `List<DescriptiveAstrologyReport>`.
+   - It must perform the same subject × doctrine loop currently used for descriptive generation.
+   - It must still call `doctrine.calculateDescriptive(subject, basicCalculator)` and build `DescriptiveAstrologyReport` with `EngineVersion.get()`, `subject`, `doctrine`, and `natalChart`.
+   - It must not depend on filesystem paths, `JsonReportWriter`, `LoggerWriter`, CLI argument parsing, or Spring web classes.
+   - Delete `DescriptiveReportService` if it only exists as the old combined generate/write facade.
+4. Update Spring/web wiring.
+   - `WebConfig` should register `DescriptiveReportGenerator` instead of `DescriptiveReportService`.
+   - `WebConfig` should not register `JsonReportWriter` or any CLI/file-output component.
+   - `DescriptiveController` should depend on the pure generator and remain thin: request null check, mapper delegation, generator call, response construction.
+   - `POST /api/descriptive` must still not write server output files.
+5. Preserve REST API behavior.
+   - `GET /api/doctrines` remains unchanged.
+   - `POST /api/descriptive` still requires one explicit singular `doctrine` id.
+   - `POST /api/descriptive` response remains `{ "report": {...}, "suggestedFilename": "{subjectId}-{doctrineId}-descriptive.json" }`.
+   - Descriptive report objects still expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart`.
+   - Do not introduce top-level `basicChart`, `descriptive`, or `calculationSetting` fields.
+   - Keep `Cache-Control: no-store` on descriptive success/error responses.
+   - Keep REST error responses JSON-shaped as `{ "error": "..." }` without stack traces.
+   - Keep REST JSON serialization: six-decimal double rounding and Java time strings for report responses.
+6. Update tests.
+   - Existing REST controller tests, object-mapper scoping tests, logger isolation tests, and the ilia/Valens snapshot test must continue to pass.
+   - Update tests that reference `DescriptiveReportService`, `JsonReportWriter`, `App`, or CLI assumptions.
+   - Add a small test if useful to prove `DescriptiveReportGenerator` is pure/in-memory and does not require output-writing dependencies; avoid over-mocking astrology internals.
+   - Do not update the snapshot unless the only difference is an intentional and documented version/report change; this iteration should not change calculation/report content.
+7. Update documentation/specs.
+   - Update `README.md` to remove CLI usage as a supported path and present Spring Boot REST as the only application mode.
+   - Update `NEW_ARCHITECTURE_SPEC.md` so it no longer says the CLI remains the file-writing path or that CLI output is the current implemented path.
+   - Update `reports/spring-boot-conversion-summary.md` to describe REST-only architecture and remove stale CLI, `exec-maven-plugin`, file-output, and run-logger references.
+   - If any report/API contract docs mention CLI output files or server-side REST file writing, update them to say REST returns JSON plus `suggestedFilename`; clients/frontends save files locally if desired.
+   - Keep the doctrine philosophy and calculation conventions unchanged.
+8. Remove stale CLI verification expectations.
+   - Do not run or report the representative CLI command.
+   - The standard verification set for this REST-only iteration is now:
+     ```bash
+     mvn compile
+     mvn test
+     mvn package -DskipTests
+     ```
+   - If practical, also smoke-start the Spring Boot application or document the packaged jar command, but do not add long-running/manual verification as a blocker.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes, including the snapshot test, REST double-rounding test, object-mapper scoping test, and logger isolation tests.
+- `mvn package -DskipTests` passes and packages `app.MystroSpringApplication`.
+- `src/main/java/app/App.java` is removed.
+- `pom.xml` no longer configures `exec-maven-plugin` for `app.App`.
+- CLI-only classes (`ArgParser`, `InputLoader`, `SubjectListParser`, `JsonReportWriter`, `LoggerWriter`) are removed if unused; if any are retained, `worker.md` must justify the retained non-CLI use.
+- `WebConfig` does not register CLI/file-output beans.
+- The web layer depends on a pure in-memory descriptive report generator, not a generate-and-write service.
+- `POST /api/descriptive` and `GET /api/doctrines` response shapes remain unchanged.
+- REST calls do not write output files or run logs on the server.
+- REST `/api/**` logging remains lifecycle-wide isolated and ephemeral.
+- No doctrine implementations, chart model/data classes, REST endpoint shapes, report structure, or astrology calculation behavior are changed.
+- Documentation no longer presents CLI execution as a supported application mode.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not introduce hidden default doctrine selection.
+- Do not introduce sidereal zodiac behavior or unrelated astrology features.
+- Do not delete `ephe/` or treat it as generated output.
+- Do not change `pom.xml` version or regenerate snapshots unless strictly necessary and explicitly documented.
+- Keep the change reviewable: remove CLI-related code, but avoid broad unrelated refactors of calculators, doctrines, chart models, or Swiss Ephemeris handling.
+
+### Feedback Requested
+Please append an Iteration 20 feedback block to `worker.md` for this revised scope with:
+- Completed work summary.
+- Changed/deleted files.
+- Exact verification commands and results.
+- Explanation of the new REST-only runtime architecture.
+- Explanation of what CLI-related pieces were removed and why.
+- Explanation of the pure descriptive generator and Spring wiring.
+- Confirmation that REST API shape, serialization, snapshot, and no-server-file-output behavior did not change.
+- Confirmation that packaging uses `app.MystroSpringApplication` and no CLI `exec-maven-plugin` remains.
+- Any retained formerly-CLI classes and why they are still needed, if applicable.
+- Known limitations/risks.
+- Suggested next audit-driven step.
+
+
+## Iteration 21 — 2026-05-06
+
+### Manager Review Notes
+Iteration 20 is accepted. I reviewed `worker.md`, the REST-only Maven/application wiring, deleted CLI classes, the new `DescriptiveReportGenerator`, `DescriptiveController`, `WebConfig`, `DoctrineLoader`, and the updated REST-only documentation/spec files. I also independently ran:
+
+```bash
+mvn test
+```
+
+It passed with 40 tests. The application is now REST-only: `app.App` and the `exec-maven-plugin` CLI path are removed, Spring Boot packaging remains pointed at `app.MystroSpringApplication`, REST endpoint shapes are unchanged, and the web layer no longer registers file-output beans.
+
+One remaining cleanup is now obvious after removing the CLI: `InputListBundle` is a mutable CLI-era holder that survives only as internal plumbing between `DescriptiveRequestMapper` and `DescriptiveReportGenerator`. Since REST descriptive generation is single-subject/single-doctrine by contract, remove this leftover mutable bundle and pass the resolved domain objects directly through an immutable REST/runtime seam.
+
+### Goal
+Remove the obsolete `InputListBundle` plumbing and make the REST descriptive generation path use explicit immutable subject/doctrine inputs.
+
+### Scope
+- Replace `InputListBundle` usage in the REST descriptive path.
+- Delete `InputListBundle` if it becomes unused.
+- Keep `POST /api/descriptive` single-doctrine and response shape unchanged.
+- Preserve calculation behavior, doctrine behavior, serialization, logging isolation, and snapshot output.
+
+### Requirements
+1. Refactor request resolution.
+   - Update `DescriptiveRequestMapper` so its resolved result contains the actual `Subject` and `Doctrine` needed for calculation.
+   - Do not construct or return `InputListBundle` from the mapper.
+   - Keep current validation behavior and error messages unless a tiny wording cleanup is necessary and documented.
+2. Refactor generation.
+   - Update `DescriptiveReportGenerator` to accept explicit immutable inputs, preferably a method like:
+     ```java
+     DescriptiveAstrologyReport generate(Subject subject, Doctrine doctrine)
+     ```
+   - It must still call `doctrine.calculateDescriptive(subject, basicCalculator)` exactly once for a REST descriptive request.
+   - It must still build `DescriptiveAstrologyReport` with `EngineVersion.get()`, `subject`, `doctrine`, and `natalChart`.
+   - It must remain pure in-memory and not depend on web classes, filesystem paths, CLI classes, or output writers.
+3. Update controller and tests.
+   - `DescriptiveController` should call the new generator method directly with the resolved subject/doctrine.
+   - Existing REST controller tests, snapshot test, object-mapper tests, and logger isolation tests must continue to pass.
+   - Add a focused unit test for `DescriptiveRequestMapper` only if it stays small and helps protect the new resolved shape; do not over-mock astrology internals.
+4. Delete obsolete model.
+   - Delete `src/main/java/app/input/model/InputListBundle.java` if no longer referenced.
+   - Run a search to ensure no production/test/docs references remain unless clearly intentional.
+5. Documentation updates.
+   - Update `NEW_ARCHITECTURE_SPEC.md` and `reports/spring-boot-conversion-summary.md` to remove references to `InputListBundle`.
+   - Describe the flow as: request DTO → mapper resolves `Subject` + `Doctrine` → generator returns one `DescriptiveAstrologyReport`.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes, including the snapshot test, REST double-rounding test, object-mapper scoping test, and logger isolation tests.
+- `mvn package -DskipTests` passes.
+- `InputListBundle` is deleted or has a clearly documented retained use.
+- `rg "InputListBundle" src/main/java src/test/java NEW_ARCHITECTURE_SPEC.md reports README.md AGENTS.md` returns no stale references if the class is deleted.
+- `POST /api/descriptive` and `GET /api/doctrines` response shapes remain unchanged.
+- REST descriptive generation remains no-server-file-output and request logs remain ephemeral.
+- No doctrine implementations, chart model/data classes, report structure, REST endpoint shapes, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not reintroduce CLI execution, CLI input files, output writers, run-log files, or `exec-maven-plugin`.
+- Do not introduce hidden default doctrine selection.
+- Do not change `pom.xml` version or regenerate snapshots unless strictly necessary and explicitly documented.
+- Do not address broader refactors such as Swiss Ephemeris pooling, application.yml, authentication, persistence, frontend assets, OpenAPI, or deployment infrastructure.
+- Keep this iteration focused on removing the obsolete bundle plumbing.
+
+### Feedback Requested
+Please append an Iteration 21 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed/deleted files.
+- Exact verification commands and results.
+- Explanation of the new mapper → generator data flow.
+- Confirmation that `InputListBundle` is removed or why it remains.
+- Confirmation that REST API shape, snapshot, serialization, and no-server-file-output behavior did not change.
+- Known limitations/risks.
+- Suggested next audit-driven step.
+
+## Iteration 22 — 2026-05-06
+
+### Manager Review Notes
+Iteration 21 is accepted. I reviewed `worker.md`, `DescriptiveRequestMapper`, `DescriptiveReportGenerator`, `DescriptiveController`, the new mapper test, and the documentation updates. I independently ran:
+
+```bash
+mvn test
+mvn package -DskipTests
+```
+
+Both passed. `InputListBundle` is gone, the mapper now resolves `Subject` + `Doctrine` directly, the generator produces one in-memory `DescriptiveAstrologyReport`, and REST endpoint shapes/snapshot behavior remain unchanged.
+
+Next, address two small Spring Boot polish items from `audit_report.md`: the app still has no `application.yml` / `application.properties`, and `WebConfig` still uses field-injected `@Value` for CORS configuration. Move the REST configuration into normal Spring Boot configuration properties without changing API behavior.
+
+### Goal
+Introduce explicit Spring Boot configuration for Mystro REST settings and replace `WebConfig` field injection with constructor-injected configuration properties.
+
+### Scope
+- Add application configuration under `src/main/resources`.
+- Move CORS allowed-origin defaults into configuration.
+- Replace `@Value` field injection in `WebConfig` with a typed configuration properties object or equivalent constructor-injected bean.
+- Preserve current CORS behavior, endpoints, serialization, logging isolation, and calculation behavior.
+
+### Requirements
+1. Add explicit application configuration.
+   - Create `src/main/resources/application.yml` or `application.properties`.
+   - Include the current default CORS allowed origins for local frontend development:
+     - `http://localhost:5173`
+     - `http://localhost:3000`
+   - Keep the property name aligned with existing docs if practical: `mystro.cors.allowed-origins`.
+   - Do not add unrelated server/deployment settings unless strictly necessary.
+2. Add typed/configuration-property wiring.
+   - Introduce a small class/record such as `CorsProperties` or `MystroWebProperties` under `app.web` or a clear config package.
+   - Bind it with Spring Boot configuration properties, e.g. `@ConfigurationProperties(prefix = "mystro.cors")` or an equivalent small mechanism.
+   - It should expose the allowed origins as an immutable/list-like value.
+   - It should defensively trim origins, ignore blank entries, and fall back to the two local defaults if the configured list is missing or empty.
+3. Refactor `WebConfig`.
+   - Remove `@Value` field injection.
+   - Use constructor injection for the typed properties object.
+   - Keep CORS mapping scoped to `/api/**`.
+   - Preserve allowed methods `GET`, `POST`, `OPTIONS` and allowed header `Content-Type`.
+   - Keep existing Jackson converter, `BasicCalculator`, `DoctrineLoader`, and `DescriptiveReportGenerator` beans unchanged except for necessary constructor/config changes.
+4. Update tests.
+   - Update existing CORS/property parsing tests to cover the new properties object and/or `WebConfig` behavior.
+   - Preserve coverage for trimming whitespace, ignoring blanks, default fallback, and single-origin configuration.
+   - Existing REST controller tests, snapshot test, object-mapper scoping tests, and logger isolation tests must continue to pass.
+5. Update documentation.
+   - Update README and `reports/spring-boot-conversion-summary.md` if they mention the CORS property or configuration behavior.
+   - Document that defaults live in `application.yml` and may still be overridden by `mystro.cors.allowed-origins` / `MYSTRO_CORS_ALLOWED_ORIGINS`.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes, including snapshot, REST rounding, object-mapper scoping, CORS config, and logger isolation tests.
+- `mvn package -DskipTests` passes.
+- `src/main/resources/application.yml` or `.properties` exists with current local CORS defaults.
+- `WebConfig` no longer uses `@Value` field injection.
+- CORS behavior for `/api/**` remains equivalent to before.
+- `POST /api/descriptive` and `GET /api/doctrines` response shapes remain unchanged.
+- No CLI path is reintroduced.
+- No doctrine implementations, chart model/data classes, report structure, REST endpoint shapes, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not introduce hidden default doctrine selection.
+- Do not change `pom.xml` version or regenerate snapshots unless strictly necessary and explicitly documented.
+- Keep this iteration focused on Spring Boot configuration/CORS property wiring.
+
+### Feedback Requested
+Please append an Iteration 22 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed/deleted files.
+- Exact verification commands and results.
+- Explanation of the new configuration-property wiring and defaults.
+- Confirmation that CORS behavior remains equivalent.
+- Confirmation that REST API shape, snapshot, serialization, and no-server-file-output behavior did not change.
+- Known limitations/risks.
+- Suggested next audit-driven step.
+
+## Iteration 23 — 2026-05-06
+
+### Manager Review Notes
+Iteration 22 is accepted. I reviewed `worker.md`, `application.yml`, `CorsProperties`, `WebConfig`, `CorsPropertiesTest`, and the related README/handoff documentation updates. I independently ran:
+
+```bash
+mvn test
+mvn package -DskipTests
+```
+
+Both passed. The new typed CORS configuration is clean: defaults live in `src/main/resources/application.yml`, `WebConfig` no longer uses `@Value` field injection, and the CORS behavior remains scoped to `/api/**` with the same origins/methods/header behavior.
+
+Next, follow the roadmap's small cleanup step: remove dead Java output model types left over from earlier report-shape experiments. Current search shows `app.output.AstrologyReport` is only a marker interface implemented by `DescriptiveAstrologyReport`, while `app.output.DoctrineSummary` and `app.output.ReportMetadata` appear unused Java classes. Do not confuse the unused Java `DoctrineSummary` class with the TypeScript-like `DoctrineSummary` interface documented in `reports/react-api-contract.md`; the API contract documentation may keep that frontend/interface name if useful.
+
+### Goal
+Delete unused Java output model types and simplify `DescriptiveAstrologyReport` without changing REST report shape or calculation behavior.
+
+### Scope
+- Remove unused Java classes/interfaces in `app.output` only after confirming they are not referenced by production or test code.
+- Preserve `DescriptiveAstrologyReport` fields/getters and serialized JSON shape.
+- Update docs/roadmap only where they mention the removed Java types or current roadmap status.
+
+### Requirements
+1. Confirm dead-code status before deleting.
+   - Search production and test sources for:
+     - `AstrologyReport`
+     - `DoctrineSummary`
+     - `ReportMetadata`
+   - Confirm `DoctrineSummary` references in `reports/react-api-contract.md` are documentation/frontend contract references, not Java class usages.
+2. Delete unused Java output types if confirmed unused.
+   - Delete `src/main/java/app/output/AstrologyReport.java` if it remains marker-only.
+   - Delete `src/main/java/app/output/DoctrineSummary.java` if no Java code uses it.
+   - Delete `src/main/java/app/output/ReportMetadata.java` if no Java code uses it.
+3. Simplify descriptive report class.
+   - Remove `implements AstrologyReport` from `DescriptiveAstrologyReport` if `AstrologyReport` is deleted.
+   - Do not change its constructor, getters, fields, or JSON output shape unless required by compilation.
+4. Update documentation/roadmap if needed.
+   - Update `reports/spring-boot-conversion-summary.md` only if it mentions the removed Java output types.
+   - Update `REST_ONLY_ROADMAP.md` to reflect that Iteration 22 is complete and Iteration 23 is the active dead-output-type cleanup.
+   - Do not remove or rename frontend-oriented TypeScript interface examples from `reports/react-api-contract.md` solely because a Java class with the same name was deleted.
+5. Preserve current behavior.
+   - `POST /api/descriptive` response remains `{ "report": {...}, "suggestedFilename": "..." }`.
+   - Report objects still expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart`.
+   - `GET /api/doctrines` remains unchanged.
+   - Snapshot output must remain unchanged.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes, including snapshot, REST rounding, object-mapper scoping, CORS config, and logger isolation tests.
+- `mvn package -DskipTests` passes.
+- The unused Java output types are deleted, or any retained type has a clear retained-use explanation in `worker.md`.
+- `DescriptiveAstrologyReport` serializes with the same top-level report shape as before.
+- No CLI path is reintroduced.
+- No REST endpoint shapes, doctrine implementations, chart model/data classes, report structure, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not introduce hidden default doctrine selection.
+- Do not change `pom.xml` version or regenerate snapshots unless strictly necessary and explicitly documented.
+- Keep this iteration focused on dead Java output type cleanup and minimal roadmap/doc updates.
+
+### Feedback Requested
+Please append an Iteration 23 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed/deleted files.
+- Exact verification commands and results.
+- Search evidence that the deleted Java output types were unused.
+- Confirmation that REST API shape, snapshot, serialization, CORS behavior, and no-server-file-output behavior did not change.
+- Any known limitations/risks.
+- Suggested finalization step.
+
+## Iteration 24 — 2026-05-06
+
+### Manager Review Notes
+Iteration 23 is accepted. I reviewed `worker.md`, `DescriptiveAstrologyReport`, the deleted Java output model types, and `REST_ONLY_ROADMAP.md`. I also independently ran:
+
+```bash
+mvn test
+```
+
+It passed with 42 tests. The deleted Java output types were genuinely unused: `AstrologyReport` was only a marker interface, `ReportMetadata` had no Java usage, and the only remaining `DoctrineSummary` references are frontend/API-contract documentation references in `reports/react-api-contract.md`. REST report shape and snapshot behavior remain unchanged.
+
+This should be the final REST-only conversion iteration unless the final verification pass discovers stale operational guidance or a startup/package issue.
+
+### Goal
+Perform the final REST-only conversion consistency pass: documentation, stale-reference scan, package/startup verification, and roadmap closure.
+
+### Scope
+- Documentation and verification focused finalization.
+- No new product features.
+- No calculation, doctrine, chart model, API shape, or serialization changes unless fixing a stale/documentation-only issue.
+
+### Requirements
+1. Update the roadmap and summary status.
+   - Update `REST_ONLY_ROADMAP.md` so Iteration 23 is marked complete and Iteration 24 is the final verification/documentation pass.
+   - Update `reports/spring-boot-conversion-summary.md` if any test counts, key files, or known limitations are stale after Iterations 22–23.
+2. Scan for stale CLI/file-output guidance.
+   - Search user-facing and project guidance docs for stale active instructions such as:
+     - `mvn exec:java`
+     - `app.App`
+     - `exec-maven-plugin`
+     - `--subjects`
+     - `--doctrines`
+     - `output/run-logger.json`
+     - `JsonReportWriter`
+     - `LoggerWriter`
+     - `InputLoader`
+     - `InputListBundle`
+   - It is acceptable for `manager.md`, `worker.md`, `audit_report.md`, or historical roadmap/review notes to mention old terms as history; do not rewrite historical iteration logs.
+   - Active docs/specs should not present CLI execution or server-side report files as supported behavior.
+3. Verify final REST-only code shape.
+   - Confirm `src/main/java/app/App.java` is absent.
+   - Confirm `pom.xml` has no `exec-maven-plugin` and still configures Spring Boot packaging for `app.MystroSpringApplication`.
+   - Confirm `src/main/resources/application.yml` is packaged as an application resource.
+   - Confirm `WebConfig` does not use `@Value` and does not register file-output beans.
+   - Confirm REST generation still flows request mapper → `Subject`/`Doctrine` → `DescriptiveReportGenerator` → `DescriptiveAstrologyReport`.
+4. Run final verification commands sequentially.
+   - Required:
+     ```bash
+     mvn compile
+     mvn test
+     mvn package -DskipTests
+     ```
+   - Also run targeted searches documenting no stale active references in active docs/source.
+   - If practical, perform a short Spring Boot startup smoke test of the packaged jar or `mvn spring-boot:run` and stop it after startup. If not practical, document why and rely on package/test verification.
+5. Preserve current behavior.
+   - `GET /api/doctrines` unchanged.
+   - `POST /api/descriptive` unchanged: singular explicit `doctrine`, response `{ "report": {...}, "suggestedFilename": "..." }`.
+   - REST descriptive calls still do not write output files or run logs on the server.
+   - `/api/**` request logging remains lifecycle-wide isolated and ephemeral.
+   - JSON serialization and the committed snapshot remain unchanged.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes with the current expected test suite.
+- `mvn package -DskipTests` passes and produces the Spring Boot jar.
+- Final docs/specs/roadmap describe REST-only operation and do not contain stale active CLI instructions.
+- `pom.xml` has no CLI `exec-maven-plugin` path and still packages `app.MystroSpringApplication`.
+- `src/main/java/app/App.java` and the removed CLI/file-output classes remain absent.
+- `src/main/resources/application.yml` exists with CORS defaults.
+- REST API shapes, snapshot, serialization, CORS behavior, logging isolation, and no-server-file-output behavior remain unchanged.
+- No doctrine implementations, chart model/data classes, report structure, or astrology calculation behavior are changed.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not introduce hidden default doctrine selection.
+- Do not change `pom.xml` version or regenerate snapshots unless strictly necessary and explicitly documented.
+- Keep this iteration focused on final consistency, documentation, and verification.
+
+### Feedback Requested
+Please append an Iteration 24 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed/deleted files.
+- Exact verification commands and results.
+- Stale-reference search commands and findings.
+- Package/startup verification result or reason startup smoke test was skipped.
+- Confirmation that REST API shape, snapshot, serialization, CORS behavior, logging isolation, and no-server-file-output behavior did not change.
+- Confirmation that the REST-only conversion can be considered complete, or a clear list of remaining blockers if not.

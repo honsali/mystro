@@ -56,7 +56,7 @@ public class SyzygyCalculator {
             laterElongation = earlierElongation;
         }
         Logger.instance.error(ctx.getSubject().getId(), "Could not find previous syzygy within " + maximumLookbackDays + " days");
-        throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+        throw new IllegalArgumentException("Calculation failed. See application logs.");
     }
 
     private Double crossedSyzygyElongation(double earlierElongation, double laterElongation, boolean initialInterval) {

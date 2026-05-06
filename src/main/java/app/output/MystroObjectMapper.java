@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Shared ObjectMapper factory for Mystro JSON conventions.
- * Both CLI file output and REST response serialization should use this.
+ * REST response serialization and other Mystro-specific JSON helpers should use this.
  */
 public final class MystroObjectMapper {
 

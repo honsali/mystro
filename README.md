@@ -1,6 +1,6 @@
 # Mystro
 
-Mystro is a self-contained Java traditional astrology calculation engine.
+Mystro is a self-contained Java traditional astrology calculation engine exposed as a Spring Boot REST application.
 
 The authoritative architecture specification is:
 
@@ -9,18 +9,10 @@ The authoritative architecture specification is:
 ## Current architecture
 
 ```text
-Input loading
-→ Input validation / normalization
+REST request validation / normalization
 → Doctrine descriptive calculation, including doctrine-owned natal chart calculation
 → Doctrine predictive calculation
-→ Formatting / printing
-```
-
-Current output families:
-
-```text
-Natal data × Doctrine modules → descriptive output
-Natal data × Doctrine modules × inquiry periods → predictive output
+→ JSON response
 ```
 
 A doctrine is a hardcoded Java knowledge module, not a settings profile.
@@ -29,15 +21,15 @@ A doctrine is a hardcoded Java knowledge module, not a settings profile.
 
 Implemented now:
 
-- natal input loading from `input/subject-list.json`
-- explicit CLI subject/doctrine selection
+- Spring Boot REST API for descriptive report generation
+- explicit doctrine discovery via `GET /api/doctrines`
+- explicit single-doctrine descriptive generation via `POST /api/descriptive`
 - doctrine-owned descriptive calculation
 - shared Swiss Ephemeris-backed `BasicCalculator`
 - unified `NatalChart` descriptive output
 - Valens and Ptolemy descriptive doctrine calculations
-- JSON report writing
-- run logging
-- Spring Boot REST API for descriptive report generation
+- REST JSON serialization with Mystro rounding/time conventions
+- thread-isolated ephemeral request logging for `/api/**`
 
 Current descriptive reports expose top-level:
 
@@ -47,11 +39,9 @@ engineVersion, subject, doctrine, natalChart
 
 There is no top-level `basicChart` key and no top-level `descriptive` key.
 
-## Input
+## Representative natal data shape
 
-`input/subject-list.json` contains natal data only.
-
-Current natal entry shape:
+The REST API accepts natal birth data directly in the request body:
 
 ```json
 {
@@ -60,7 +50,8 @@ Current natal entry shape:
   "birthTime": "22:55:00",
   "latitude": 50.60600755996812,
   "longitude": 3.0333769552426793,
-  "utcOffset": "+01:00"
+  "utcOffset": "+01:00",
+  "doctrine": "valens"
 }
 ```
 
@@ -69,23 +60,19 @@ Current natal entry shape:
 - Java 17 is required.
 - Swiss Ephemeris data files under `ephe/` are required runtime data.
 
-## CLI
+## Build and run
 
-Build:
+Compile:
 
 ```bash
 mvn compile
 ```
 
-Run a subject with explicit doctrine modules:
+Run tests:
 
 ```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+mvn test
 ```
-
-No hidden default doctrine should be introduced.
-
-## Spring Boot API
 
 Start the web application:
 
@@ -95,11 +82,29 @@ mvn spring-boot:run
 
 The server starts on port 8080 by default.
 
+### Packaged jar
+
+Build a standalone jar:
+
+```bash
+mvn package -DskipTests
+```
+
+Run it:
+
+```bash
+java -jar target/mystro-1.2.0.jar
+```
+
+The `ephe/` directory must be available from the working directory for Swiss Ephemeris calculations.
+
+## Spring Boot API
+
 ### CORS (React frontend development)
 
 CORS is configured for `/api/**` to allow local React frontend development.
 
-Default allowed origins:
+Default allowed origins are defined in `src/main/resources/application.yml`:
 - `http://localhost:5173` (Vite dev server)
 - `http://localhost:3000` (Create React App)
 
@@ -115,6 +120,8 @@ Or via environment variable:
 set MYSTRO_CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 mvn spring-boot:run
 ```
+
+Blank or whitespace-only configured origins are ignored. If the configured list is missing or empty, Mystro falls back to the two local defaults above.
 
 CORS does not mean data is stored; the backend remains stateless and ephemeral.
 
@@ -202,7 +209,7 @@ Response shape:
 ```json
 {
   "report": {
-    "engineVersion": "1.0.0",
+    "engineVersion": "1.2.0",
     "subject": { ... },
     "doctrine": { ... },
     "natalChart": { ... }
@@ -216,7 +223,7 @@ Notes:
 - The `suggestedFilename` is a hint for the frontend to use when saving the report locally.
 - REST requests do not write output files; the backend is stateless.
 - Responses include `Cache-Control: no-store`.
-- JSON serialization uses the same conventions as file output: doubles are rounded to six decimal places, dates are serialized as strings not timestamps.
+- JSON serialization uses Mystro conventions: doubles are rounded to six decimal places, dates are serialized as strings not timestamps.
 - The `engineVersion` in reports is resolved from Maven metadata embedded in the jar, so it is correct even when running from a packaged jar without `pom.xml`.
 
 ### REST error responses
@@ -237,47 +244,18 @@ Common `POST /api/descriptive` 400 cases:
 - malformed JSON → `{ "error": "Malformed or missing request body" }`
 - invalid latitude/longitude → `{ "error": "Latitude out of range: ..." }` or `{ "error": "Longitude out of range: ..." }`
 
-Unexpected server errors return HTTP 500 with `{ "error": "Internal server error" }` (stack trace logged server-side only).
+Unexpected server errors return HTTP 500 with `{ "error": "Internal server error" }`.
 
-### Packaged jar
-
-Build a standalone jar:
-
-```bash
-mvn package -DskipTests
-```
-
-Run it:
-
-```bash
-java -jar target/mystro-1.0.0.jar
-```
-
-The `ephe/` directory must be available from the working directory for Swiss Ephemeris calculations.
-
-### Privacy and local-first usage
+## Privacy and local-first usage
 
 The REST API is designed for privacy-friendly, local-first frontend usage:
 
 - The backend is stateless and ephemeral: it calculates and returns, nothing is stored.
 - REST descriptive calls do not write output files on the server.
-- REST calculation logging is thread-isolated and ephemeral; request calculation logs are not retained by default.
+- `/api/**` request logging is thread-isolated and ephemeral; request calculation logs are not retained by default.
 - Responses include `Cache-Control: no-store` to discourage caching of chart data.
 - The frontend should download and save report JSON locally using the `suggestedFilename`.
 - One REST call produces one report for one doctrine. To get reports for multiple doctrines, call the endpoint once per selected doctrine and save one file per doctrine.
 - No authentication, database, or chart history exists on the backend.
 
-Note: while the backend does not store data, network infrastructure (proxies, load balancers) may still see HTTP request/response contents. This design is privacy-friendly, not absolute anonymity.
-
-## Current output
-
-```text
-output/{subjectId}/{doctrineId}-descriptive.json
-output/run-logger.json
-```
-
-Target predictive output path:
-
-```text
-output/{subjectId}/{doctrineId}-predictive.json
-```
+Note: while the backend does not store data, network infrastructure may still see HTTP request/response contents. This design is privacy-friendly, not absolute anonymity.

@@ -4,7 +4,7 @@ import app.chart.model.NatalChart;
 import app.doctrine.Doctrine;
 import app.input.model.Subject;
 
-public class DescriptiveAstrologyReport implements AstrologyReport {
+public class DescriptiveAstrologyReport {
     private final String engineVersion;
     private final Subject subject;
     private final Doctrine doctrine;

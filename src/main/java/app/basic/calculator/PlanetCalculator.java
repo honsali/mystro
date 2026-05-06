@@ -60,7 +60,7 @@ public class PlanetCalculator implements Calculator {
         ctx.requireSwissEphemerisResult(result, planet, "position", error);
         if (Double.isNaN(values[0])) {
             Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris returned invalid values for " + planet + ": " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         double longitude = AstroMath.normalize(values[0]);
         EquatorialPosition equatorial = equatorialPosition(planet, swissPlanetId, julianDay, ctx);
@@ -81,7 +81,7 @@ public class PlanetCalculator implements Calculator {
         ctx.requireSwissEphemerisResult(result, planet, "equatorial position", error);
         if (Double.isNaN(values[0]) || Double.isNaN(values[1])) {
             Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris returned invalid equatorial values for " + planet + ": " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         return new EquatorialPosition(AstroMath.normalize(values[0]), values[1]);
     }

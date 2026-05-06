@@ -2,7 +2,7 @@
 
 ## 1. Project goal
 
-Mystro is a self-contained Java traditional astrology calculation engine.
+Mystro is a self-contained Java traditional astrology calculation engine exposed as a Spring Boot REST application.
 
 Current output families:
 
@@ -11,25 +11,18 @@ Natal data × Doctrine modules → descriptive output
 Natal data × Doctrine modules × inquiry periods → predictive output
 ```
 
-There are only two report files per requested subject/doctrine:
-
-```text
-output/{subjectId}/{doctrineId}-descriptive.json
-output/{subjectId}/{doctrineId}-predictive.json
-```
-
-Predictive output is architectural target work; current implemented CLI output is descriptive JSON plus run logging, and current implemented REST output is stateless descriptive calculation JSON.
+Predictive output is still an architectural target. The currently implemented application mode is stateless REST descriptive calculation JSON.
 
 ---
 
 ## 2. Current pipeline
 
 ```text
-Input loading
+REST request loading
 → Input validation / normalization
 → Doctrine descriptive calculation
 → Doctrine predictive calculation
-→ Formatting / printing
+→ JSON response
 ```
 
 Basic chart calculation is not a separate report stage. It is shared infrastructure used inside doctrine-owned descriptive and predictive calculation.
@@ -37,49 +30,34 @@ Basic chart calculation is not a separate report stage. It is shared infrastruct
 Current descriptive runtime flow:
 
 ```text
-InputLoader
-  ↓
-InputListBundle(subjects, doctrines)
-  ↓
-for each subject × doctrine:
-    doctrine.calculateDescriptive(subject, BasicCalculator)
-      ↓
-    CalculationContext(subject, doctrine calculation choices)
-      ↓
-    doctrine.calculateNatalChart(ctx, BasicCalculator)
-      ↓
-    NatalChart
-      ↓
-    doctrine.describe(ctx, natalChart)
-      ↓
-    doctrine calculators pour data into NatalChart
-      ↓
-    DescriptiveAstrologyReport
-      ↓
-    output/{subjectId}/{doctrineId}-descriptive.json
-```
-
-The application layer writes reports. The doctrine owns when and how `BasicCalculator` is called.
-
-Spring Boot REST adapter flow:
-
-```text
 POST /api/descriptive
   ↓
 DescriptiveRequest(id, birth data, doctrine)
   ↓
-DescriptiveRequestMapper validates and builds one-subject/one-doctrine InputListBundle
+DescriptiveRequestMapper validates and resolves Subject + Doctrine
   ↓
-DescriptiveController runs calculation with thread-isolated ephemeral logging
+LoggerIsolationFilter wraps /api/** request lifecycle in thread-isolated ephemeral logging
   ↓
-DescriptiveReportService.generateDescriptiveReports(...)
+DescriptiveReportGenerator.generate(subject, doctrine)
+  ↓
+doctrine.calculateDescriptive(subject, BasicCalculator)
+  ↓
+CalculationContext(subject, doctrine calculation choices)
+  ↓
+doctrine.calculateNatalChart(ctx, BasicCalculator)
+  ↓
+NatalChart
+  ↓
+doctrine.describe(ctx, natalChart)
+  ↓
+doctrine calculators pour data into NatalChart
   ↓
 DescriptiveAstrologyReport
   ↓
 { "report": { ... }, "suggestedFilename": "{subjectId}-{doctrineId}-descriptive.json" }
 ```
 
-The REST adapter is stateless and local-first: it does not write output files by default. A frontend can call once per doctrine and save one local JSON report file per doctrine. The CLI remains the file-writing path.
+The REST adapter is stateless and local-first: it does not write output files. A frontend can call once per doctrine and save one local JSON report file per doctrine.
 
 ---
 
@@ -106,34 +84,15 @@ Each doctrine defines:
 - how it pours doctrine-specific data into NatalChart or predictive reports
 ```
 
-Absent concepts are simply absent from that doctrine's output. Execution-level errors belong to run logging/application handling, not to astrology report data.
+Absent concepts are simply absent from that doctrine's output. Execution-level errors belong to application handling/logging, not to astrology report data.
 
 ---
 
 ## 4. Current inputs
 
-Natal input records contain birth data only. The current native input file is `input/subject-list.json`.
+The current application input is REST JSON containing natal birth data plus one explicit doctrine id.
 
-Current native input shape:
-
-```json
-{
-  "id": "ilia",
-  "birthDate": "1975-07-14",
-  "birthTime": "22:55:00",
-  "latitude": 50.60600755996812,
-  "longitude": 3.0333769552426793,
-  "utcOffset": "+01:00"
-}
-```
-
-Doctrine selection is explicit through CLI:
-
-```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
-```
-
-REST descriptive calculation also requires an explicit singular `doctrine` id:
+Current request shape:
 
 ```json
 {
@@ -148,6 +107,8 @@ REST descriptive calculation also requires an explicit singular `doctrine` id:
 ```
 
 No hidden default doctrine should be introduced.
+
+The repository may still contain representative natal fixtures such as `input/subject-list.json`, but the application does not load runtime subjects from that file anymore.
 
 There is currently no calculation settings object. Do not add settings until they are wired into calculation or reporting behavior.
 
@@ -212,7 +173,7 @@ Current top-level report shape:
 
 ```json
 {
-  "engineVersion": "1.0.0",
+  "engineVersion": "1.2.0",
   "subject": {},
   "doctrine": {},
   "natalChart": {}
@@ -224,7 +185,7 @@ The REST descriptive endpoint wraps exactly one such report:
 ```json
 {
   "report": {
-    "engineVersion": "1.0.0",
+    "engineVersion": "1.2.0",
     "subject": {},
     "doctrine": {},
     "natalChart": {}
@@ -389,31 +350,26 @@ To add a doctrine, implement `app.doctrine.Doctrine` under `app.doctrine.impl.<d
 
 ## 10. Output and logging
 
-Current descriptive output path:
+Current descriptive REST response shape:
 
-```text
-output/{subjectId}/{doctrineId}-descriptive.json
+```json
+{
+  "report": { ... },
+  "suggestedFilename": "{subjectId}-{doctrineId}-descriptive.json"
+}
 ```
 
-Target predictive output path:
+The backend does not write descriptive output files. Frontends may use `suggestedFilename` as a local download hint.
 
-```text
-output/{subjectId}/{doctrineId}-predictive.json
-```
-
-Run logging currently writes in the CLI path:
-
-```text
-output/run-logger.json
-```
+Predictive output remains a target architecture area; no predictive REST endpoint is implemented yet.
 
 Execution-level statuses are not astrological results and do not belong inside doctrine report data.
 
-REST `/api/**` requests use lifecycle-wide thread-isolated ephemeral logging via `LoggerIsolationFilter` so per-request log entries do not accumulate in the global CLI logger. REST does not return execution logs in report JSON.
+REST `/api/**` requests use lifecycle-wide thread-isolated ephemeral logging via `LoggerIsolationFilter`, so request calculation log entries do not accumulate or persist by default. REST does not return execution logs in report JSON.
 
 The report `engineVersion` is resolved from package implementation metadata, Maven `pom.properties`, or the first project `<version>` in `pom.xml` for development runs.
 
-JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision. File output and REST responses share the same Mystro Jackson configuration. REST descriptive responses and errors use `Cache-Control: no-store`.
+JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision. REST responses use the same Mystro Jackson configuration as file-oriented helpers such as `MystroObjectMapper`, while Spring Boot's global application `ObjectMapper` is not intentionally replaced. REST descriptive responses and errors use `Cache-Control: no-store`.
 
 ---
 
@@ -423,7 +379,6 @@ Current app code lives under:
 
 ```text
 src/main/java/app/
-  App.java
   MystroSpringApplication.java
   input/
   basic/
@@ -444,7 +399,7 @@ app.basic.CalculationContext
 app.chart.model.NatalChart
 app.doctrine.Doctrine
 app.output.DescriptiveAstrologyReport
-app.runtime.DescriptiveReportService
+app.runtime.DescriptiveReportGenerator
 app.MystroSpringApplication
 ```
 
@@ -496,18 +451,22 @@ After Java changes, run:
 mvn compile
 ```
 
-Representative runtime check:
-
-```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
-```
-
-After web/API changes, run:
+After behavior or web/API changes, run:
 
 ```bash
 mvn test
 ```
 
-The CLI subject selector is `--subjects`.
+For packaging verification, run:
+
+```bash
+mvn package -DskipTests
+```
+
+To start the application locally:
+
+```bash
+mvn spring-boot:run
+```
 
 Documentation should keep this file authoritative and remove stale architecture references instead of creating competing descriptions.

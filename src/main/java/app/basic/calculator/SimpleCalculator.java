@@ -16,7 +16,7 @@ public class SimpleCalculator implements Calculator {
         int result = ctx.getSwissEph().swe_calc_ut(ctx.getFullJulianDay(), SweConst.SE_ECL_NUT, 0, values, error);
         if (result < 0 || Double.isNaN(values[0])) {
             Logger.instance.error(ctx.getSubject().getId(), "Swiss Ephemeris failed to calculate obliquity: " + error);
-            throw new IllegalArgumentException("Calculation failed. See output/run-logger.json");
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
 
         double julianDayUt = ctx.getFullJulianDay();

@@ -55,8 +55,8 @@ public final class Logger {
     /**
      * Run a block with isolated per-thread logging. Calls to {@link #info} and
      * {@link #error} during the block write to a thread-local list instead of the
-     * global CLI log. If an isolated context is already active on the current thread
-     * (nested call), it is saved and restored after the block finishes.
+     * global logger entries. If an isolated context is already active on the current
+     * thread (nested call), it is saved and restored after the block finishes.
      */
     public <T> T runIsolated(Callable<T> callable) throws Exception {
         List<LogEntry> previous = isolatedEntries.get();

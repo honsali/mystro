@@ -2,7 +2,6 @@ package app.web;
 
 import app.doctrine.Doctrine;
 import app.input.DoctrineLoader;
-import app.input.model.InputListBundle;
 import app.input.model.Subject;
 
 import org.springframework.stereotype.Component;
@@ -13,7 +12,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
 /**
  * Validates a {@link DescriptiveRequest} and converts it to domain objects.
@@ -30,7 +28,7 @@ public final class DescriptiveRequestMapper {
     /**
      * Result of a successful request mapping.
      */
-    public record ResolvedBundle(InputListBundle bundle, Subject subject, Doctrine doctrine) {}
+    public record ResolvedBundle(Subject subject, Doctrine doctrine) {}
 
     /**
      * Validate and convert the request. Throws {@link IllegalArgumentException} with a
@@ -49,11 +47,7 @@ public final class DescriptiveRequestMapper {
             throw new IllegalArgumentException("Unknown doctrine: " + doctrineId.trim());
         }
 
-        InputListBundle bundle = new InputListBundle(List.of(subject.getId()), List.of(doctrineId.trim()));
-        bundle.setSubjects(List.of(subject));
-        bundle.setDoctrines(List.of(doctrine));
-
-        return new ResolvedBundle(bundle, subject, doctrine);
+        return new ResolvedBundle(subject, doctrine);
     }
 
     private Subject toSubject(DescriptiveRequest req) {
