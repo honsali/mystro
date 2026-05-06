@@ -20,16 +20,15 @@ Override via `mystro.cors.allowed-origins` property or `MYSTRO_CORS_ALLOWED_ORIG
 
 ### GET /api/doctrines
 
-List available doctrine modules and their calculation choices.
+List available doctrine modules and their calculation choices. Returns a direct JSON array.
 
 ### POST /api/descriptive
 
-Generate one descriptive report for one subject and one doctrine.
+Generate one descriptive report for one subject and one doctrine. Returns a direct `DescriptiveAstrologyReport` JSON object.
 
 - One request = one report = one doctrine.
 - No output files are written on the server.
 - Response includes `Cache-Control: no-store`.
-- Response includes `suggestedFilename` for local download.
 
 ## TypeScript Interfaces
 
@@ -48,11 +47,7 @@ interface DescriptiveRequest {
 
 // --- Response ---
 
-interface DescriptiveResponse {
-  report: DescriptiveAstrologyReport;
-  suggestedFilename: string;  // e.g. "ilia-valens-descriptive.json"
-}
-
+// POST /api/descriptive returns DescriptiveAstrologyReport directly
 interface DescriptiveAstrologyReport {
   engineVersion: string;
   subject: Subject;
@@ -84,10 +79,7 @@ type NatalChart = Record<string, unknown>;
 
 // --- Doctrine discovery ---
 
-interface DoctrinesResponse {
-  doctrines: DoctrineInfo[];
-}
-
+// GET /api/doctrines returns DoctrineInfo[] directly
 interface DoctrineInfo {
   id: string;
   name: string;
@@ -111,8 +103,8 @@ interface ErrorResponse {
 
 ```typescript
 const response = await fetch('http://localhost:8080/api/doctrines');
-const data: DoctrinesResponse = await response.json();
-// data.doctrines[0].id === "dorotheus"
+const doctrines: DoctrineInfo[] = await response.json();
+// doctrines[0].id === "dorotheus"
 ```
 
 ### Generate and download a descriptive report
@@ -130,16 +122,17 @@ async function fetchAndDownload(request: DescriptiveRequest): Promise<void> {
     throw new Error(error.error);
   }
 
-  const data: DescriptiveResponse = await response.json();
+  const report: DescriptiveAstrologyReport = await response.json();
 
-  // Download as local file using suggestedFilename
-  const blob = new Blob([JSON.stringify(data.report, null, 2)], {
+  // Download as local file
+  const filename = `${request.id}-${request.doctrine}-descriptive.json`;
+  const blob = new Blob([JSON.stringify(report, null, 2)], {
     type: 'application/json',
   });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = data.suggestedFilename;
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -171,5 +164,4 @@ async function fetchMultipleDoctrines(
 - `Cache-Control: no-store` is sent on descriptive responses to discourage caching.
 - Doctrine ids are explicit; no default doctrine is assumed.
 - The backend does not require authentication for local development.
-- The `suggestedFilename` is a convenience hint; the frontend may choose its own filename.
 - REST calculations use ephemeral thread-isolated logging; calculator execution logs are not exposed to the frontend and do not accumulate server-side.

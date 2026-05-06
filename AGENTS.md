@@ -50,11 +50,11 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - Fresh app code lives under `src/main/java/app/`.
 - The repository may still contain representative natal fixtures such as `input/subject-list.json`, but the application does not load runtime subjects from that file.
 - No hidden default doctrine should be introduced.
-- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
+- Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object. `GET /api/doctrines` returns a direct JSON array; `POST /api/descriptive` returns a direct `DescriptiveAstrologyReport`.
 - Mystro now runs as a Spring Boot REST-only application. The web entrypoint is `app.MystroSpringApplication`.
-- REST endpoints: `GET /api/doctrines` lists available doctrine choices; `POST /api/descriptive` accepts one natal subject plus one explicit `doctrine` id and returns `{ "report": {...}, "suggestedFilename": "..." }`.
+- REST endpoints: `GET /api/doctrines` lists available doctrine choices and returns a direct JSON array; `POST /api/descriptive` accepts one natal subject plus one explicit `doctrine` id and returns a direct `DescriptiveAstrologyReport` JSON object.
 - REST descriptive calls are single-doctrine by design. A frontend should call once per selected doctrine and save one local JSON file per doctrine. Do not reintroduce hidden defaults or plural REST doctrine selection unless explicitly requested.
-- REST descriptive calls do not write server output files. They return JSON plus `suggestedFilename` so clients/frontends can save files locally if desired.
+- REST descriptive calls do not write server output files. They return JSON directly so clients/frontends can save files locally if desired.
 - REST responses use the shared `MystroObjectMapper`/`RoundedDoubleSerializer` conventions and set `Cache-Control: no-store` on descriptive responses/errors. CORS for `/api/**` is configurable via `mystro.cors.allowed-origins` with local React defaults.
 - REST `/api/**` request logging uses lifecycle-wide thread-isolated ephemeral logging via `LoggerIsolationFilter`; request logs are not retained by default.
 - `src/test/resources/snapshots/descriptive/ilia-valens-response.json` is the committed full REST response snapshot for the representative `ilia`/Valens descriptive calculation. Keep it in sync only when calculation/report changes are intentional.

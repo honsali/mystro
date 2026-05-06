@@ -38,26 +38,18 @@ DescriptiveRequestMapper validates and resolves Subject + Doctrine
   ↓
 LoggerIsolationFilter wraps /api/** request lifecycle in thread-isolated ephemeral logging
   ↓
-DescriptiveReportGenerator.generate(subject, doctrine)
-  ↓
-doctrine.calculateDescriptive(subject, BasicCalculator)
+DescriptiveController calls doctrine.calculateDescriptive(subject, BasicCalculator)
   ↓
 CalculationContext(subject, doctrine calculation choices)
   ↓
-doctrine.calculateNatalChart(ctx, BasicCalculator)
+describe(ctx, natalChart)
   ↓
-NatalChart
-  ↓
-doctrine.describe(ctx, natalChart)
-  ↓
-doctrine calculators pour data into NatalChart
+desctrine calculators pour data into NatalChart
   ↓
 DescriptiveAstrologyReport
   ↓
-{ "report": { ... }, "suggestedFilename": "{subjectId}-{doctrineId}-descriptive.json" }
+Direct JSON response: { engineVersion, subject, doctrine, natalChart }
 ```
-
-The REST adapter is stateless and local-first: it does not write output files. A frontend can call once per doctrine and save one local JSON report file per doctrine.
 
 ---
 
@@ -119,22 +111,24 @@ There is currently no calculation settings object. Do not add settings until the
 Current doctrine contract:
 
 ```java
-public interface Doctrine extends CalculationDefinition {
-    default NatalChart calculateDescriptive(
+public abstract class Doctrine {
+    public NatalChart calculateDescriptive(
         Subject subject,
         BasicCalculator basicCalculator
     );
 
-    default NatalChart calculateNatalChart(
+    public NatalChart calculateNatalChart(
         CalculationContext ctx,
         BasicCalculator basicCalculator
     );
 
-    void describe(CalculationContext ctx, NatalChart chart);
+    public abstract void describe(CalculationContext ctx, NatalChart chart);
+
+    public abstract DoctrineInfo getDoctrineInfo();
 }
 ```
 
-`CalculationDefinition` exposes doctrine-owned basic choices:
+`DoctrineInfo` exposes doctrine-owned basic choices:
 
 ```text
 - id
@@ -173,26 +167,27 @@ Current top-level report shape:
 
 ```json
 {
-  "engineVersion": "1.2.0",
+  "engineVersion": "<version>",
   "subject": {},
   "doctrine": {},
   "natalChart": {}
 }
 ```
 
-The REST descriptive endpoint wraps exactly one such report:
+The REST descriptive endpoint returns exactly one report as a direct JSON object:
 
 ```json
 {
-  "report": {
-    "engineVersion": "1.2.0",
-    "subject": {},
-    "doctrine": {},
-    "natalChart": {}
-  },
-  "suggestedFilename": "ilia-valens-descriptive.json"
+  "engineVersion": "<version>",
+  "subject": {},
+  "doctrine": {},
+  "natalChart": {}
 }
 ```
+
+`GET /api/doctrines` returns a direct JSON array of doctrine info objects.
+
+The REST adapter is stateless and local-first: it does not write output files. A frontend can call once per doctrine and save one local JSON report file per doctrine.
 
 There is no top-level `basicChart` key and no top-level `descriptive` key.
 
@@ -344,22 +339,33 @@ Fixed stars are not implemented. If added, the star set must be explicitly param
 
 ### Adding a doctrine module
 
-To add a doctrine, implement `app.doctrine.Doctrine` under `app.doctrine.impl.<doctrineId>`, choose its `CalculationDefinition` values, register it in `DoctrineLoader`, and add doctrine-specific descriptive calculators under `app.descriptive.<doctrineId>.calculator` when the doctrine has descriptive concepts to pour into `NatalChart`.
+To add a doctrine, implement `app.doctrine.Doctrine` under `app.doctrine.impl.<doctrineId>`, provide a `DoctrineInfo` with its calculation choices via `getDoctrineInfo()`, register it in `DoctrineLoader`, and add doctrine-specific descriptive calculators under `app.descriptive.<doctrineId>.calculator` when the doctrine has descriptive concepts to pour into `NatalChart`.
 
 ---
 
 ## 10. Output and logging
 
-Current descriptive REST response shape:
+Current descriptive REST response shape (direct `DescriptiveAstrologyReport` object):
 
 ```json
 {
-  "report": { ... },
-  "suggestedFilename": "{subjectId}-{doctrineId}-descriptive.json"
+  "engineVersion": "<version>",
+  "subject": {},
+  "doctrine": {},
+  "natalChart": {}
 }
 ```
 
-The backend does not write descriptive output files. Frontends may use `suggestedFilename` as a local download hint.
+`GET /api/doctrines` returns a direct JSON array:
+
+```json
+[
+  { "id": "...", "name": "...", ... },
+  ...
+]
+```
+
+The backend does not write descriptive output files. Frontends should save reports locally.
 
 Predictive output remains a target architecture area; no predictive REST endpoint is implemented yet.
 
@@ -367,7 +373,7 @@ Execution-level statuses are not astrological results and do not belong inside d
 
 REST `/api/**` requests use lifecycle-wide thread-isolated ephemeral logging via `LoggerIsolationFilter`, so request calculation log entries do not accumulate or persist by default. REST does not return execution logs in report JSON.
 
-The report `engineVersion` is resolved from package implementation metadata, Maven `pom.properties`, or the first project `<version>` in `pom.xml` for development runs.
+The report `engineVersion` comes from the configured `mystro.engine-version` application property.
 
 JSON output rounds doubles at serialization through `RoundedDoubleSerializer`; calculators keep full internal double precision. REST responses use the same Mystro Jackson configuration as file-oriented helpers such as `MystroObjectMapper`, while Spring Boot's global application `ObjectMapper` is not intentionally replaced. REST descriptive responses and errors use `Cache-Control: no-store`.
 
@@ -399,7 +405,6 @@ app.basic.CalculationContext
 app.chart.model.NatalChart
 app.doctrine.Doctrine
 app.output.DescriptiveAstrologyReport
-app.runtime.DescriptiveReportGenerator
 app.MystroSpringApplication
 ```
 
@@ -430,7 +435,8 @@ app.descriptive.common.model
 Spring Boot adapter classes live under:
 
 ```text
-app.web
+app.web.business      — controllers, request DTOs, request mapper, error model
+app.web.infra         — configuration, CORS properties, filters, global exception handler
 ```
 
 Reusable application/runtime orchestration lives under:

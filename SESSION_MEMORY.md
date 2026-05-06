@@ -45,14 +45,14 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - No doctrine is selected by default.
 - Current doctrine modules: `dorotheus`, `ptolemy`, `valens`.
 - REST endpoints:
-  - `GET /api/doctrines` lists doctrine choices.
-  - `POST /api/descriptive` accepts one natal subject plus one explicit singular `doctrine` id and returns `{ "report": {...}, "suggestedFilename": "..." }`.
+  - `GET /api/doctrines` lists doctrine choices and returns a direct JSON array.
+  - `POST /api/descriptive` accepts one natal subject plus one explicit singular `doctrine` id and returns a direct `DescriptiveAstrologyReport` JSON object.
 - REST descriptive calls are stateless/local-first: they do not write server output files or run-log files, set `Cache-Control: no-store`, and are intended for a frontend to download one local JSON file per doctrine if desired.
-- REST descriptive generation flow is: `DescriptiveRequest` → `DescriptiveRequestMapper` resolves `Subject` + `Doctrine` → `DescriptiveReportGenerator.generate(subject, doctrine)` → `DescriptiveAstrologyReport`.
-- `DescriptiveReportGenerator` is pure in-memory orchestration. It calls `doctrine.calculateDescriptive(subject, basicCalculator)` and wraps the result in `DescriptiveAstrologyReport`.
+- REST descriptive generation flow is: `DescriptiveRequest` → `DescriptiveRequestMapper` resolves `Subject` + `Doctrine` → controller calls `doctrine.calculateDescriptive(subject, basicCalculator)` → `DescriptiveAstrologyReport`.
 - Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - REST responses use `MystroObjectMapper`/`RoundedDoubleSerializer` conventions through a REST `MappingJackson2HttpMessageConverter`; the global Spring Boot `ObjectMapper` is not intentionally replaced.
+- `engineVersion` is sourced from Spring configuration property `mystro.engine-version` in `src/main/resources/application.yml`.
 - REST `/api/**` CORS defaults live in `src/main/resources/application.yml` under `mystro.cors.allowed-origins` with local React dev origins `http://localhost:5173` and `http://localhost:3000`. Overrides can use Spring Boot relaxed binding, including `MYSTRO_CORS_ALLOWED_ORIGINS`.
 - REST `/api/**` request logging is lifecycle-wide thread-isolated and ephemeral via `LoggerIsolationFilter`; request logs are not returned or persisted by default.
 - A full REST response snapshot for the representative `ilia`/Valens descriptive calculation is committed at `src/test/resources/snapshots/descriptive/ilia-valens-response.json`; update it only for intentional calculation/report changes.
@@ -68,6 +68,8 @@ Basic chart calculation is not a separate report stage. `BasicCalculator` is sha
 - `BasicCalculator` keeps full internal double precision; JSON output rounds doubles through `RoundedDoubleSerializer`. `BasicCalculator` ordering is dependency-bearing and documented in code; do not reorder casually.
 - Intentional calculation conventions: geocentric apparent planet positions, no topocentric lunar parallax correction, fail-fast Placidus errors with no silent fallback, file-backed Swiss Ephemeris only, and exactly 180° Moon-Sun elongation treated as waxing.
 - Doctrine implementations live under `src/main/java/app/doctrine/impl/<doctrineId>/`; register new doctrine modules in `DoctrineLoader` and place doctrine-specific descriptive calculators under `src/main/java/app/descriptive/<doctrineId>/calculator/`.
+- Doctrine metadata is carried by `app.input.model.DoctrineInfo`; `Doctrine` is an abstract class exposing `getDoctrineInfo()` and shared `calculateDescriptive(...)` / `calculateNatalChart(...)` behavior.
+- Spring web adapter classes are split into `app.web.business` and `app.web.infra`.
 - Java 17 is required.
 - Swiss Ephemeris data under `ephe/` is required runtime data. `CalculationContext` explicitly sets the ephemeris path to `ephe`, requests file-backed Swiss Ephemeris (`SEFLG_SWIEPH`), and rejects Moshier fallback for planet positions.
 - Current Valens output pours prenatal syzygy, Fortune/Spirit lots, sign-based aspects including conjunction, dignity/debility assessments, and solar condition into `NatalChart`.
@@ -105,7 +107,7 @@ mvn spring-boot:run
 Run packaged jar:
 
 ```bash
-java -jar target/mystro-1.2.0.jar
+java -jar target/mystro-<version>.jar
 ```
 
 The `ephe/` directory must be available from the working directory for Swiss Ephemeris calculations.

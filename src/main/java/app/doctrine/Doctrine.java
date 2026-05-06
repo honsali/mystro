@@ -3,21 +3,24 @@ package app.doctrine;
 import app.basic.BasicCalculator;
 import app.basic.CalculationContext;
 import app.chart.model.NatalChart;
-import app.chart.model.CalculationDefinition;
+import app.input.model.DoctrineInfo;
 import app.input.model.Subject;
 
-public interface Doctrine extends CalculationDefinition {
+public abstract class Doctrine {
 
-    default NatalChart calculateDescriptive(Subject subject, BasicCalculator basicCalculator) {
-        CalculationContext ctx = new CalculationContext(subject, this);
+    public NatalChart calculateNatalChart(CalculationContext ctx, BasicCalculator basicCalculator) {
+        return basicCalculator.calculate(ctx);
+    }
+
+    public abstract void describe(CalculationContext ctx, NatalChart chart);
+
+    public abstract DoctrineInfo getDoctrineInfo();
+
+
+    public NatalChart calculateDescriptive(Subject subject, BasicCalculator basicCalculator) {
+        CalculationContext ctx = new CalculationContext(subject, getDoctrineInfo());
         NatalChart natalChart = calculateNatalChart(ctx, basicCalculator);
         describe(ctx, natalChart);
         return natalChart;
     }
-
-    default NatalChart calculateNatalChart(CalculationContext ctx, BasicCalculator basicCalculator) {
-        return basicCalculator.calculate(ctx);
-    }
-
-    void describe(CalculationContext ctx, NatalChart chart);
 }

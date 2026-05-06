@@ -1,4 +1,6 @@
-package app.web;
+package app.web.infra;
+
+import app.web.business.ErrorResponse;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

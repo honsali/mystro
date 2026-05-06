@@ -18,8 +18,8 @@ After Java code changes, run:
 mvn compile
 ```
 
-For a representative current runtime check, run:
+For current verification after behavior or web/API changes, run:
 
 ```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+mvn test
 ```

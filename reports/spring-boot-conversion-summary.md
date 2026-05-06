@@ -1,13 +1,13 @@
-# Spring Boot REST Application Summary
+# REST-Only Spring Boot Application Summary
 
 This document summarizes Mystro's current REST-only Spring Boot application shape.
 
 ## Implemented Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/doctrines` | List available doctrine modules and their calculation choices |
-| `POST` | `/api/descriptive` | Generate one descriptive astrology report from natal data |
+| Method | Path | Response | Description |
+|--------|------|----------|-------------|
+| `GET` | `/api/doctrines` | Direct JSON array of `DoctrineInfo` | List available doctrine modules and their calculation choices |
+| `POST` | `/api/descriptive` | Direct `DescriptiveAstrologyReport` | Generate one descriptive astrology report from natal data |
 
 Both endpoints are explicit about doctrine selection; no default doctrine is assumed.
 
@@ -15,9 +15,9 @@ Both endpoints are explicit about doctrine selection; no default doctrine is ass
 
 - **Entrypoint**: `app.MystroSpringApplication`
 - **Application mode**: Spring Boot REST only
-- **Descriptive generation**: `app.runtime.DescriptiveReportGenerator`
-- **No server-side report writing**: `POST /api/descriptive` returns JSON plus `suggestedFilename`
-- **No CLI entrypoint**: the old `app.App` / `exec-maven-plugin` path has been removed
+- **Descriptive generation**: `DescriptiveController` calls `doctrine.calculateDescriptive(subject, basicCalculator)` directly
+- **No server-side report writing**: `POST /api/descriptive` returns JSON directly
+- **No CLI entrypoint**: Mystro runs as a REST-only Spring Boot application
 
 ## Key Files
 
@@ -25,23 +25,24 @@ Both endpoints are explicit about doctrine selection; no default doctrine is ass
 
 | File | Purpose |
 |------|---------|
-| `EngineVersion.java` | Multi-source version resolution (package impl, Maven metadata, pom.xml) |
-| `DescriptiveReportGenerator.java` | Pure in-memory descriptive report generation |
+| `EngineVersion.java` | Spring-managed engine version sourced from `mystro.engine-version` |
 
-### Web layer (`app.web`)
+### Web business layer (`app.web.business`)
 
 | File | Purpose |
 |------|---------|
-| `WebConfig.java` | Spring bean configuration (`MappingJackson2HttpMessageConverter`, `BasicCalculator`, `DoctrineLoader`, `DescriptiveReportGenerator`) |
-| `CorsProperties.java` | Typed `mystro.cors` configuration properties with trimming/default fallback |
-| `DescriptiveController.java` | `POST /api/descriptive` — thin controller, delegates to mapper + generator |
-| `DoctrinesController.java` | `GET /api/doctrines` — lists registered doctrines |
+| `DescriptiveController.java` | `POST /api/descriptive` — thin controller, delegates to mapper, calls doctrine directly |
+| `DoctrinesController.java` | `GET /api/doctrines` — returns direct array of doctrine info |
 | `DescriptiveRequestMapper.java` | Validates request DTOs and resolves `Subject` + `Doctrine` |
 | `DescriptiveRequest.java` | Request DTO for descriptive generation |
-| `DescriptiveResponse.java` | Response wrapper `{ "report": {...}, "suggestedFilename": "..." }` |
-| `DoctrinesResponse.java` | Response wrapper `{ "doctrines": [...] }` |
-| `DoctrineInfo.java` | DTO for doctrine summary (id, name, houseSystem, zodiac, terms, triplicity, nodeType) |
 | `ErrorResponse.java` | Error body `{ "error": "..." }` |
+
+### Web infrastructure layer (`app.web.infra`)
+
+| File | Purpose |
+|------|---------|
+| `WebConfig.java` | Spring bean configuration (`MappingJackson2HttpMessageConverter`, `BasicCalculator`, `DoctrineLoader`) + CORS |
+| `CorsProperties.java` | Typed `mystro.cors` configuration properties with trimming/default fallback |
 | `GlobalExceptionHandler.java` | REST exception handler (malformed JSON, validation, generic) |
 | `LoggerIsolationFilter.java` | Lifecycle-wide `/api/**` request logging isolation |
 
@@ -57,6 +58,7 @@ Both endpoints are explicit about doctrine selection; no default doctrine is ass
 | File | Purpose |
 |------|---------|
 | `DoctrineLoader.java` | Doctrine registry and discovery |
+| `DoctrineInfo.java` | Doctrine calculation choices (id, name, houseSystem, zodiac, terms, triplicity, nodeType) |
 
 ### Tests
 
@@ -91,7 +93,7 @@ mvn spring-boot:run
 To run the packaged jar:
 
 ```bash
-java -jar target/mystro-1.2.0.jar
+java -jar target/mystro-<version>.jar
 ```
 
 ## JSON Serialization
@@ -115,9 +117,10 @@ Spring Boot's auto-configured global `ObjectMapper` remains the default for any 
 ## Local-first frontend contract
 
 - `POST /api/descriptive` accepts one explicit `doctrine` id.
-- `DescriptiveRequestMapper` resolves a `Subject` plus `Doctrine`, then `DescriptiveReportGenerator` returns one `DescriptiveAstrologyReport`.
+- `DescriptiveRequestMapper` resolves a `Subject` plus `Doctrine`, then the controller calls `doctrine.calculateDescriptive(subject, basicCalculator)` directly and returns a `DescriptiveAstrologyReport`.
 - One request returns one report for one doctrine.
-- Response shape is `{ "report": {...}, "suggestedFilename": "..." }`.
+- Response is a direct `DescriptiveAstrologyReport` JSON object with top-level `engineVersion`, `subject`, `doctrine`, `natalChart`.
+- `GET /api/doctrines` returns a direct JSON array of doctrine info objects.
 - The frontend should save report JSON locally if desired.
 - A React-oriented contract reference is available at `reports/react-api-contract.md`.
 

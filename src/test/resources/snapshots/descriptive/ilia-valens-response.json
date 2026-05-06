@@ -1,1262 +1,1259 @@
 {
-  "report" : {
-    "engineVersion" : "1.2.0",
-    "subject" : {
-      "id" : "ilia",
-      "localBirthDateTime" : "1975-07-14T22:55:00+01:00",
-      "resolvedUtcInstant" : "1975-07-14T21:55:00Z",
-      "latitude" : 50.606008,
-      "longitude" : 3.033377
-    },
-    "doctrine" : {
-      "name" : "Valens",
-      "id" : "valens",
-      "nodeType" : "MEAN",
-      "terms" : "EGYPTIAN",
-      "houseSystem" : "WHOLE_SIGN",
-      "triplicity" : "DOROTHEAN",
-      "zodiac" : "TROPICAL"
-    },
-    "natalChart" : {
-      "resolvedUtcInstant" : "1975-07-14T21:55:00Z",
-      "julianDayUt" : 2442608.413194,
-      "julianDayTt" : 2442608.413727,
-      "deltaTSeconds" : 45.994413,
-      "armc" : 263.924769,
-      "localApparentSiderealTimeHours" : 17.594985,
-      "trueObliquity" : 23.441035,
-      "meanObliquity" : 23.442463,
-      "nutationLongitude" : 0.004334,
-      "nutationObliquity" : -0.001427,
-      "points" : {
-        "SUN" : {
-          "longitude" : 111.833034,
-          "sign" : "CANCER",
-          "degreeInSign" : 21.833034,
-          "latitude" : -1.1E-5,
-          "rightAscension" : 113.58991,
-          "declination" : 21.670663,
-          "altitude" : -13.127475,
-          "aboveHorizon" : false,
-          "speed" : 0.953848,
-          "meanDailySpeed" : 0.9856,
-          "speedRatio" : 0.967784,
-          "retrograde" : false,
-          "house" : 5,
-          "wholeSignHouse" : 5,
-          "angularity" : "SUCCEDENT",
-          "antisciaLongitude" : 68.166966,
-          "contraAntisciaLongitude" : 248.166966,
-          "domicileRuler" : "MOON",
-          "exaltationRuler" : "JUPITER",
-          "triplicityRuler" : "MARS",
-          "participatingTriplicityRuler" : "MOON",
-          "termRuler" : "JUPITER",
-          "faceRuler" : "MOON",
-          "detrimentRuler" : "SATURN",
-          "fallRuler" : "MARS",
-          "dignities" : [ ],
-          "debilities" : [ ],
-          "sect" : {
-            "sect" : "DIURNAL",
-            "condition" : "CONTRARY_TO_SECT"
-          },
-          "type" : "PLANET"
-        },
-        "MOON" : {
-          "longitude" : 189.866552,
-          "sign" : "LIBRA",
-          "degreeInSign" : 9.866552,
-          "latitude" : -3.909867,
-          "rightAscension" : 187.518199,
-          "declination" : -7.502327,
-          "altitude" : 2.692943,
-          "aboveHorizon" : true,
-          "speed" : 14.20978,
-          "meanDailySpeed" : 13.1764,
-          "speedRatio" : 1.078427,
-          "retrograde" : false,
-          "house" : 8,
-          "wholeSignHouse" : 8,
-          "angularity" : "SUCCEDENT",
-          "antisciaLongitude" : 350.133448,
-          "contraAntisciaLongitude" : 170.133448,
-          "domicileRuler" : "VENUS",
-          "exaltationRuler" : "SATURN",
-          "triplicityRuler" : "MERCURY",
-          "participatingTriplicityRuler" : "JUPITER",
-          "termRuler" : "MERCURY",
-          "faceRuler" : "MOON",
-          "detrimentRuler" : "MARS",
-          "fallRuler" : "SUN",
-          "dignities" : [ "FACE" ],
-          "debilities" : [ ],
-          "solarPhase" : "OCCIDENTAL",
-          "sect" : {
-            "sect" : "NOCTURNAL",
-            "condition" : "OF_SECT"
-          },
-          "solarCondition" : "FREE_OF_SUN",
-          "type" : "PLANET"
-        },
-        "MERCURY" : {
-          "longitude" : 93.948666,
-          "sign" : "CANCER",
-          "degreeInSign" : 3.948666,
-          "latitude" : -0.912073,
-          "rightAscension" : 94.273129,
-          "declination" : 22.470406,
-          "altitude" : -16.353123,
-          "aboveHorizon" : false,
-          "speed" : 1.633719,
-          "meanDailySpeed" : 1.3833,
-          "speedRatio" : 1.18103,
-          "retrograde" : false,
-          "house" : 5,
-          "wholeSignHouse" : 5,
-          "angularity" : "SUCCEDENT",
-          "antisciaLongitude" : 86.051334,
-          "contraAntisciaLongitude" : 266.051334,
-          "domicileRuler" : "MOON",
-          "exaltationRuler" : "JUPITER",
-          "triplicityRuler" : "MARS",
-          "participatingTriplicityRuler" : "MOON",
-          "termRuler" : "MARS",
-          "faceRuler" : "VENUS",
-          "detrimentRuler" : "SATURN",
-          "fallRuler" : "MARS",
-          "dignities" : [ ],
-          "debilities" : [ ],
-          "solarPhase" : "ORIENTAL",
-          "sect" : {
-            "sect" : "DIURNAL",
-            "condition" : "CONTRARY_TO_SECT",
-            "phaseRelativeToSun" : "ORIENTAL"
-          },
-          "solarCondition" : "FREE_OF_SUN",
-          "type" : "PLANET"
-        },
-        "VENUS" : {
-          "longitude" : 153.748029,
-          "sign" : "VIRGO",
-          "degreeInSign" : 3.748029,
-          "latitude" : -0.703378,
-          "rightAscension" : 155.395497,
-          "declination" : 9.478697,
-          "altitude" : -4.109663,
-          "aboveHorizon" : false,
-          "speed" : 0.639489,
-          "meanDailySpeed" : 1.2026,
-          "speedRatio" : 0.531755,
-          "retrograde" : false,
-          "house" : 7,
-          "wholeSignHouse" : 7,
-          "angularity" : "ANGULAR",
-          "antisciaLongitude" : 26.251971,
-          "contraAntisciaLongitude" : 206.251971,
-          "domicileRuler" : "MERCURY",
-          "exaltationRuler" : "MERCURY",
-          "triplicityRuler" : "MOON",
-          "participatingTriplicityRuler" : "MARS",
-          "termRuler" : "MERCURY",
-          "faceRuler" : "SUN",
-          "detrimentRuler" : "JUPITER",
-          "fallRuler" : "VENUS",
-          "dignities" : [ "TRIPLICITY" ],
-          "debilities" : [ "FALL" ],
-          "solarPhase" : "OCCIDENTAL",
-          "sect" : {
-            "sect" : "NOCTURNAL",
-            "condition" : "OF_SECT"
-          },
-          "solarCondition" : "FREE_OF_SUN",
-          "type" : "PLANET"
-        },
-        "MARS" : {
-          "longitude" : 39.651662,
-          "sign" : "TAURUS",
-          "degreeInSign" : 9.651662,
-          "latitude" : -1.589241,
-          "rightAscension" : 37.765892,
-          "declination" : 13.197246,
-          "altitude" : -14.569473,
-          "aboveHorizon" : false,
-          "speed" : 0.690083,
-          "meanDailySpeed" : 0.524,
-          "speedRatio" : 1.316952,
-          "retrograde" : false,
-          "house" : 3,
-          "wholeSignHouse" : 3,
-          "angularity" : "CADENT",
-          "antisciaLongitude" : 140.348338,
-          "contraAntisciaLongitude" : 320.348338,
-          "domicileRuler" : "VENUS",
-          "exaltationRuler" : "MOON",
-          "triplicityRuler" : "MOON",
-          "participatingTriplicityRuler" : "MARS",
-          "termRuler" : "MERCURY",
-          "faceRuler" : "MERCURY",
-          "detrimentRuler" : "MARS",
-          "dignities" : [ "TRIPLICITY" ],
-          "debilities" : [ "DETRIMENT" ],
-          "solarPhase" : "ORIENTAL",
-          "sect" : {
-            "sect" : "NOCTURNAL",
-            "condition" : "OF_SECT"
-          },
-          "solarCondition" : "FREE_OF_SUN",
-          "type" : "PLANET"
-        },
-        "JUPITER" : {
-          "longitude" : 23.180654,
-          "sign" : "ARIES",
-          "degreeInSign" : 23.180654,
-          "latitude" : -1.327065,
-          "rightAscension" : 21.943829,
-          "declination" : 7.775876,
-          "altitude" : -11.001591,
-          "aboveHorizon" : false,
-          "speed" : 0.095353,
-          "meanDailySpeed" : 0.0831,
-          "speedRatio" : 1.147448,
-          "retrograde" : false,
-          "house" : 2,
-          "wholeSignHouse" : 2,
-          "angularity" : "SUCCEDENT",
-          "antisciaLongitude" : 156.819346,
-          "contraAntisciaLongitude" : 336.819346,
-          "domicileRuler" : "MARS",
-          "exaltationRuler" : "SUN",
-          "triplicityRuler" : "JUPITER",
-          "participatingTriplicityRuler" : "SATURN",
-          "termRuler" : "MARS",
-          "faceRuler" : "VENUS",
-          "detrimentRuler" : "VENUS",
-          "fallRuler" : "SATURN",
-          "dignities" : [ "TRIPLICITY" ],
-          "debilities" : [ ],
-          "solarPhase" : "ORIENTAL",
-          "sect" : {
-            "sect" : "DIURNAL",
-            "condition" : "CONTRARY_TO_SECT"
-          },
-          "solarCondition" : "FREE_OF_SUN",
-          "type" : "PLANET"
-        },
-        "SATURN" : {
-          "longitude" : 112.411879,
-          "sign" : "CANCER",
-          "degreeInSign" : 22.411879,
-          "latitude" : -0.038799,
-          "rightAscension" : 114.197638,
-          "declination" : 21.539114,
-          "altitude" : -13.067946,
-          "aboveHorizon" : false,
-          "speed" : 0.130034,
-          "meanDailySpeed" : 0.0335,
-          "speedRatio" : 3.881606,
-          "retrograde" : false,
-          "house" : 5,
-          "wholeSignHouse" : 5,
-          "angularity" : "SUCCEDENT",
-          "antisciaLongitude" : 67.588121,
-          "contraAntisciaLongitude" : 247.588121,
-          "domicileRuler" : "MOON",
-          "exaltationRuler" : "JUPITER",
-          "triplicityRuler" : "MARS",
-          "participatingTriplicityRuler" : "MOON",
-          "termRuler" : "JUPITER",
-          "faceRuler" : "MOON",
-          "detrimentRuler" : "SATURN",
-          "fallRuler" : "MARS",
-          "dignities" : [ ],
-          "debilities" : [ "DETRIMENT" ],
-          "solarPhase" : "OCCIDENTAL",
-          "sect" : {
-            "sect" : "DIURNAL",
-            "condition" : "CONTRARY_TO_SECT"
-          },
-          "solarCondition" : "COMBUST",
-          "type" : "PLANET"
-        },
-        "NORTH_NODE" : {
-          "longitude" : 238.274915,
-          "sign" : "SCORPIO",
-          "degreeInSign" : 28.274915,
-          "latitude" : 0.0,
-          "rightAscension" : 236.02678,
-          "declination" : -19.777319,
-          "altitude" : 15.445322,
-          "aboveHorizon" : true,
-          "speed" : -0.052972,
-          "meanDailySpeed" : 0.05295,
-          "speedRatio" : 1.000416,
-          "retrograde" : true,
-          "house" : 9,
-          "wholeSignHouse" : 9,
-          "angularity" : "CADENT",
-          "antisciaLongitude" : 301.725085,
-          "contraAntisciaLongitude" : 121.725085,
-          "dignities" : [ ],
-          "debilities" : [ ],
-          "type" : "PLANET"
-        },
-        "SOUTH_NODE" : {
-          "longitude" : 58.274915,
-          "sign" : "TAURUS",
-          "degreeInSign" : 28.274915,
-          "latitude" : 0.0,
-          "rightAscension" : 56.02678,
-          "declination" : 19.777319,
-          "altitude" : -15.445322,
-          "aboveHorizon" : false,
-          "speed" : -0.052972,
-          "meanDailySpeed" : 0.05295,
-          "speedRatio" : 1.000416,
-          "retrograde" : true,
-          "house" : 3,
-          "wholeSignHouse" : 3,
-          "angularity" : "CADENT",
-          "antisciaLongitude" : 121.725085,
-          "contraAntisciaLongitude" : 301.725085,
-          "dignities" : [ ],
-          "debilities" : [ ],
-          "type" : "PLANET"
-        },
-        "ASCENDANT" : {
-          "longitude" : 346.108172,
-          "sign" : "PISCES",
-          "degreeInSign" : 16.108172,
-          "type" : "ANGLE"
-        },
-        "MIDHEAVEN" : {
-          "longitude" : 264.422857,
-          "sign" : "SAGITTARIUS",
-          "degreeInSign" : 24.422857,
-          "type" : "ANGLE"
-        },
-        "DESCENDANT" : {
-          "longitude" : 166.108172,
-          "sign" : "VIRGO",
-          "degreeInSign" : 16.108172,
-          "type" : "ANGLE"
-        },
-        "IMUM_COELI" : {
-          "longitude" : 84.422857,
-          "sign" : "GEMINI",
-          "degreeInSign" : 24.422857,
-          "type" : "ANGLE"
-        }
-      },
-      "houses" : [ {
-        "house" : 1,
-        "cuspLongitude" : 330.0,
-        "sign" : "PISCES",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 2,
-        "cuspLongitude" : 0.0,
-        "sign" : "ARIES",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 3,
-        "cuspLongitude" : 30.0,
-        "sign" : "TAURUS",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 4,
-        "cuspLongitude" : 60.0,
-        "sign" : "GEMINI",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 5,
-        "cuspLongitude" : 90.0,
+  "engineVersion" : "1.3.0",
+  "subject" : {
+    "id" : "ilia",
+    "localBirthDateTime" : "1975-07-14T22:55:00+01:00",
+    "resolvedUtcInstant" : "1975-07-14T21:55:00Z",
+    "latitude" : 50.606008,
+    "longitude" : 3.033377
+  },
+  "doctrine" : {
+    "id" : "valens",
+    "name" : "Valens",
+    "houseSystem" : "WHOLE_SIGN",
+    "zodiac" : "TROPICAL",
+    "terms" : "EGYPTIAN",
+    "triplicity" : "DOROTHEAN",
+    "nodeType" : "MEAN"
+  },
+  "natalChart" : {
+    "resolvedUtcInstant" : "1975-07-14T21:55:00Z",
+    "julianDayUt" : 2442608.413194,
+    "julianDayTt" : 2442608.413727,
+    "deltaTSeconds" : 45.994413,
+    "armc" : 263.924769,
+    "localApparentSiderealTimeHours" : 17.594985,
+    "trueObliquity" : 23.441035,
+    "meanObliquity" : 23.442463,
+    "nutationLongitude" : 0.004334,
+    "nutationObliquity" : -0.001427,
+    "points" : {
+      "SUN" : {
+        "longitude" : 111.833034,
         "sign" : "CANCER",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 6,
-        "cuspLongitude" : 120.0,
-        "sign" : "LEO",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 7,
-        "cuspLongitude" : 150.0,
-        "sign" : "VIRGO",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 8,
-        "cuspLongitude" : 180.0,
+        "degreeInSign" : 21.833034,
+        "latitude" : -1.1E-5,
+        "rightAscension" : 113.58991,
+        "declination" : 21.670663,
+        "altitude" : -13.127475,
+        "aboveHorizon" : false,
+        "speed" : 0.953848,
+        "meanDailySpeed" : 0.9856,
+        "speedRatio" : 0.967784,
+        "retrograde" : false,
+        "house" : 5,
+        "wholeSignHouse" : 5,
+        "angularity" : "SUCCEDENT",
+        "antisciaLongitude" : 68.166966,
+        "contraAntisciaLongitude" : 248.166966,
+        "domicileRuler" : "MOON",
+        "exaltationRuler" : "JUPITER",
+        "triplicityRuler" : "MARS",
+        "participatingTriplicityRuler" : "MOON",
+        "termRuler" : "JUPITER",
+        "faceRuler" : "MOON",
+        "detrimentRuler" : "SATURN",
+        "fallRuler" : "MARS",
+        "dignities" : [ ],
+        "debilities" : [ ],
+        "sect" : {
+          "sect" : "DIURNAL",
+          "condition" : "CONTRARY_TO_SECT"
+        },
+        "type" : "PLANET"
+      },
+      "MOON" : {
+        "longitude" : 189.866552,
         "sign" : "LIBRA",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 9,
-        "cuspLongitude" : 210.0,
-        "sign" : "SCORPIO",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 10,
-        "cuspLongitude" : 240.0,
-        "sign" : "SAGITTARIUS",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 11,
-        "cuspLongitude" : 270.0,
-        "sign" : "CAPRICORN",
-        "degreeInSign" : 0.0
-      }, {
-        "house" : 12,
-        "cuspLongitude" : 300.0,
-        "sign" : "AQUARIUS",
-        "degreeInSign" : 0.0
-      } ],
-      "pairwiseRelations" : [ {
-        "pointAName" : "SUN",
-        "pointBName" : "MOON",
-        "ecliptic" : {
-          "angularSeparation" : 78.033517,
-          "signDistance" : 3
+        "degreeInSign" : 9.866552,
+        "latitude" : -3.909867,
+        "rightAscension" : 187.518199,
+        "declination" : -7.502327,
+        "altitude" : 2.692943,
+        "aboveHorizon" : true,
+        "speed" : 14.20978,
+        "meanDailySpeed" : 13.1764,
+        "speedRatio" : 1.078427,
+        "retrograde" : false,
+        "house" : 8,
+        "wholeSignHouse" : 8,
+        "angularity" : "SUCCEDENT",
+        "antisciaLongitude" : 350.133448,
+        "contraAntisciaLongitude" : 170.133448,
+        "domicileRuler" : "VENUS",
+        "exaltationRuler" : "SATURN",
+        "triplicityRuler" : "MERCURY",
+        "participatingTriplicityRuler" : "JUPITER",
+        "termRuler" : "MERCURY",
+        "faceRuler" : "MOON",
+        "detrimentRuler" : "MARS",
+        "fallRuler" : "SUN",
+        "dignities" : [ "FACE" ],
+        "debilities" : [ ],
+        "solarPhase" : "OCCIDENTAL",
+        "sect" : {
+          "sect" : "NOCTURNAL",
+          "condition" : "OF_SECT"
         },
-        "equatorial" : {
-          "declinationDifference" : 29.17299,
-          "contraParallelSeparation" : 14.168337,
-          "sameHemisphere" : false
-        },
-        "aspect" : {
-          "type" : "SQUARE",
-          "orbFromExact" : 11.966483
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "MERCURY",
-        "ecliptic" : {
-          "angularSeparation" : 17.884368,
-          "signDistance" : 0
-        },
-        "equatorial" : {
-          "declinationDifference" : 0.799742,
-          "contraParallelSeparation" : 44.141069,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "CONJUNCTION",
-          "orbFromExact" : 17.884368
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "VENUS",
-        "ecliptic" : {
-          "angularSeparation" : 41.914995,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 12.191966,
-          "contraParallelSeparation" : 31.14936,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SEXTILE",
-          "orbFromExact" : 18.085005
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "MARS",
-        "ecliptic" : {
-          "angularSeparation" : 72.181372,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 8.473417,
-          "contraParallelSeparation" : 34.86791,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SEXTILE",
-          "orbFromExact" : 12.181372
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "JUPITER",
-        "ecliptic" : {
-          "angularSeparation" : 88.65238,
-          "signDistance" : 3
-        },
-        "equatorial" : {
-          "declinationDifference" : 13.894787,
-          "contraParallelSeparation" : 29.446539,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SQUARE",
-          "orbFromExact" : 1.34762
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "SATURN",
-        "ecliptic" : {
-          "angularSeparation" : 0.578845,
-          "signDistance" : 0
-        },
-        "equatorial" : {
-          "declinationDifference" : 0.131549,
-          "contraParallelSeparation" : 43.209778,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "CONJUNCTION",
-          "orbFromExact" : 0.578845
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 126.441881,
-          "signDistance" : 4
-        },
-        "equatorial" : {
-          "declinationDifference" : 41.447982,
-          "contraParallelSeparation" : 1.893345,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 53.558119,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 1.893345,
-          "contraParallelSeparation" : 41.447982,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 125.724863,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 152.589823,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 54.275137,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "SUN",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 27.410177,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "MERCURY",
-        "ecliptic" : {
-          "angularSeparation" : 95.917886,
-          "signDistance" : 3
-        },
-        "equatorial" : {
-          "declinationDifference" : 29.972732,
-          "contraParallelSeparation" : 14.968079,
-          "sameHemisphere" : false
-        },
-        "aspect" : {
-          "type" : "SQUARE",
-          "orbFromExact" : 5.917886
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "VENUS",
-        "ecliptic" : {
-          "angularSeparation" : 36.118522,
-          "signDistance" : 1
-        },
-        "equatorial" : {
-          "declinationDifference" : 16.981023,
-          "contraParallelSeparation" : 1.97637,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "MARS",
-        "ecliptic" : {
-          "angularSeparation" : 150.214889,
-          "signDistance" : 5
-        },
-        "equatorial" : {
-          "declinationDifference" : 20.699573,
-          "contraParallelSeparation" : 5.69492,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "JUPITER",
-        "ecliptic" : {
-          "angularSeparation" : 166.685898,
-          "signDistance" : 6
-        },
-        "equatorial" : {
-          "declinationDifference" : 15.278202,
-          "contraParallelSeparation" : 0.273549,
-          "sameHemisphere" : false
-        },
-        "aspect" : {
-          "type" : "OPPOSITION",
-          "orbFromExact" : 13.314102
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "SATURN",
-        "ecliptic" : {
-          "angularSeparation" : 77.454673,
-          "signDistance" : 3
-        },
-        "equatorial" : {
-          "declinationDifference" : 29.041441,
-          "contraParallelSeparation" : 14.036788,
-          "sameHemisphere" : false
-        },
-        "aspect" : {
-          "type" : "SQUARE",
-          "orbFromExact" : 12.545327
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 48.408363,
-          "signDistance" : 1
-        },
-        "equatorial" : {
-          "declinationDifference" : 12.274992,
-          "contraParallelSeparation" : 27.279645,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 131.591637,
-          "signDistance" : 5
-        },
-        "equatorial" : {
-          "declinationDifference" : 27.279645,
-          "contraParallelSeparation" : 12.274992,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 156.24162,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 74.556305,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 23.75838,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "MOON",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 105.443695,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "VENUS",
-        "ecliptic" : {
-          "angularSeparation" : 59.799363,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 12.991709,
-          "contraParallelSeparation" : 31.949102,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SEXTILE",
-          "orbFromExact" : 0.200637
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "MARS",
-        "ecliptic" : {
-          "angularSeparation" : 54.297004,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 9.273159,
-          "contraParallelSeparation" : 35.667652,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SEXTILE",
-          "orbFromExact" : 5.702996
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "JUPITER",
-        "ecliptic" : {
-          "angularSeparation" : 70.768012,
-          "signDistance" : 3
-        },
-        "equatorial" : {
-          "declinationDifference" : 14.69453,
-          "contraParallelSeparation" : 30.246281,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SQUARE",
-          "orbFromExact" : 19.231988
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "SATURN",
-        "ecliptic" : {
-          "angularSeparation" : 18.463213,
-          "signDistance" : 0
-        },
-        "equatorial" : {
-          "declinationDifference" : 0.931291,
-          "contraParallelSeparation" : 44.00952,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "CONJUNCTION",
-          "orbFromExact" : 18.463213
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 144.326249,
-          "signDistance" : 4
-        },
-        "equatorial" : {
-          "declinationDifference" : 42.247724,
-          "contraParallelSeparation" : 2.693087,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 35.673751,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 2.693087,
-          "contraParallelSeparation" : 42.247724,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 107.840494,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 170.474191,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 72.159506,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "MERCURY",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 9.525809,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "MARS",
-        "ecliptic" : {
-          "angularSeparation" : 114.096367,
-          "signDistance" : 4
-        },
-        "equatorial" : {
-          "declinationDifference" : 3.71855,
-          "contraParallelSeparation" : 22.675943,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "TRINE",
-          "orbFromExact" : 5.903633
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "JUPITER",
-        "ecliptic" : {
-          "angularSeparation" : 130.567375,
-          "signDistance" : 5
-        },
-        "equatorial" : {
-          "declinationDifference" : 1.702821,
-          "contraParallelSeparation" : 17.254573,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "SATURN",
-        "ecliptic" : {
-          "angularSeparation" : 41.33615,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 12.060418,
-          "contraParallelSeparation" : 31.017811,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SEXTILE",
-          "orbFromExact" : 18.66385
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 84.526885,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 29.256016,
-          "contraParallelSeparation" : 10.298622,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 95.473115,
-          "signDistance" : 4
-        },
-        "equatorial" : {
-          "declinationDifference" : 10.298622,
-          "contraParallelSeparation" : 29.256016,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 167.639858,
-          "signDistance" : 6
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 110.674827,
-          "signDistance" : 3
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 12.360142,
-          "signDistance" : 0
-        }
-      }, {
-        "pointAName" : "VENUS",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 69.325173,
-          "signDistance" : 3
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "JUPITER",
-        "ecliptic" : {
-          "angularSeparation" : 16.471008,
-          "signDistance" : 1
-        },
-        "equatorial" : {
-          "declinationDifference" : 5.421371,
-          "contraParallelSeparation" : 20.973122,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "SATURN",
-        "ecliptic" : {
-          "angularSeparation" : 72.760217,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 8.341868,
-          "contraParallelSeparation" : 34.736361,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SEXTILE",
-          "orbFromExact" : 12.760217
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 161.376748,
-          "signDistance" : 6
-        },
-        "equatorial" : {
-          "declinationDifference" : 32.974565,
-          "contraParallelSeparation" : 6.580072,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 18.623252,
-          "signDistance" : 0
-        },
-        "equatorial" : {
-          "declinationDifference" : 6.580072,
-          "contraParallelSeparation" : 32.974565,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 53.543491,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 135.228806,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 126.456509,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "MARS",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 44.771194,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "SATURN",
-        "ecliptic" : {
-          "angularSeparation" : 89.231225,
-          "signDistance" : 3
-        },
-        "equatorial" : {
-          "declinationDifference" : 13.763239,
-          "contraParallelSeparation" : 29.31499,
-          "sameHemisphere" : true
-        },
-        "aspect" : {
-          "type" : "SQUARE",
-          "orbFromExact" : 0.768775
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 144.905739,
-          "signDistance" : 5
-        },
-        "equatorial" : {
-          "declinationDifference" : 27.553195,
-          "contraParallelSeparation" : 12.001443,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 35.094261,
-          "signDistance" : 1
-        },
-        "equatorial" : {
-          "declinationDifference" : 12.001443,
-          "contraParallelSeparation" : 27.553195,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 37.072483,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 118.757797,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 142.927517,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "JUPITER",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 61.242203,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "SATURN",
-        "pointBName" : "NORTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 125.863036,
-          "signDistance" : 4
-        },
-        "equatorial" : {
-          "declinationDifference" : 41.316433,
-          "contraParallelSeparation" : 1.761796,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "SATURN",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 54.136964,
-          "signDistance" : 2
-        },
-        "equatorial" : {
-          "declinationDifference" : 1.761796,
-          "contraParallelSeparation" : 41.316433,
-          "sameHemisphere" : true
-        }
-      }, {
-        "pointAName" : "SATURN",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 126.303708,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "SATURN",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 152.010978,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "SATURN",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 53.696292,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "SATURN",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 27.989022,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "NORTH_NODE",
-        "pointBName" : "SOUTH_NODE",
-        "ecliptic" : {
-          "angularSeparation" : 180.0,
-          "signDistance" : 6
-        },
-        "equatorial" : {
-          "declinationDifference" : 39.554637,
-          "contraParallelSeparation" : 0.0,
-          "sameHemisphere" : false
-        }
-      }, {
-        "pointAName" : "NORTH_NODE",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 107.833257,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "NORTH_NODE",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 26.147942,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "NORTH_NODE",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 72.166743,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "NORTH_NODE",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 153.852058,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "SOUTH_NODE",
-        "pointBName" : "ASCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 72.166743,
-          "signDistance" : 2
-        }
-      }, {
-        "pointAName" : "SOUTH_NODE",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 153.852058,
-          "signDistance" : 5
-        }
-      }, {
-        "pointAName" : "SOUTH_NODE",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 107.833257,
-          "signDistance" : 4
-        }
-      }, {
-        "pointAName" : "SOUTH_NODE",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 26.147942,
-          "signDistance" : 1
-        }
-      }, {
-        "pointAName" : "ASCENDANT",
-        "pointBName" : "MIDHEAVEN",
-        "ecliptic" : {
-          "angularSeparation" : 81.685315,
-          "signDistance" : 3
-        }
-      }, {
-        "pointAName" : "ASCENDANT",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 180.0,
-          "signDistance" : 6
-        }
-      }, {
-        "pointAName" : "ASCENDANT",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 98.314685,
-          "signDistance" : 3
-        }
-      }, {
-        "pointAName" : "MIDHEAVEN",
-        "pointBName" : "DESCENDANT",
-        "ecliptic" : {
-          "angularSeparation" : 98.314685,
-          "signDistance" : 3
-        }
-      }, {
-        "pointAName" : "MIDHEAVEN",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 180.0,
-          "signDistance" : 6
-        }
-      }, {
-        "pointAName" : "DESCENDANT",
-        "pointBName" : "IMUM_COELI",
-        "ecliptic" : {
-          "angularSeparation" : 81.685315,
-          "signDistance" : 3
-        }
-      } ],
-      "moonPhase" : {
-        "illuminationFraction" : 0.39633,
-        "phase" : "CRESCENT_TO_FIRST_QUARTER",
-        "waxing" : true
+        "solarCondition" : "FREE_OF_SUN",
+        "type" : "PLANET"
       },
-      "sect" : {
-        "sect" : "NOCTURNAL",
-        "lightOfSect" : "MOON",
-        "lightContraryToSect" : "SUN",
-        "beneficOfSect" : "VENUS",
-        "beneficContraryToSect" : "JUPITER",
-        "maleficOfSect" : "MARS",
-        "maleficContraryToSect" : "SATURN",
-        "sunAboveHorizon" : false,
-        "moonAboveHorizon" : true,
-        "sunAltitude" : -13.127475,
-        "moonAltitude" : 2.692943
-      },
-      "syzygy" : {
-        "type" : "NEW_MOON",
-        "julianDay" : 2442602.673696,
-        "approximateUtcInstant" : "1975-07-09T04:10:07Z",
-        "longitude" : 106.358362,
+      "MERCURY" : {
+        "longitude" : 93.948666,
         "sign" : "CANCER",
-        "degreeInSign" : 16.358362,
+        "degreeInSign" : 3.948666,
+        "latitude" : -0.912073,
+        "rightAscension" : 94.273129,
+        "declination" : 22.470406,
+        "altitude" : -16.353123,
+        "aboveHorizon" : false,
+        "speed" : 1.633719,
+        "meanDailySpeed" : 1.3833,
+        "speedRatio" : 1.18103,
+        "retrograde" : false,
         "house" : 5,
-        "sunLongitude" : 106.358362,
-        "moonLongitude" : 106.358362,
-        "angularSeparation" : 0.0,
-        "sunSign" : "CANCER",
-        "moonSign" : "CANCER"
-      },
-      "lots" : {
-        "FORTUNE" : {
-          "name" : "FORTUNE",
-          "longitude" : 268.074654,
-          "sign" : "SAGITTARIUS",
-          "degreeInSign" : 28.074654,
-          "house" : 10,
-          "ruler" : "JUPITER",
-          "formula" : "ASC + Sun - Moon"
+        "wholeSignHouse" : 5,
+        "angularity" : "SUCCEDENT",
+        "antisciaLongitude" : 86.051334,
+        "contraAntisciaLongitude" : 266.051334,
+        "domicileRuler" : "MOON",
+        "exaltationRuler" : "JUPITER",
+        "triplicityRuler" : "MARS",
+        "participatingTriplicityRuler" : "MOON",
+        "termRuler" : "MARS",
+        "faceRuler" : "VENUS",
+        "detrimentRuler" : "SATURN",
+        "fallRuler" : "MARS",
+        "dignities" : [ ],
+        "debilities" : [ ],
+        "solarPhase" : "ORIENTAL",
+        "sect" : {
+          "sect" : "DIURNAL",
+          "condition" : "CONTRARY_TO_SECT",
+          "phaseRelativeToSun" : "ORIENTAL"
         },
-        "SPIRIT" : {
-          "name" : "SPIRIT",
-          "longitude" : 64.141689,
-          "sign" : "GEMINI",
-          "degreeInSign" : 4.141689,
-          "house" : 4,
-          "ruler" : "MERCURY",
-          "formula" : "ASC + Moon - Sun"
-        }
+        "solarCondition" : "FREE_OF_SUN",
+        "type" : "PLANET"
+      },
+      "VENUS" : {
+        "longitude" : 153.748029,
+        "sign" : "VIRGO",
+        "degreeInSign" : 3.748029,
+        "latitude" : -0.703378,
+        "rightAscension" : 155.395497,
+        "declination" : 9.478697,
+        "altitude" : -4.109663,
+        "aboveHorizon" : false,
+        "speed" : 0.639489,
+        "meanDailySpeed" : 1.2026,
+        "speedRatio" : 0.531755,
+        "retrograde" : false,
+        "house" : 7,
+        "wholeSignHouse" : 7,
+        "angularity" : "ANGULAR",
+        "antisciaLongitude" : 26.251971,
+        "contraAntisciaLongitude" : 206.251971,
+        "domicileRuler" : "MERCURY",
+        "exaltationRuler" : "MERCURY",
+        "triplicityRuler" : "MOON",
+        "participatingTriplicityRuler" : "MARS",
+        "termRuler" : "MERCURY",
+        "faceRuler" : "SUN",
+        "detrimentRuler" : "JUPITER",
+        "fallRuler" : "VENUS",
+        "dignities" : [ "TRIPLICITY" ],
+        "debilities" : [ "FALL" ],
+        "solarPhase" : "OCCIDENTAL",
+        "sect" : {
+          "sect" : "NOCTURNAL",
+          "condition" : "OF_SECT"
+        },
+        "solarCondition" : "FREE_OF_SUN",
+        "type" : "PLANET"
+      },
+      "MARS" : {
+        "longitude" : 39.651662,
+        "sign" : "TAURUS",
+        "degreeInSign" : 9.651662,
+        "latitude" : -1.589241,
+        "rightAscension" : 37.765892,
+        "declination" : 13.197246,
+        "altitude" : -14.569473,
+        "aboveHorizon" : false,
+        "speed" : 0.690083,
+        "meanDailySpeed" : 0.524,
+        "speedRatio" : 1.316952,
+        "retrograde" : false,
+        "house" : 3,
+        "wholeSignHouse" : 3,
+        "angularity" : "CADENT",
+        "antisciaLongitude" : 140.348338,
+        "contraAntisciaLongitude" : 320.348338,
+        "domicileRuler" : "VENUS",
+        "exaltationRuler" : "MOON",
+        "triplicityRuler" : "MOON",
+        "participatingTriplicityRuler" : "MARS",
+        "termRuler" : "MERCURY",
+        "faceRuler" : "MERCURY",
+        "detrimentRuler" : "MARS",
+        "dignities" : [ "TRIPLICITY" ],
+        "debilities" : [ "DETRIMENT" ],
+        "solarPhase" : "ORIENTAL",
+        "sect" : {
+          "sect" : "NOCTURNAL",
+          "condition" : "OF_SECT"
+        },
+        "solarCondition" : "FREE_OF_SUN",
+        "type" : "PLANET"
+      },
+      "JUPITER" : {
+        "longitude" : 23.180654,
+        "sign" : "ARIES",
+        "degreeInSign" : 23.180654,
+        "latitude" : -1.327065,
+        "rightAscension" : 21.943829,
+        "declination" : 7.775876,
+        "altitude" : -11.001591,
+        "aboveHorizon" : false,
+        "speed" : 0.095353,
+        "meanDailySpeed" : 0.0831,
+        "speedRatio" : 1.147448,
+        "retrograde" : false,
+        "house" : 2,
+        "wholeSignHouse" : 2,
+        "angularity" : "SUCCEDENT",
+        "antisciaLongitude" : 156.819346,
+        "contraAntisciaLongitude" : 336.819346,
+        "domicileRuler" : "MARS",
+        "exaltationRuler" : "SUN",
+        "triplicityRuler" : "JUPITER",
+        "participatingTriplicityRuler" : "SATURN",
+        "termRuler" : "MARS",
+        "faceRuler" : "VENUS",
+        "detrimentRuler" : "VENUS",
+        "fallRuler" : "SATURN",
+        "dignities" : [ "TRIPLICITY" ],
+        "debilities" : [ ],
+        "solarPhase" : "ORIENTAL",
+        "sect" : {
+          "sect" : "DIURNAL",
+          "condition" : "CONTRARY_TO_SECT"
+        },
+        "solarCondition" : "FREE_OF_SUN",
+        "type" : "PLANET"
+      },
+      "SATURN" : {
+        "longitude" : 112.411879,
+        "sign" : "CANCER",
+        "degreeInSign" : 22.411879,
+        "latitude" : -0.038799,
+        "rightAscension" : 114.197638,
+        "declination" : 21.539114,
+        "altitude" : -13.067946,
+        "aboveHorizon" : false,
+        "speed" : 0.130034,
+        "meanDailySpeed" : 0.0335,
+        "speedRatio" : 3.881606,
+        "retrograde" : false,
+        "house" : 5,
+        "wholeSignHouse" : 5,
+        "angularity" : "SUCCEDENT",
+        "antisciaLongitude" : 67.588121,
+        "contraAntisciaLongitude" : 247.588121,
+        "domicileRuler" : "MOON",
+        "exaltationRuler" : "JUPITER",
+        "triplicityRuler" : "MARS",
+        "participatingTriplicityRuler" : "MOON",
+        "termRuler" : "JUPITER",
+        "faceRuler" : "MOON",
+        "detrimentRuler" : "SATURN",
+        "fallRuler" : "MARS",
+        "dignities" : [ ],
+        "debilities" : [ "DETRIMENT" ],
+        "solarPhase" : "OCCIDENTAL",
+        "sect" : {
+          "sect" : "DIURNAL",
+          "condition" : "CONTRARY_TO_SECT"
+        },
+        "solarCondition" : "COMBUST",
+        "type" : "PLANET"
+      },
+      "NORTH_NODE" : {
+        "longitude" : 238.274915,
+        "sign" : "SCORPIO",
+        "degreeInSign" : 28.274915,
+        "latitude" : 0.0,
+        "rightAscension" : 236.02678,
+        "declination" : -19.777319,
+        "altitude" : 15.445322,
+        "aboveHorizon" : true,
+        "speed" : -0.052972,
+        "meanDailySpeed" : 0.05295,
+        "speedRatio" : 1.000416,
+        "retrograde" : true,
+        "house" : 9,
+        "wholeSignHouse" : 9,
+        "angularity" : "CADENT",
+        "antisciaLongitude" : 301.725085,
+        "contraAntisciaLongitude" : 121.725085,
+        "dignities" : [ ],
+        "debilities" : [ ],
+        "type" : "PLANET"
+      },
+      "SOUTH_NODE" : {
+        "longitude" : 58.274915,
+        "sign" : "TAURUS",
+        "degreeInSign" : 28.274915,
+        "latitude" : 0.0,
+        "rightAscension" : 56.02678,
+        "declination" : 19.777319,
+        "altitude" : -15.445322,
+        "aboveHorizon" : false,
+        "speed" : -0.052972,
+        "meanDailySpeed" : 0.05295,
+        "speedRatio" : 1.000416,
+        "retrograde" : true,
+        "house" : 3,
+        "wholeSignHouse" : 3,
+        "angularity" : "CADENT",
+        "antisciaLongitude" : 121.725085,
+        "contraAntisciaLongitude" : 301.725085,
+        "dignities" : [ ],
+        "debilities" : [ ],
+        "type" : "PLANET"
+      },
+      "ASCENDANT" : {
+        "longitude" : 346.108172,
+        "sign" : "PISCES",
+        "degreeInSign" : 16.108172,
+        "type" : "ANGLE"
+      },
+      "MIDHEAVEN" : {
+        "longitude" : 264.422857,
+        "sign" : "SAGITTARIUS",
+        "degreeInSign" : 24.422857,
+        "type" : "ANGLE"
+      },
+      "DESCENDANT" : {
+        "longitude" : 166.108172,
+        "sign" : "VIRGO",
+        "degreeInSign" : 16.108172,
+        "type" : "ANGLE"
+      },
+      "IMUM_COELI" : {
+        "longitude" : 84.422857,
+        "sign" : "GEMINI",
+        "degreeInSign" : 24.422857,
+        "type" : "ANGLE"
+      }
+    },
+    "houses" : [ {
+      "house" : 1,
+      "cuspLongitude" : 330.0,
+      "sign" : "PISCES",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 2,
+      "cuspLongitude" : 0.0,
+      "sign" : "ARIES",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 3,
+      "cuspLongitude" : 30.0,
+      "sign" : "TAURUS",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 4,
+      "cuspLongitude" : 60.0,
+      "sign" : "GEMINI",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 5,
+      "cuspLongitude" : 90.0,
+      "sign" : "CANCER",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 6,
+      "cuspLongitude" : 120.0,
+      "sign" : "LEO",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 7,
+      "cuspLongitude" : 150.0,
+      "sign" : "VIRGO",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 8,
+      "cuspLongitude" : 180.0,
+      "sign" : "LIBRA",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 9,
+      "cuspLongitude" : 210.0,
+      "sign" : "SCORPIO",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 10,
+      "cuspLongitude" : 240.0,
+      "sign" : "SAGITTARIUS",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 11,
+      "cuspLongitude" : 270.0,
+      "sign" : "CAPRICORN",
+      "degreeInSign" : 0.0
+    }, {
+      "house" : 12,
+      "cuspLongitude" : 300.0,
+      "sign" : "AQUARIUS",
+      "degreeInSign" : 0.0
+    } ],
+    "pairwiseRelations" : [ {
+      "pointAName" : "SUN",
+      "pointBName" : "MOON",
+      "ecliptic" : {
+        "angularSeparation" : 78.033517,
+        "signDistance" : 3
+      },
+      "equatorial" : {
+        "declinationDifference" : 29.17299,
+        "contraParallelSeparation" : 14.168337,
+        "sameHemisphere" : false
+      },
+      "aspect" : {
+        "type" : "SQUARE",
+        "orbFromExact" : 11.966483
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "MERCURY",
+      "ecliptic" : {
+        "angularSeparation" : 17.884368,
+        "signDistance" : 0
+      },
+      "equatorial" : {
+        "declinationDifference" : 0.799742,
+        "contraParallelSeparation" : 44.141069,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "CONJUNCTION",
+        "orbFromExact" : 17.884368
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "VENUS",
+      "ecliptic" : {
+        "angularSeparation" : 41.914995,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 12.191966,
+        "contraParallelSeparation" : 31.14936,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SEXTILE",
+        "orbFromExact" : 18.085005
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "MARS",
+      "ecliptic" : {
+        "angularSeparation" : 72.181372,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 8.473417,
+        "contraParallelSeparation" : 34.86791,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SEXTILE",
+        "orbFromExact" : 12.181372
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "JUPITER",
+      "ecliptic" : {
+        "angularSeparation" : 88.65238,
+        "signDistance" : 3
+      },
+      "equatorial" : {
+        "declinationDifference" : 13.894787,
+        "contraParallelSeparation" : 29.446539,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SQUARE",
+        "orbFromExact" : 1.34762
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "SATURN",
+      "ecliptic" : {
+        "angularSeparation" : 0.578845,
+        "signDistance" : 0
+      },
+      "equatorial" : {
+        "declinationDifference" : 0.131549,
+        "contraParallelSeparation" : 43.209778,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "CONJUNCTION",
+        "orbFromExact" : 0.578845
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 126.441881,
+        "signDistance" : 4
+      },
+      "equatorial" : {
+        "declinationDifference" : 41.447982,
+        "contraParallelSeparation" : 1.893345,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 53.558119,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 1.893345,
+        "contraParallelSeparation" : 41.447982,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 125.724863,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 152.589823,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 54.275137,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "SUN",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 27.410177,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "MERCURY",
+      "ecliptic" : {
+        "angularSeparation" : 95.917886,
+        "signDistance" : 3
+      },
+      "equatorial" : {
+        "declinationDifference" : 29.972732,
+        "contraParallelSeparation" : 14.968079,
+        "sameHemisphere" : false
+      },
+      "aspect" : {
+        "type" : "SQUARE",
+        "orbFromExact" : 5.917886
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "VENUS",
+      "ecliptic" : {
+        "angularSeparation" : 36.118522,
+        "signDistance" : 1
+      },
+      "equatorial" : {
+        "declinationDifference" : 16.981023,
+        "contraParallelSeparation" : 1.97637,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "MARS",
+      "ecliptic" : {
+        "angularSeparation" : 150.214889,
+        "signDistance" : 5
+      },
+      "equatorial" : {
+        "declinationDifference" : 20.699573,
+        "contraParallelSeparation" : 5.69492,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "JUPITER",
+      "ecliptic" : {
+        "angularSeparation" : 166.685898,
+        "signDistance" : 6
+      },
+      "equatorial" : {
+        "declinationDifference" : 15.278202,
+        "contraParallelSeparation" : 0.273549,
+        "sameHemisphere" : false
+      },
+      "aspect" : {
+        "type" : "OPPOSITION",
+        "orbFromExact" : 13.314102
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "SATURN",
+      "ecliptic" : {
+        "angularSeparation" : 77.454673,
+        "signDistance" : 3
+      },
+      "equatorial" : {
+        "declinationDifference" : 29.041441,
+        "contraParallelSeparation" : 14.036788,
+        "sameHemisphere" : false
+      },
+      "aspect" : {
+        "type" : "SQUARE",
+        "orbFromExact" : 12.545327
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 48.408363,
+        "signDistance" : 1
+      },
+      "equatorial" : {
+        "declinationDifference" : 12.274992,
+        "contraParallelSeparation" : 27.279645,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 131.591637,
+        "signDistance" : 5
+      },
+      "equatorial" : {
+        "declinationDifference" : 27.279645,
+        "contraParallelSeparation" : 12.274992,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 156.24162,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 74.556305,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 23.75838,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "MOON",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 105.443695,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "VENUS",
+      "ecliptic" : {
+        "angularSeparation" : 59.799363,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 12.991709,
+        "contraParallelSeparation" : 31.949102,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SEXTILE",
+        "orbFromExact" : 0.200637
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "MARS",
+      "ecliptic" : {
+        "angularSeparation" : 54.297004,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 9.273159,
+        "contraParallelSeparation" : 35.667652,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SEXTILE",
+        "orbFromExact" : 5.702996
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "JUPITER",
+      "ecliptic" : {
+        "angularSeparation" : 70.768012,
+        "signDistance" : 3
+      },
+      "equatorial" : {
+        "declinationDifference" : 14.69453,
+        "contraParallelSeparation" : 30.246281,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SQUARE",
+        "orbFromExact" : 19.231988
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "SATURN",
+      "ecliptic" : {
+        "angularSeparation" : 18.463213,
+        "signDistance" : 0
+      },
+      "equatorial" : {
+        "declinationDifference" : 0.931291,
+        "contraParallelSeparation" : 44.00952,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "CONJUNCTION",
+        "orbFromExact" : 18.463213
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 144.326249,
+        "signDistance" : 4
+      },
+      "equatorial" : {
+        "declinationDifference" : 42.247724,
+        "contraParallelSeparation" : 2.693087,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 35.673751,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 2.693087,
+        "contraParallelSeparation" : 42.247724,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 107.840494,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 170.474191,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 72.159506,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "MERCURY",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 9.525809,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "MARS",
+      "ecliptic" : {
+        "angularSeparation" : 114.096367,
+        "signDistance" : 4
+      },
+      "equatorial" : {
+        "declinationDifference" : 3.71855,
+        "contraParallelSeparation" : 22.675943,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "TRINE",
+        "orbFromExact" : 5.903633
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "JUPITER",
+      "ecliptic" : {
+        "angularSeparation" : 130.567375,
+        "signDistance" : 5
+      },
+      "equatorial" : {
+        "declinationDifference" : 1.702821,
+        "contraParallelSeparation" : 17.254573,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "SATURN",
+      "ecliptic" : {
+        "angularSeparation" : 41.33615,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 12.060418,
+        "contraParallelSeparation" : 31.017811,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SEXTILE",
+        "orbFromExact" : 18.66385
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 84.526885,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 29.256016,
+        "contraParallelSeparation" : 10.298622,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 95.473115,
+        "signDistance" : 4
+      },
+      "equatorial" : {
+        "declinationDifference" : 10.298622,
+        "contraParallelSeparation" : 29.256016,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 167.639858,
+        "signDistance" : 6
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 110.674827,
+        "signDistance" : 3
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 12.360142,
+        "signDistance" : 0
+      }
+    }, {
+      "pointAName" : "VENUS",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 69.325173,
+        "signDistance" : 3
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "JUPITER",
+      "ecliptic" : {
+        "angularSeparation" : 16.471008,
+        "signDistance" : 1
+      },
+      "equatorial" : {
+        "declinationDifference" : 5.421371,
+        "contraParallelSeparation" : 20.973122,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "SATURN",
+      "ecliptic" : {
+        "angularSeparation" : 72.760217,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 8.341868,
+        "contraParallelSeparation" : 34.736361,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SEXTILE",
+        "orbFromExact" : 12.760217
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 161.376748,
+        "signDistance" : 6
+      },
+      "equatorial" : {
+        "declinationDifference" : 32.974565,
+        "contraParallelSeparation" : 6.580072,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 18.623252,
+        "signDistance" : 0
+      },
+      "equatorial" : {
+        "declinationDifference" : 6.580072,
+        "contraParallelSeparation" : 32.974565,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 53.543491,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 135.228806,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 126.456509,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "MARS",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 44.771194,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "SATURN",
+      "ecliptic" : {
+        "angularSeparation" : 89.231225,
+        "signDistance" : 3
+      },
+      "equatorial" : {
+        "declinationDifference" : 13.763239,
+        "contraParallelSeparation" : 29.31499,
+        "sameHemisphere" : true
+      },
+      "aspect" : {
+        "type" : "SQUARE",
+        "orbFromExact" : 0.768775
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 144.905739,
+        "signDistance" : 5
+      },
+      "equatorial" : {
+        "declinationDifference" : 27.553195,
+        "contraParallelSeparation" : 12.001443,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 35.094261,
+        "signDistance" : 1
+      },
+      "equatorial" : {
+        "declinationDifference" : 12.001443,
+        "contraParallelSeparation" : 27.553195,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 37.072483,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 118.757797,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 142.927517,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "JUPITER",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 61.242203,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "SATURN",
+      "pointBName" : "NORTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 125.863036,
+        "signDistance" : 4
+      },
+      "equatorial" : {
+        "declinationDifference" : 41.316433,
+        "contraParallelSeparation" : 1.761796,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "SATURN",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 54.136964,
+        "signDistance" : 2
+      },
+      "equatorial" : {
+        "declinationDifference" : 1.761796,
+        "contraParallelSeparation" : 41.316433,
+        "sameHemisphere" : true
+      }
+    }, {
+      "pointAName" : "SATURN",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 126.303708,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "SATURN",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 152.010978,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "SATURN",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 53.696292,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "SATURN",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 27.989022,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "NORTH_NODE",
+      "pointBName" : "SOUTH_NODE",
+      "ecliptic" : {
+        "angularSeparation" : 180.0,
+        "signDistance" : 6
+      },
+      "equatorial" : {
+        "declinationDifference" : 39.554637,
+        "contraParallelSeparation" : 0.0,
+        "sameHemisphere" : false
+      }
+    }, {
+      "pointAName" : "NORTH_NODE",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 107.833257,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "NORTH_NODE",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 26.147942,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "NORTH_NODE",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 72.166743,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "NORTH_NODE",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 153.852058,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "SOUTH_NODE",
+      "pointBName" : "ASCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 72.166743,
+        "signDistance" : 2
+      }
+    }, {
+      "pointAName" : "SOUTH_NODE",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 153.852058,
+        "signDistance" : 5
+      }
+    }, {
+      "pointAName" : "SOUTH_NODE",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 107.833257,
+        "signDistance" : 4
+      }
+    }, {
+      "pointAName" : "SOUTH_NODE",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 26.147942,
+        "signDistance" : 1
+      }
+    }, {
+      "pointAName" : "ASCENDANT",
+      "pointBName" : "MIDHEAVEN",
+      "ecliptic" : {
+        "angularSeparation" : 81.685315,
+        "signDistance" : 3
+      }
+    }, {
+      "pointAName" : "ASCENDANT",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 180.0,
+        "signDistance" : 6
+      }
+    }, {
+      "pointAName" : "ASCENDANT",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 98.314685,
+        "signDistance" : 3
+      }
+    }, {
+      "pointAName" : "MIDHEAVEN",
+      "pointBName" : "DESCENDANT",
+      "ecliptic" : {
+        "angularSeparation" : 98.314685,
+        "signDistance" : 3
+      }
+    }, {
+      "pointAName" : "MIDHEAVEN",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 180.0,
+        "signDistance" : 6
+      }
+    }, {
+      "pointAName" : "DESCENDANT",
+      "pointBName" : "IMUM_COELI",
+      "ecliptic" : {
+        "angularSeparation" : 81.685315,
+        "signDistance" : 3
+      }
+    } ],
+    "moonPhase" : {
+      "illuminationFraction" : 0.39633,
+      "phase" : "CRESCENT_TO_FIRST_QUARTER",
+      "waxing" : true
+    },
+    "sect" : {
+      "sect" : "NOCTURNAL",
+      "lightOfSect" : "MOON",
+      "lightContraryToSect" : "SUN",
+      "beneficOfSect" : "VENUS",
+      "beneficContraryToSect" : "JUPITER",
+      "maleficOfSect" : "MARS",
+      "maleficContraryToSect" : "SATURN",
+      "sunAboveHorizon" : false,
+      "moonAboveHorizon" : true,
+      "sunAltitude" : -13.127475,
+      "moonAltitude" : 2.692943
+    },
+    "syzygy" : {
+      "type" : "NEW_MOON",
+      "julianDay" : 2442602.673696,
+      "approximateUtcInstant" : "1975-07-09T04:10:07Z",
+      "longitude" : 106.358362,
+      "sign" : "CANCER",
+      "degreeInSign" : 16.358362,
+      "house" : 5,
+      "sunLongitude" : 106.358362,
+      "moonLongitude" : 106.358362,
+      "angularSeparation" : 0.0,
+      "sunSign" : "CANCER",
+      "moonSign" : "CANCER"
+    },
+    "lots" : {
+      "FORTUNE" : {
+        "name" : "FORTUNE",
+        "longitude" : 268.074654,
+        "sign" : "SAGITTARIUS",
+        "degreeInSign" : 28.074654,
+        "house" : 10,
+        "ruler" : "JUPITER",
+        "formula" : "ASC + Sun - Moon"
+      },
+      "SPIRIT" : {
+        "name" : "SPIRIT",
+        "longitude" : 64.141689,
+        "sign" : "GEMINI",
+        "degreeInSign" : 4.141689,
+        "house" : 4,
+        "ruler" : "MERCURY",
+        "formula" : "ASC + Moon - Sun"
       }
     }
-  },
-  "suggestedFilename" : "ilia-valens-descriptive.json"
+  }
 }

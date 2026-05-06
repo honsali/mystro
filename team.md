@@ -1,6 +1,6 @@
 # Team Collaboration Rules
 
-This document defines the manager/worker collaboration process for converting Mystro into a simple Spring Boot application.
+This document defines the manager/worker collaboration process for maintaining Mystro as a REST-only Spring Boot application.
 
 ## Roles
 
@@ -124,18 +124,16 @@ When the user says **"your turn"**, interpret it according to the active role:
 
 If the active role is unclear, ask the user to clarify whether the current session is acting as manager or worker before making changes.
 
-## Conversion Strategy
+## Change Strategy
 
-The Spring Boot conversion should be incremental:
+Future REST-only work should remain incremental:
 
-1. Extract reusable runtime/application services without changing CLI behavior.
-2. Add Spring Boot dependency and a separate application entrypoint.
-3. Expose descriptive report generation through a simple REST endpoint.
-4. Add request/response DTOs and web mappers as needed.
-5. Add Spring dependency injection and tests.
-6. Align REST serialization with existing file-output serialization.
-7. Add packaging/documentation polish.
-8. Add additional endpoints only when explicitly requested.
+1. Keep runtime/application seams reusable and calculation-focused.
+2. Keep the Spring Boot layer a thin adapter over existing calculation code.
+3. Expose additional REST endpoints only when explicitly requested.
+4. Add request/response DTOs, tests, and documentation alongside endpoint changes.
+5. Preserve JSON serialization, logging isolation, and explicit doctrine selection.
+6. Keep packaging/documentation aligned with the current REST-only application shape.
 
 ## Project Context Rules
 
@@ -144,7 +142,7 @@ The Spring Boot conversion should be incremental:
 - Current descriptive reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart`.
 - There must be no top-level `basicChart`, `descriptive`, or `calculationSetting` field unless the architecture spec changes.
 - Doctrine selection must remain explicit.
-- No hidden default doctrine should be introduced in CLI or REST paths.
+- No hidden default doctrine should be introduced in REST paths.
 - Swiss Ephemeris runtime data under `ephe/` is required and must not be deleted or treated as generated output.
 
 ## Architectural Rules
@@ -156,8 +154,7 @@ The Spring Boot conversion should be incremental:
 - Do not duplicate astrology calculation logic in controllers, DTOs, or tests.
 - Do not rewrite doctrine implementations as part of web wiring.
 - Do not move shared chart model ownership away from `app.chart.data` / `app.chart.model` without explicit approval.
-- Existing CLI behavior should remain working unless explicitly changed.
-- The CLI should not require a Spring application context.
+- Do not reintroduce a CLI execution path unless explicitly requested.
 - REST endpoints should not write output files unless explicitly requested.
 - Preserve current output/report structure unless a requirement explicitly changes it.
 - Do not introduce sidereal zodiac behavior or unrelated astrology features.
@@ -191,17 +188,13 @@ When tests exist or behavior is changed, also run:
 mvn test
 ```
 
-When runtime behavior is relevant, also run:
-
-```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
-```
-
-When packaging, Spring Boot plugin, or executable jar behavior changes, also run:
+When packaging, startup, or executable jar behavior changes, also run:
 
 ```bash
 mvn package -DskipTests
 ```
+
+When a runtime smoke test is practical, briefly start the Spring Boot app (`mvn spring-boot:run` or `java -jar target/mystro-<version>.jar`), verify the relevant endpoint, and stop the process cleanly.
 
 The worker must record all verification commands and results in `worker.md`.
 
@@ -211,7 +204,7 @@ Before reporting an iteration complete, the worker should check:
 
 - Latest `manager.md` requirement was followed.
 - No unrelated features or broad rewrites were introduced.
-- CLI behavior is preserved unless explicitly changed.
+- No CLI/file-output path was reintroduced unless explicitly requested.
 - Spring Boot code remains an adapter layer.
 - Controllers remain thin.
 - No astrology calculation logic was duplicated in web code.
@@ -240,7 +233,7 @@ An iteration is done only when:
 - If the worker discovers a blocker, they should stop expanding scope and document it in `worker.md`.
 - If an architectural decision is unclear, the worker should ask in `worker.md` instead of guessing.
 - If a requirement conflicts with the architecture spec, the worker should document the conflict and pause that part of the work.
-- If implementation requires changing doctrine behavior, chart model ownership, input format, output shape, or CLI flags, the worker must call it out before proceeding.
+- If implementation requires changing doctrine behavior, chart model ownership, REST request/response shape, input format, or reintroducing CLI/file-output behavior, the worker must call it out before proceeding.
 - The manager decides the next step after reviewing worker feedback.
 
 ## Prohibited Unless Explicitly Requested
@@ -255,4 +248,4 @@ An iteration is done only when:
 - New astrology features.
 - Sidereal zodiac behavior.
 - Hidden default doctrine selection.
-- Changes to current native input file format or CLI flags.
+- Reintroducing CLI flags, native input-file mode, or server-side report-file output.

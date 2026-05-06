@@ -1,12 +1,12 @@
-package app.web;
+package app.web.business;
 
-import app.input.DoctrineLoader;
-
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import app.doctrine.Doctrine;
+import app.input.DoctrineLoader;
+import app.input.model.DoctrineInfo;
 
 @RestController
 @RequestMapping("/api")
@@ -19,10 +19,7 @@ public final class DoctrinesController {
     }
 
     @GetMapping("/doctrines")
-    public DoctrinesResponse list() {
-        List<DoctrineInfo> infos = doctrineLoader.list().stream()
-                .map(DoctrineInfo::new)
-                .toList();
-        return new DoctrinesResponse(infos);
+    public List<DoctrineInfo> list() {
+        return doctrineLoader.list().stream().map(Doctrine::getDoctrineInfo).toList();
     }
 }

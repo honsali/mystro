@@ -1,4 +1,4 @@
-package app.web;
+package app.web.infra;
 
 import org.junit.jupiter.api.Test;
 

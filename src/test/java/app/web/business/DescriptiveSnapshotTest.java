@@ -1,4 +1,4 @@
-package app.web;
+package app.web.business;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -15,27 +15,27 @@ Read:
 ## Current architecture
 
 ```text
-Input loading
+REST request loading
 → Input validation / normalization
 → Doctrine descriptive calculation, including doctrine-owned natal chart calculation
 → Doctrine predictive calculation
-→ Formatting / printing
+→ JSON response
 ```
 
 Basic chart calculation is not a separate report stage. `BasicCalculator` is shared infrastructure called through `Doctrine.calculateNatalChart(...)`.
 
 ## Current implementation facts
 
-- `input/subject-list.json` contains natal data only.
-- Natal records use `id` as the subject identifier.
-- Doctrine modules are selected explicitly with `--doctrines ...`.
-- Current descriptive output path is `output/{subjectId}/{doctrineId}-descriptive.json`.
+- Runtime input is REST JSON with `id`, `birthDate`, `birthTime`, `latitude`, `longitude`, `utcOffset`, and one explicit `doctrine` id.
 - Current reports expose top-level `engineVersion`, `subject`, `doctrine`, and `natalChart` fields. There is no `calculationSetting` object.
 - There is no top-level `basicChart` key and no top-level `descriptive` key.
 - Doctrine calculators pour descriptive data into `NatalChart`.
-- Run logger path is `output/run-logger.json`.
-- REST endpoints are `GET /api/doctrines` and single-doctrine `POST /api/descriptive`, returning `{ "report": {...}, "suggestedFilename": "..." }` without writing server output files.
-- REST `/api/**` request logging is lifecycle-wide thread-isolated and ephemeral; CLI logging remains global and writes `output/run-logger.json`.
+- REST endpoints are `GET /api/doctrines` and single-doctrine `POST /api/descriptive`.
+- `GET /api/doctrines` returns a direct JSON array.
+- `POST /api/descriptive` returns a direct `DescriptiveAstrologyReport` JSON object with top-level `engineVersion`, `subject`, `doctrine`, and `natalChart`.
+- `engineVersion` comes from Spring configuration property `mystro.engine-version`.
+- REST descriptive calls do not write server output files.
+- REST `/api/**` request logging is lifecycle-wide thread-isolated and ephemeral.
 - The full `ilia`/Valens REST descriptive response snapshot lives at `src/test/resources/snapshots/descriptive/ilia-valens-response.json`.
 
 ## Core rule
@@ -50,8 +50,20 @@ After Java code changes, run:
 mvn compile
 ```
 
-Representative runtime command:
+After behavior or web/API changes, also run:
 
 ```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+mvn test
+```
+
+For packaging verification, also run:
+
+```bash
+mvn package -DskipTests
+```
+
+To start the application locally:
+
+```bash
+mvn spring-boot:run
 ```

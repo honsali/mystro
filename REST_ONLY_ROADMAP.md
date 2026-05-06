@@ -121,11 +121,26 @@ Completed:
 
 ### Iteration 24 — Final documentation and startup/package check — complete
 
+Note: Two Iteration 24 feedback blocks exist in `worker.md` due to a documentation overlap; the second one covers the final consistency/startup pass.
+
 Completed:
 
-- Verified README, architecture spec, reports, and agent notes are consistent with REST-only operation.
+- Updated active guidance (`team.md`, `.pi` skills/prompts, README, reports) so it reflects REST-only operation.
+- Refreshed final summary details such as current package locations and non-stale packaged-jar examples.
 - Verified no stale active CLI commands remain in active guidance.
-- Verified compile, tests, packaging, and packaged-jar startup smoke test.
+- Verified compile, tests, packaging, `application.yml` packaging, and packaged-jar startup smoke test.
+
+### Iteration 25 — Web layer simplification and repackaging — complete
+
+Completed:
+
+- Removed `DescriptiveResponse` and `DoctrinesResponse` wrapper classes.
+- `POST /api/descriptive` now returns a direct `DescriptiveAstrologyReport` (no `report` wrapper, no `suggestedFilename`).
+- `GET /api/doctrines` now returns a direct JSON array (no `doctrines` wrapper).
+- Removed `DescriptiveReportGenerator` pass-through; `DescriptiveController` calls `doctrine.calculateDescriptive(subject, basicCalculator)` directly.
+- Split `app.web` into `app.web.business` (controllers, DTOs, mapper, error model) and `app.web.infra` (config, CORS, filters, exception handler).
+- Updated snapshot, tests, and all documentation for new endpoint shapes and package layout.
+- Flat `doctrine` object serialization in reports confirmed and preserved.
 
 ## Optional later work — not required to finish REST-only conversion
 
@@ -148,10 +163,9 @@ The REST-only conversion is complete because:
 4. Documentation no longer has stale active CLI instructions.
 5. `mvn compile`, `mvn test`, and `mvn package -DskipTests` pass.
 6. REST contract remains stable:
-   - `GET /api/doctrines`,
-   - `POST /api/descriptive`,
+   - `GET /api/doctrines` returns direct JSON array,
+   - `POST /api/descriptive` returns direct `DescriptiveAstrologyReport`,
    - explicit singular doctrine,
-   - `{ "report": {...}, "suggestedFilename": "..." }`,
    - no server-side report files,
    - no hidden defaults.
 

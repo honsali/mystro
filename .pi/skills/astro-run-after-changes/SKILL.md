@@ -12,10 +12,16 @@ After Java code changes, run:
 mvn compile
 ```
 
-When the change affects runtime behavior, run a representative current command:
+When behavior or web/API changes, also run:
 
 ```bash
-mvn exec:java -Dexec.args="--subjects ilia --doctrines valens"
+mvn test
 ```
 
-Doctrines are explicit. Do not rely on hidden default doctrine selection.
+For packaging or startup verification, also run:
+
+```bash
+mvn package -DskipTests
+```
+
+Mystro is REST-only. Do not rely on removed CLI flags or server-side report-file output.

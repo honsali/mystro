@@ -9,7 +9,7 @@ import app.chart.data.Planet;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.data.Zodiac;
-import app.chart.model.CalculationDefinition;
+import app.input.model.DoctrineInfo;
 import app.input.model.Subject;
 import app.output.Logger;
 import app.swisseph.core.SweConst;
@@ -32,15 +32,15 @@ public class CalculationContext {
     private final double[] ascmc = new double[10];
     private final double armc;
 
-    public CalculationContext(Subject subject, CalculationDefinition definition) {
+    public CalculationContext(Subject subject, DoctrineInfo doctrineInfo) {
         this.subject = subject;
         configureEphemerisPath(subject);
-        this.doctrineId = definition.getId();
-        this.houseSystem = definition.getHouseSystem();
-        this.zodiac = definition.getZodiac();
-        this.terms = definition.getTerms();
-        this.triplicity = definition.getTriplicity();
-        this.nodeType = definition.getNodeType();
+        this.doctrineId = doctrineInfo.getId();
+        this.houseSystem = doctrineInfo.getHouseSystem();
+        this.zodiac = doctrineInfo.getZodiac();
+        this.terms = doctrineInfo.getTerms();
+        this.triplicity = doctrineInfo.getTriplicity();
+        this.nodeType = doctrineInfo.getNodeType();
 
         fullJulianDay = julianDayFromInstant(subject.getResolvedUtcInstant());
 
@@ -50,18 +50,6 @@ public class CalculationContext {
             throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         armc = AstroMath.normalize(ascmc[2]);
-    }
-
-    private void configureEphemerisPath(Subject subject) {
-        if (!Files.isDirectory(Path.of(EPHEMERIS_PATH))) {
-            Logger.instance.error(subject.getId(), "Required Swiss Ephemeris directory not found: " + EPHEMERIS_PATH);
-            throw new IllegalArgumentException("Calculation failed. See application logs.");
-        }
-        swissEph.swe_set_ephe_path(EPHEMERIS_PATH);
-    }
-
-    private double julianDayFromInstant(Instant instant) {
-        return 2440587.5 + instant.getEpochSecond() / 86400.0 + instant.getNano() / 86_400_000_000_000.0;
     }
 
     public Subject getSubject() {
@@ -122,18 +110,6 @@ public class CalculationContext {
         return values[1];
     }
 
-    private double[] eclipticCoordinatesFor(Planet planet, int swissPlanetId, double julianDay) {
-        double[] values = new double[6];
-        StringBuilder error = new StringBuilder();
-        int result = swissEph.swe_calc_ut(julianDay, swissPlanetId, planetFlags(), values, error);
-        requireSwissEphemerisResult(result, planet, "ecliptic coordinates", error);
-        if (Double.isNaN(values[0]) || Double.isNaN(values[1])) {
-            Logger.instance.error(subject.getId(), "Swiss Ephemeris returned invalid values for " + planet + " ecliptic coordinates: " + error);
-            throw new IllegalArgumentException("Calculation failed. See application logs.");
-        }
-        return values;
-    }
-
     public void requireSwissEphemerisResult(int result, Planet planet, String calculation, StringBuilder error) {
         if (result < 0) {
             Logger.instance.error(subject.getId(), "Swiss Ephemeris failed for " + planet + " " + calculation + ": " + error);
@@ -174,13 +150,6 @@ public class CalculationContext {
         throw new IllegalArgumentException("Calculation failed. See application logs.");
     }
 
-    private boolean isWithinZodiacalArc(double longitude, double start, double end) {
-        if (start <= end) {
-            return longitude >= start && longitude < end;
-        }
-        return longitude >= start || longitude < end;
-    }
-
     public Planet termRuler(double longitude, Terms terms) {
         return TraditionalTables.termRuler(longitude, terms);
     }
@@ -212,11 +181,42 @@ public class CalculationContext {
     }
 
     /**
-     * Swiss Ephemeris flags for geocentric apparent positions with speed output.
-     * File-backed Swiss Ephemeris data is required; Moshier fallback is rejected by callers.
+     * Swiss Ephemeris flags for geocentric apparent positions with speed output. File-backed Swiss
+     * Ephemeris data is required; Moshier fallback is rejected by callers.
      */
     public int planetFlags() {
         return SweConst.SEFLG_SPEED | SweConst.SEFLG_SWIEPH;
+    }
+
+    private void configureEphemerisPath(Subject subject) {
+        if (!Files.isDirectory(Path.of(EPHEMERIS_PATH))) {
+            Logger.instance.error(subject.getId(), "Required Swiss Ephemeris directory not found: " + EPHEMERIS_PATH);
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
+        }
+        swissEph.swe_set_ephe_path(EPHEMERIS_PATH);
+    }
+
+    private double julianDayFromInstant(Instant instant) {
+        return 2440587.5 + instant.getEpochSecond() / 86400.0 + instant.getNano() / 86_400_000_000_000.0;
+    }
+
+    private double[] eclipticCoordinatesFor(Planet planet, int swissPlanetId, double julianDay) {
+        double[] values = new double[6];
+        StringBuilder error = new StringBuilder();
+        int result = swissEph.swe_calc_ut(julianDay, swissPlanetId, planetFlags(), values, error);
+        requireSwissEphemerisResult(result, planet, "ecliptic coordinates", error);
+        if (Double.isNaN(values[0]) || Double.isNaN(values[1])) {
+            Logger.instance.error(subject.getId(), "Swiss Ephemeris returned invalid values for " + planet + " ecliptic coordinates: " + error);
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
+        }
+        return values;
+    }
+
+    private boolean isWithinZodiacalArc(double longitude, double start, double end) {
+        if (start <= end) {
+            return longitude >= start && longitude < end;
+        }
+        return longitude >= start || longitude < end;
     }
 
     private int calculateSwissHouses(double julianDay, double[] cusps, double[] ascmc) {

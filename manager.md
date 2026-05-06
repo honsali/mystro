@@ -1895,3 +1895,220 @@ Please append an Iteration 24 feedback block to `worker.md` with:
 - Package/startup verification result or reason startup smoke test was skipped.
 - Confirmation that REST API shape, snapshot, serialization, CORS behavior, logging isolation, and no-server-file-output behavior did not change.
 - Confirmation that the REST-only conversion can be considered complete, or a clear list of remaining blockers if not.
+
+## Iteration 25 — 2026-05-06
+
+### Manager Review Notes
+We are now intentionally simplifying the web layer after the completed REST-only conversion baseline. Since the last accepted iteration, local/manual refactoring removed `CalculationDefinition`, rewired doctrine metadata through `DoctrineInfo`, and changed doctrine classes accordingly. `mvn compile` currently passes, but `mvn test` fails because the descriptive report currently serializes doctrine data as nested `report.doctrine.doctrineInfo` instead of the required flat doctrine object. The user also explicitly requested several API/web simplifications:
+
+- remove `DescriptiveResponse` and return `DescriptiveAstrologyReport` directly from `POST /api/descriptive`
+- remove `suggestedFilename`
+- remove `DoctrinesResponse` and return the doctrine list directly from `GET /api/doctrines`
+- remove trivial `DescriptiveReportGenerator` and inline its tiny orchestration into the controller
+- split `app.web` into `app.web.business` and `app.web.infra`
+
+Treat these as intentional simplifications, not regressions, but keep the report object itself stable.
+
+### Goal
+Simplify the REST web layer and finish the doctrine-metadata refactor while restoring a consistent, test-passing external API.
+
+### Scope
+- Finish the `DoctrineInfo`/`Doctrine` simplification without nested doctrine serialization in descriptive reports.
+- Simplify both REST endpoints by removing unnecessary response-wrapper classes.
+- Remove the trivial report-generator pass-through.
+- Repackage web code into `business` and `infra` subpackages.
+- Update tests, snapshot, and active documentation/specs for the intentional endpoint shape changes.
+
+### Requirements
+1. Restore flat doctrine serialization inside descriptive reports.
+   - Keep the internal `DoctrineInfo` rewiring if desired.
+   - `DescriptiveAstrologyReport` JSON must expose a flat doctrine object, not `doctrineInfo` nesting.
+   - Required doctrine fields in the report object remain:
+     - `id`
+     - `name`
+     - `houseSystem`
+     - `zodiac`
+     - `terms`
+     - `triplicity`
+     - `nodeType`
+2. Simplify `POST /api/descriptive`.
+   - Remove `app.web.DescriptiveResponse`.
+   - Return `DescriptiveAstrologyReport` directly.
+   - Remove `suggestedFilename` from the REST response.
+   - Preserve `Cache-Control: no-store` and current JSON error response behavior.
+   - Preserve the report object shape itself: top-level `engineVersion`, `subject`, `doctrine`, `natalChart`.
+3. Simplify `GET /api/doctrines`.
+   - Remove `app.web.DoctrinesResponse`.
+   - Return the doctrine list directly.
+   - Doctrine item fields should remain the same stable metadata fields currently exposed.
+4. Remove trivial orchestration indirection.
+   - Remove `app.runtime.DescriptiveReportGenerator` if it remains a trivial pass-through.
+   - Inline its tiny current orchestration into the controller or the nearest still-justified orchestration point.
+   - Do not duplicate astrology logic beyond the existing tiny orchestration.
+5. Repackage the web layer.
+   - Split `app.web` into at least:
+     - `app.web.business`
+     - `app.web.infra`
+   - Put controllers, request DTOs, request mappers, endpoint-facing response/error models that remain, etc. in `business`.
+   - Put configuration, CORS properties, filters, and global exception handling in `infra`.
+   - Keep this as a packaging cleanup, not a redesign.
+6. Update tests and documentation to the new intentional API shape.
+   - Update controller tests to stop expecting:
+     - `$.report...`
+     - `$.suggestedFilename`
+     - wrapper object `{ "doctrines": [...] }`
+   - Update the descriptive snapshot to the new direct-response shape if the only intentional difference is endpoint wrapping.
+   - Update active docs/specs/README content that still describe the old wrappers.
+   - Do not rewrite historical iteration logs in `manager.md`/`worker.md`.
+7. Preserve non-target behavior.
+   - Keep explicit singular doctrine selection.
+   - Keep no hidden doctrine defaults.
+   - Keep calculation behavior unchanged.
+   - Keep rounding/object-mapper behavior unchanged.
+   - Keep `/api/**` logger isolation and CORS behavior unchanged.
+
+### Acceptance Criteria
+- `mvn compile` passes.
+- `mvn test` passes.
+- `POST /api/descriptive` now returns a direct `DescriptiveAstrologyReport` JSON object with top-level `engineVersion`, `subject`, `doctrine`, and `natalChart`.
+- The `doctrine` object inside descriptive reports is flat and no longer nests `doctrineInfo`.
+- `GET /api/doctrines` now returns a direct JSON array.
+- `DescriptiveResponse`, `DoctrinesResponse`, and `DescriptiveReportGenerator` are removed if they have become unnecessary.
+- Active docs/specs/readme text are updated to the new endpoint shapes.
+- No doctrine implementations, chart model/data classes, or astrology calculations change in behavior.
+
+### Constraints
+- Do not add predictive endpoints.
+- Do not add authentication, sessions, database persistence, frontend assets, OpenAPI, Actuator, or deployment infrastructure.
+- Do not reintroduce hidden default doctrine selection.
+- Do not broaden scope into unrelated runtime/service redesign beyond the explicit simplifications above.
+- Do not change `pom.xml` version unless explicitly requested.
+
+### Feedback Requested
+Please append an Iteration 25 feedback block to `worker.md` with:
+- Completed work summary.
+- Changed/deleted files.
+- Exact verification commands and results.
+- Explanation of how flat doctrine serialization was restored after the `DoctrineInfo` rewiring.
+- Confirmation of the new endpoint shapes:
+  - direct `DescriptiveAstrologyReport` for `POST /api/descriptive`
+  - direct JSON array for `GET /api/doctrines`
+- The list of classes moved into `app.web.business` and `app.web.infra`.
+- Confirmation that calculation behavior, serialization conventions, CORS behavior, and logger isolation did not otherwise change.
+- Any known limitations/risks.
+- Suggested next cleanup step.
+
+## Iteration 26 — 2026-05-06
+
+### Manager Review Notes
+Iteration 25 is functionally almost complete. I independently reviewed the new `app.web.business` / `app.web.infra` package split, the direct-response controller code, the direct-array doctrines endpoint, the inline replacement of `DescriptiveReportGenerator`, and the updated snapshot/tests. I also independently ran:
+
+```bash
+mvn test
+mvn package -DskipTests
+```
+
+Both passed.
+
+The remaining issue is documentation consistency: active project guidance is still split between the old and new REST contracts. In particular, `AGENTS.md` still contains an outdated line saying `POST /api/descriptive` returns `{ "report": {...}, "suggestedFilename": "..." }`, while other active docs now correctly describe the direct report and direct doctrines array.
+
+So Iteration 25 is not fully accepted yet, but only because of this remaining active-doc inconsistency.
+
+### Goal
+Finish the REST contract simplification by aligning active project guidance/docs with the implemented direct-response API.
+
+### Scope
+- Documentation consistency only.
+- No Java behavior changes unless a tiny correction is absolutely required for consistency.
+
+### Requirements
+1. Fix stale active project guidance.
+   - Update `AGENTS.md` so its REST endpoint description matches the implemented API:
+     - `GET /api/doctrines` returns a direct JSON array.
+     - `POST /api/descriptive` returns a direct `DescriptiveAstrologyReport` object.
+   - Remove mentions of `suggestedFilename` and wrapper objects from active guidance unless clearly marked as historical.
+2. Run a small stale-reference scan across active docs.
+   - Search at least these files:
+     - `AGENTS.md`
+     - `README.md`
+     - `NEW_ARCHITECTURE_SPEC.md`
+     - `reports/spring-boot-conversion-summary.md`
+     - `reports/react-api-contract.md`
+   - Ensure no active guidance still presents the removed wrapper response shapes as current behavior.
+   - Historical roadmap/history text may mention prior shapes if clearly historical.
+3. Verify no behavior drift.
+   - Run:
+     ```bash
+     mvn test
+     ```
+   - Do not change snapshots or API behavior in this iteration unless a genuine inconsistency is discovered.
+
+### Acceptance Criteria
+- `AGENTS.md` matches the implemented direct-response REST API.
+- Active docs consistently describe:
+  - `GET /api/doctrines` as a direct array
+  - `POST /api/descriptive` as a direct `DescriptiveAstrologyReport`
+- `mvn test` passes.
+- No further code or contract drift is introduced.
+
+### Constraints
+- Do not add new features.
+- Do not change endpoint behavior.
+- Do not change `pom.xml` version.
+- Keep this iteration strictly focused on active documentation consistency.
+
+### Feedback Requested
+Please append an Iteration 26 feedback block to `worker.md` with:
+- The exact docs updated.
+- Stale-reference search commands and findings.
+- Exact `mvn test` result.
+- Confirmation that no Java behavior or API shape changed.
+
+## Iteration 27 — 2026-05-06
+
+### Manager Review Notes
+Iteration 26 is accepted. Active documentation now consistently describes the implemented direct-response REST API, and `mvn test` still passes.
+
+Next, address the earlier user concern about `EngineVersion`: the current multi-source runtime fallback utility is more complicated than desired for this project. Simplify it to a normal Spring-managed configuration approach.
+
+### Goal
+Simplify engine version sourcing so `engineVersion` comes from Spring configuration rather than the current custom multi-source fallback chain.
+
+### Scope
+- `EngineVersion`/version wiring only.
+- Small supporting config/test/doc updates as needed.
+- No REST shape changes.
+
+### Requirements
+1. Replace the current complex `EngineVersion` resolution approach with a simpler Spring-style configuration source.
+   - Preferred direction from user: keep the version in application configuration and load it as normal config.
+   - Keep the implementation simple and explicit.
+   - Remove unnecessary fallback logic if no longer needed.
+2. Preserve output behavior.
+   - `DescriptiveAstrologyReport` must still expose top-level `engineVersion`.
+   - The value must remain non-null and stable in normal app/test/package runs.
+3. Update tests accordingly.
+   - Update/add tests so the configured `engineVersion` is verified through the current runtime path.
+   - Keep REST/controller tests passing.
+4. Update active docs if needed.
+   - If `engineVersion` sourcing changes materially, update the active docs that describe where it comes from.
+
+### Acceptance Criteria
+- `EngineVersion` is simplified to Spring-managed configuration.
+- `mvn compile` passes.
+- `mvn test` passes.
+- REST report shape remains unchanged apart from the internal sourcing mechanism.
+- No doctrine/calculation behavior changes.
+
+### Constraints
+- Do not change endpoint shapes.
+- Do not introduce hidden defaults for doctrine selection.
+- Do not broaden scope into unrelated cleanup.
+- Keep this iteration focused on version sourcing simplification.
+
+### Feedback Requested
+Please append an Iteration 27 feedback block to `worker.md` with:
+- The exact version-sourcing approach used.
+- Changed files.
+- Exact verification commands and results.
+- Any tradeoffs/limitations.

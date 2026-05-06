@@ -93,7 +93,7 @@ mvn package -DskipTests
 Run it:
 
 ```bash
-java -jar target/mystro-1.2.0.jar
+java -jar target/mystro-<version>.jar
 ```
 
 The `ephe/` directory must be available from the working directory for Swiss Ephemeris calculations.
@@ -135,40 +135,38 @@ Example request:
 curl http://localhost:8080/api/doctrines
 ```
 
-Response shape:
+Response shape (direct JSON array):
 
 ```json
-{
-  "doctrines": [
-    {
-      "id": "dorotheus",
+[
+  {
+    "id": "dorotheus",
       "name": "Dorotheus",
       "houseSystem": "WHOLE_SIGN",
       "zodiac": "TROPICAL",
       "terms": "EGYPTIAN",
       "triplicity": "DOROTHEAN",
       "nodeType": "MEAN"
-    },
-    {
-      "id": "ptolemy",
-      "name": "Ptolemy",
-      "houseSystem": "WHOLE_SIGN",
-      "zodiac": "TROPICAL",
-      "terms": "PTOLEMAIC",
-      "triplicity": "PTOLEMAIC",
-      "nodeType": "MEAN"
-    },
-    {
-      "id": "valens",
-      "name": "Valens",
-      "houseSystem": "WHOLE_SIGN",
-      "zodiac": "TROPICAL",
-      "terms": "EGYPTIAN",
-      "triplicity": "DOROTHEAN",
-      "nodeType": "MEAN"
-    }
-  ]
-}
+  },
+  {
+    "id": "ptolemy",
+    "name": "Ptolemy",
+    "houseSystem": "WHOLE_SIGN",
+    "zodiac": "TROPICAL",
+    "terms": "PTOLEMAIC",
+    "triplicity": "PTOLEMAIC",
+    "nodeType": "MEAN"
+  },
+  {
+    "id": "valens",
+    "name": "Valens",
+    "houseSystem": "WHOLE_SIGN",
+    "zodiac": "TROPICAL",
+    "terms": "EGYPTIAN",
+    "triplicity": "DOROTHEAN",
+    "nodeType": "MEAN"
+  }
+]
 ```
 
 This endpoint is for discovery only; it does not select or imply a default doctrine.
@@ -177,7 +175,7 @@ This endpoint is for discovery only; it does not select or imply a default doctr
 
 Generate a descriptive astrology report for one subject and one doctrine.
 
-Each call produces exactly one report. To get reports for multiple doctrines, call this endpoint once per doctrine. The response includes a `suggestedFilename` hint for local download.
+Each call produces exactly one report. To get reports for multiple doctrines, call this endpoint once per doctrine.
 
 Example request:
 
@@ -204,27 +202,23 @@ Request fields:
 - `longitude` — geographic longitude, -180 to 180 (required)
 - `doctrine` — explicit doctrine id, e.g. `"valens"` (required)
 
-Response shape:
+Response shape (direct `DescriptiveAstrologyReport` object):
 
 ```json
 {
-  "report": {
-    "engineVersion": "1.2.0",
-    "subject": { ... },
-    "doctrine": { ... },
-    "natalChart": { ... }
-  },
-  "suggestedFilename": "test-subject-valens-descriptive.json"
+  "engineVersion": "<version>",
+  "subject": { ... },
+  "doctrine": { ... },
+  "natalChart": { ... }
 }
 ```
 
 Notes:
 - The `doctrine` field is a single explicit id; no default doctrine is assumed.
-- The `suggestedFilename` is a hint for the frontend to use when saving the report locally.
 - REST requests do not write output files; the backend is stateless.
 - Responses include `Cache-Control: no-store`.
 - JSON serialization uses Mystro conventions: doubles are rounded to six decimal places, dates are serialized as strings not timestamps.
-- The `engineVersion` in reports is resolved from Maven metadata embedded in the jar, so it is correct even when running from a packaged jar without `pom.xml`.
+- The `engineVersion` in reports comes from `mystro.engine-version` in application configuration.
 
 ### REST error responses
 
@@ -254,7 +248,7 @@ The REST API is designed for privacy-friendly, local-first frontend usage:
 - REST descriptive calls do not write output files on the server.
 - `/api/**` request logging is thread-isolated and ephemeral; request calculation logs are not retained by default.
 - Responses include `Cache-Control: no-store` to discourage caching of chart data.
-- The frontend should download and save report JSON locally using the `suggestedFilename`.
+- The frontend should download and save report JSON locally.
 - One REST call produces one report for one doctrine. To get reports for multiple doctrines, call the endpoint once per selected doctrine and save one file per doctrine.
 - No authentication, database, or chart history exists on the backend.
 

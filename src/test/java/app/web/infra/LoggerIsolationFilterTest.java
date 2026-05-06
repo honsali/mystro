@@ -1,4 +1,4 @@
-package app.web;
+package app.web.infra;
 
 import app.output.Logger;
 

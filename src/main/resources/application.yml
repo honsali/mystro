@@ -1,4 +1,5 @@
 mystro:
+  engine-version: 1.3.0
   cors:
     allowed-origins:
       - http://localhost:5173

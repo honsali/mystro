@@ -1,4 +1,4 @@
-package app.web;
+package app.web.business;
 
 import app.doctrine.Doctrine;
 import app.input.DoctrineLoader;

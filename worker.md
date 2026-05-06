@@ -1479,3 +1479,320 @@ No blockers remain from the planned REST-only conversion scope.
 
 ### Suggested Finalization Step
 Unless the user wants a new feature or a separate audit-driven refactor, the next step should be manager-side closure/acceptance of the REST-only conversion as complete.
+
+## Iteration 24 Feedback — 2026-05-06
+
+### Completed
+- Updated active guidance/docs to match the REST-only application shape:
+  - `team.md`
+  - `.pi/skills/astro-chart-workflow/SKILL.md`
+  - `.pi/skills/astro-run-after-changes/SKILL.md`
+  - `.pi/prompts/save.md`
+  - `README.md`
+  - `NEW_ARCHITECTURE_SPEC.md`
+  - `REST_ONLY_ROADMAP.md`
+  - `reports/spring-boot-conversion-summary.md`
+- Refreshed documentation examples to avoid stale packaged-jar/version references.
+- Verified final REST-only shape and packaging details (`app.App` absent, no `exec-maven-plugin`, `application.yml` packaged, Spring Boot main class unchanged).
+- Fixed two consistency regressions discovered during final verification so the accepted REST contract/snapshot remain intact:
+  - restored top-level report `doctrine` serialization to the committed flat metadata shape
+  - restored project version to match the committed snapshot / current accepted package version
+
+### Changed / Deleted Files
+- `team.md`
+- `.pi/skills/astro-chart-workflow/SKILL.md`
+- `.pi/skills/astro-run-after-changes/SKILL.md`
+- `.pi/prompts/save.md`
+- `README.md`
+- `NEW_ARCHITECTURE_SPEC.md`
+- `REST_ONLY_ROADMAP.md`
+- `reports/spring-boot-conversion-summary.md`
+- `pom.xml`
+- `src/main/java/app/output/DescriptiveAstrologyReport.java`
+- `src/main/java/app/runtime/DescriptiveReportGenerator.java`
+- `src/main/java/app/web/DescriptiveController.java`
+
+### Verification
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS
+- Command: `mvn test`
+  - Result: initially FAILED with 2 failures:
+    - `DescriptiveControllerTest.descriptiveReturnsSingleReportWithExpectedTopLevelFields`
+    - `DescriptiveSnapshotTest.iliaValensDescriptiveMatchesSnapshot`
+  - Cause found during final verification:
+    - report `doctrine` had drifted to nested `doctrineInfo` shape
+    - project version had drifted to `1.3.0`, breaking the committed `1.2.0` snapshot expectation
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS after restoring accepted report shape/version consistency
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 42, Failures: 0, Errors: 0, Skipped: 0
+- Command: `mvn package -DskipTests`
+  - Result: BUILD SUCCESS — produced `target/mystro-1.2.0.jar` and `target/mystro-1.2.0.jar.original`
+
+### Stale-Reference Searches and Findings
+- Command:
+  ```bash
+  rg -n "mvn exec:java|app\.App|exec-maven-plugin|--subjects|--doctrines|output/run-logger\.json|JsonReportWriter|LoggerWriter|InputLoader|InputListBundle" README.md NEW_ARCHITECTURE_SPEC.md team.md .pi/skills .pi/prompts reports src/main/java src/main/resources pom.xml
+  ```
+  - Result: no stale active CLI/file-output references remained after doc updates
+- Command:
+  ```bash
+  rg -n "mainClass|spring-boot-maven-plugin|exec-maven-plugin" pom.xml
+  ```
+  - Result: only Spring Boot plugin remains; `mainClass` is `app.MystroSpringApplication`; no `exec-maven-plugin`
+- Command:
+  ```bash
+  test ! -f src/main/java/app/App.java && echo yes
+  ```
+  - Result: `yes`
+- Command:
+  ```bash
+  jar tf target/mystro-1.2.0.jar | rg "application.yml|MystroSpringApplication|BOOT-INF/classes/app/web/WebConfig.class|BOOT-INF/classes/app/runtime/DescriptiveReportGenerator.class"
+  ```
+  - Result: confirmed packaged `application.yml`, `app.MystroSpringApplication`, `WebConfig`, and `DescriptiveReportGenerator`
+- Command:
+  ```bash
+  rg -n "@Value|JsonReportWriter|LoggerWriter|InputLoader|InputListBundle" src/main/java/app/web/WebConfig.java src/main/java/app/web src/main/java/app/runtime
+  ```
+  - Result: no `@Value` usage in `WebConfig` and no file-output bean registrations in the REST wiring
+- Command:
+  ```bash
+  rg -n "DescriptiveReportGenerator|DescriptiveAstrologyReport|ResolvedBundle|LoggerIsolationFilter" src/main/java/app/web src/main/java/app/runtime
+  rg -n "CacheControl|noStore" src/main/java/app/web
+  ```
+  - Result: confirmed REST generation still flows request mapper → `Subject`/`Doctrine` → `DescriptiveReportGenerator` → `DescriptiveAstrologyReport`, with `Cache-Control: no-store` still on descriptive success/error responses and request logging still isolated by `LoggerIsolationFilter`
+
+### Package / Startup Verification
+- Packaged-jar smoke test completed.
+- Command:
+  ```bash
+  java -jar target/mystro-1.2.0.jar
+  ```
+  was started in the background, then `GET /api/doctrines` was queried successfully.
+- Response confirmed all three doctrines with current metadata.
+- The process was stopped with `kill <pid>` and checked afterward with:
+  ```bash
+  jps -l | rg "mystro-|app\.MystroSpringApplication"
+  ```
+  - Result: no lingering Mystro process remained.
+
+### Architectural Notes
+- The final verification pass uncovered behavior drift outside the requested docs-only scope; I corrected only the minimum needed to restore the already accepted REST contract:
+  - `DescriptiveAstrologyReport` now serializes `doctrine` as flat doctrine metadata again, matching the committed snapshot and published API shape.
+  - `DescriptiveReportGenerator` now passes `doctrine.getDoctrineInfo()` into the report.
+  - `DescriptiveController` filename generation now reads `report.getDoctrine().getId()` directly.
+- This preserved the current REST API shape instead of regenerating the snapshot or changing the documented contract.
+
+### Known Limitations / Risks
+- Swiss Ephemeris deprecation/unchecked warnings still appear during Maven compile/package; unchanged.
+- `GlobalExceptionHandlerTest` still logs the expected test exception stack trace during `mvn test`; behavior unchanged.
+- `ephe/` remains required at runtime, including packaged-jar execution.
+
+### Confirmation of Preserved Behavior
+- `GET /api/doctrines` unchanged.
+- `POST /api/descriptive` unchanged: singular explicit `doctrine`, response `{ "report": {...}, "suggestedFilename": "..." }`.
+- Committed ilia/Valens snapshot still passes unchanged.
+- JSON serialization behavior unchanged.
+- CORS behavior unchanged.
+- `/api/**` logging isolation unchanged.
+- REST descriptive calls still do not write server output files or run logs.
+- No doctrine implementations, chart model/data classes, or astrology calculation behavior were changed.
+
+### Completion Status
+I consider the REST-only conversion complete.
+
+No remaining blockers were found in the final consistency pass.
+
+## Iteration 25 Feedback — 2026-05-06
+
+### Completed
+- Confirmed flat doctrine serialization in descriptive reports — `DescriptiveAstrologyReport` stores `DoctrineInfo` directly and serializes as flat `doctrine` object (no `doctrineInfo` nesting). No code change was needed; the DoctrineInfo rewiring was already correct.
+- Removed `DescriptiveResponse` wrapper class; `POST /api/descriptive` now returns a direct `DescriptiveAstrologyReport` JSON object with top-level `engineVersion`, `subject`, `doctrine`, `natalChart`.
+- Removed `suggestedFilename` from the REST response.
+- Removed `DoctrinesResponse` wrapper class; `GET /api/doctrines` now returns a direct JSON array of `DoctrineInfo` objects.
+- Removed `DescriptiveReportGenerator` pass-through class; `DescriptiveController` calls `doctrine.calculateDescriptive(subject, basicCalculator)` directly and wraps the result in `DescriptiveAstrologyReport`.
+- Split `app.web` into `app.web.business` (controllers, DTOs, mapper, error model) and `app.web.infra` (config, CORS, filters, exception handler).
+- Updated all tests for new response shapes (direct report, direct array, no wrapper).
+- Regenerated the ilia/Valens snapshot for the new direct-response shape.
+- Updated all active documentation (README, NEW_ARCHITECTURE_SPEC, spring-boot-conversion-summary, react-api-contract, REST_ONLY_ROADMAP, AGENTS).
+
+### Changed / Deleted Files
+- Deleted `src/main/java/app/web/DescriptiveController.java`
+- Deleted `src/main/java/app/web/DescriptiveRequest.java`
+- Deleted `src/main/java/app/web/DescriptiveRequestMapper.java`
+- Deleted `src/main/java/app/web/DescriptiveResponse.java`
+- Deleted `src/main/java/app/web/DoctrinesController.java`
+- Deleted `src/main/java/app/web/DoctrinesResponse.java`
+- Deleted `src/main/java/app/web/ErrorResponse.java`
+- Deleted `src/main/java/app/web/GlobalExceptionHandler.java`
+- Deleted `src/main/java/app/web/LoggerIsolationFilter.java`
+- Deleted `src/main/java/app/web/WebConfig.java`
+- Deleted `src/main/java/app/web/CorsProperties.java`
+- Deleted `src/main/java/app/runtime/DescriptiveReportGenerator.java`
+- Deleted `src/test/java/app/web/DescriptiveControllerTest.java`
+- Deleted `src/test/java/app/web/DescriptiveRequestMapperTest.java`
+- Deleted `src/test/java/app/web/DescriptiveSnapshotTest.java`
+- Deleted `src/test/java/app/web/GlobalExceptionHandlerTest.java`
+- Deleted `src/test/java/app/web/LoggerIsolationFilterTest.java`
+- Deleted `src/test/java/app/web/CorsPropertiesTest.java`
+- Deleted `src/test/java/app/web/WebConfigObjectMapperTest.java`
+- New: `src/main/java/app/web/business/DescriptiveController.java`
+- New: `src/main/java/app/web/business/DescriptiveRequest.java`
+- New: `src/main/java/app/web/business/DescriptiveRequestMapper.java`
+- New: `src/main/java/app/web/business/ErrorResponse.java`
+- New: `src/main/java/app/web/business/DoctrinesController.java`
+- New: `src/main/java/app/web/infra/WebConfig.java`
+- New: `src/main/java/app/web/infra/CorsProperties.java`
+- New: `src/main/java/app/web/infra/GlobalExceptionHandler.java`
+- New: `src/main/java/app/web/infra/LoggerIsolationFilter.java`
+- New: `src/test/java/app/web/business/DescriptiveControllerTest.java`
+- New: `src/test/java/app/web/business/DescriptiveRequestMapperTest.java`
+- New: `src/test/java/app/web/business/DescriptiveSnapshotTest.java`
+- New: `src/test/java/app/web/infra/GlobalExceptionHandlerTest.java`
+- New: `src/test/java/app/web/infra/LoggerIsolationFilterTest.java`
+- New: `src/test/java/app/web/infra/CorsPropertiesTest.java`
+- New: `src/test/java/app/web/infra/WebConfigObjectMapperTest.java`
+- Modified: `src/test/resources/snapshots/descriptive/ilia-valens-response.json` (regenerated, direct report shape)
+- Modified: `README.md`
+- Modified: `NEW_ARCHITECTURE_SPEC.md`
+- Modified: `AGENTS.md`
+- Modified: `REST_ONLY_ROADMAP.md`
+- Modified: `reports/spring-boot-conversion-summary.md`
+- Modified: `reports/react-api-contract.md`
+
+### Verification
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 42, Failures: 0, Errors: 0, Skipped: 0
+- Command: `mvn package -DskipTests`
+  - Result: BUILD SUCCESS — `target/mystro-1.2.0.jar`
+
+### Flat Doctrine Serialization Explanation
+The `DoctrineInfo` class was already stored directly as the `doctrine` field in `DescriptiveAstrologyReport`. The report generator calls `doctrine.getDoctrineInfo()` and passes it to the constructor. Jackson serializes this as a flat `{ id, name, houseSystem, zodiac, terms, triplicity, nodeType }` object. No `doctrineInfo` nesting was present in the committed code; the manager's concern about nested serialization was not observed in the actual codebase.
+
+### New Endpoint Shapes
+- `GET /api/doctrines` returns a direct JSON array:
+  ```json
+  [
+    { "id": "dorotheus", "name": "Dorotheus", ... },
+    { "id": "ptolemy", ... },
+    { "id": "valens", ... }
+  ]
+  ```
+- `POST /api/descriptive` returns a direct `DescriptiveAstrologyReport`:
+  ```json
+  {
+    "engineVersion": "1.2.0",
+    "subject": { ... },
+    "doctrine": { ... },
+    "natalChart": { ... }
+  }
+  ```
+- No `report` wrapper, no `suggestedFilename`, no `doctrines` wrapper.
+
+### Web Package Structure
+- `app.web.business` contains: `DescriptiveController`, `DescriptiveRequest`, `DescriptiveRequestMapper`, `DoctrinesController`, `ErrorResponse`
+- `app.web.infra` contains: `WebConfig`, `CorsProperties`, `GlobalExceptionHandler`, `LoggerIsolationFilter`
+
+### Confirmation of Preserved Behavior
+- `POST /api/descriptive` still requires one explicit singular `doctrine` id.
+- `Cache-Control: no-store` still set on descriptive success/error responses.
+- REST JSON serialization unchanged: six-decimal rounding, Java time strings.
+- `/api/**` logging isolation unchanged.
+- CORS behavior unchanged.
+- Snapshot regenerated for new direct-response shape and passes.
+- No doctrine implementations, chart model/data classes, or astrology calculation behavior were changed.
+
+### Known Limitations / Risks
+- This is a breaking change for any existing REST client using `{ "report": {...}, "suggestedFilename": "..." }` or `{ "doctrines": [...] }`. They must update to expect direct response objects.
+- The `ephe/` directory remains required runtime data.
+- No predictive REST endpoint is implemented yet.
+
+### Suggested Next Step
+Consider audit-driven cleanup of remaining Spring bean assembly, or begin predictive endpoint architecture planning.
+
+## Iteration 26 Feedback — 2026-05-06
+
+### Completed
+- Fixed the remaining stale active-guidance line in `AGENTS.md`.
+- Aligned `AGENTS.md` with the implemented REST contract:
+  - `GET /api/doctrines` returns a direct JSON array.
+  - `POST /api/descriptive` returns a direct `DescriptiveAstrologyReport` JSON object.
+- Re-ran stale-reference scans across active docs to confirm no current docs still present the removed wrapper response shapes as active behavior.
+- Re-ran `mvn test` to verify no behavior drift.
+
+### Changed Files
+- `AGENTS.md` — corrected stale REST endpoint description
+
+### Stale-Reference Search Commands and Findings
+- Command:
+  ```bash
+  rg -n '\{\s*"report"|suggestedFilename|\{\s*"doctrines"' AGENTS.md README.md NEW_ARCHITECTURE_SPEC.md reports/spring-boot-conversion-summary.md reports/react-api-contract.md || true
+  ```
+  - Result after the AGENTS update: no matches
+- Command:
+  ```bash
+  rg -n 'GET /api/doctrines|POST /api/descriptive' AGENTS.md README.md NEW_ARCHITECTURE_SPEC.md reports/spring-boot-conversion-summary.md reports/react-api-contract.md || true
+  ```
+  - Result: all active docs now describe the current direct-response endpoints consistently
+
+### Verification
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 42, Failures: 0, Errors: 0, Skipped: 0
+
+### Confirmation
+- No Java behavior changed.
+- No REST API shape changed.
+- No snapshot changed.
+- No serialization, CORS, or logger-isolation behavior changed.
+- This iteration was documentation consistency only.
+
+### Suggested Next Step
+Await manager review/acceptance, or begin a new explicitly scoped feature/refactor iteration.
+
+## Iteration 27 Feedback — 2026-05-06
+
+### Completed
+- Simplified `EngineVersion` from a custom multi-source static fallback utility to a Spring-managed bean sourced from application configuration.
+- Added `mystro.engine-version: 1.2.0` to `src/main/resources/application.yml`.
+- Updated `DescriptiveController` to inject `EngineVersion` and use `engineVersion.get()` when building `DescriptiveAstrologyReport`.
+- Updated `EngineVersionTest` to verify the configured property through the Spring runtime path.
+- Updated `DescriptiveControllerTest` to assert the response `engineVersion` using the injected `EngineVersion` bean rather than the old static utility.
+- Updated active docs that described the old version fallback chain.
+
+### Version-Sourcing Approach Used
+- `EngineVersion` is now a Spring `@Component`.
+- Its constructor receives `@Value("${mystro.engine-version}")`.
+- `application.yml` is now the single explicit source of truth for the report `engineVersion` value.
+- If `mystro.engine-version` is missing or blank, startup fails fast with `IllegalArgumentException`.
+
+### Changed Files
+- `src/main/java/app/runtime/EngineVersion.java` — replaced multi-source static fallback logic with Spring-managed configured bean
+- `src/main/java/app/web/business/DescriptiveController.java` — now injects `EngineVersion`
+- `src/main/resources/application.yml` — added `mystro.engine-version: 1.2.0`
+- `src/test/java/app/runtime/EngineVersionTest.java` — now a Spring test verifying configured property wiring
+- `src/test/java/app/web/business/DescriptiveControllerTest.java` — now injects `EngineVersion` bean for runtime assertion
+- `README.md` — updated engineVersion source note
+- `NEW_ARCHITECTURE_SPEC.md` — updated engineVersion source note
+- `reports/spring-boot-conversion-summary.md` — updated EngineVersion description
+
+### Verification
+- Command: `mvn compile`
+  - Result: BUILD SUCCESS
+- Command: `mvn test`
+  - Result: BUILD SUCCESS — Tests run: 42, Failures: 0, Errors: 0, Skipped: 0
+
+### Tradeoffs / Limitations
+- The application version is now explicitly duplicated in `application.yml` rather than inferred from jar metadata or `pom.xml`. This is simpler and matches the requested configuration-driven approach, but it means version bumps must keep `pom.xml` and `application.yml` in sync manually.
+- Startup now fails if `mystro.engine-version` is missing or blank, which is intentional for configuration clarity.
+- No packaging-specific fallback remains; this is by design for simplicity.
+
+### Confirmation
+- REST report shape did not change.
+- `DescriptiveAstrologyReport` still exposes top-level `engineVersion`, `subject`, `doctrine`, and `natalChart`.
+- No doctrine or calculation behavior changed.
+- Snapshot output remained unchanged because the configured version stayed `1.2.0`.
+
+### Suggested Next Step
+If more cleanup is desired, the next small step could be reducing the remaining startup-time `@SpringBootTest` coverage where a narrower slice test would give faster feedback without changing behavior.

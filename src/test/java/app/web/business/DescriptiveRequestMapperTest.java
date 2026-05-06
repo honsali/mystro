@@ -1,12 +1,10 @@
-package app.web;
-
-import app.doctrine.Doctrine;
-import app.input.DoctrineLoader;
-
-import org.junit.jupiter.api.Test;
+package app.web.business;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import app.doctrine.Doctrine;
+import app.input.DoctrineLoader;
 
 class DescriptiveRequestMapperTest {
 
@@ -27,8 +25,8 @@ class DescriptiveRequestMapperTest {
 
         assertEquals("ilia", resolved.subject().getId());
         Doctrine doctrine = resolved.doctrine();
-        assertEquals("valens", doctrine.getId());
-        assertEquals("Valens", doctrine.getName());
+        assertEquals("valens", doctrine.getDoctrineInfo().getId());
+        assertEquals("Valens", doctrine.getDoctrineInfo().getName());
     }
 
     @Test
@@ -42,8 +40,7 @@ class DescriptiveRequestMapperTest {
         request.setLongitude(3.0333769552426793);
         request.setDoctrine("unknown");
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> mapper.resolve(request));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> mapper.resolve(request));
 
         assertEquals("Unknown doctrine: unknown", ex.getMessage());
     }

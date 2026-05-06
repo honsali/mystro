@@ -19,7 +19,7 @@ public final class DoctrineLoader {
     }
 
     public void register(Doctrine doctrine) {
-        doctrines.put(doctrine.getId(), doctrine);
+        doctrines.put(doctrine.getDoctrineInfo().getId(), doctrine);
     }
 
     public Optional<Doctrine> find(String id) {

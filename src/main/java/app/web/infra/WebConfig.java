@@ -1,9 +1,8 @@
-package app.web;
+package app.web.infra;
 
 import app.basic.BasicCalculator;
 import app.input.DoctrineLoader;
 import app.output.MystroObjectMapper;
-import app.runtime.DescriptiveReportGenerator;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,10 +42,5 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public DoctrineLoader doctrineLoader() {
         return new DoctrineLoader();
-    }
-
-    @Bean
-    public DescriptiveReportGenerator descriptiveReportGenerator(BasicCalculator basicCalculator) {
-        return new DescriptiveReportGenerator(basicCalculator);
     }
 }

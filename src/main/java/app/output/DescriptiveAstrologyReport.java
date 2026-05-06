@@ -1,16 +1,16 @@
 package app.output;
 
 import app.chart.model.NatalChart;
-import app.doctrine.Doctrine;
+import app.input.model.DoctrineInfo;
 import app.input.model.Subject;
 
 public class DescriptiveAstrologyReport {
     private final String engineVersion;
     private final Subject subject;
-    private final Doctrine doctrine;
+    private final DoctrineInfo doctrine;
     private final NatalChart natalChart;
 
-    public DescriptiveAstrologyReport(String engineVersion, Subject subject, Doctrine doctrine, NatalChart natalChart) {
+    public DescriptiveAstrologyReport(String engineVersion, Subject subject, DoctrineInfo doctrine, NatalChart natalChart) {
         this.engineVersion = engineVersion;
         this.subject = subject;
         this.doctrine = doctrine;
@@ -25,7 +25,7 @@ public class DescriptiveAstrologyReport {
         return subject;
     }
 
-    public Doctrine getDoctrine() {
+    public DoctrineInfo getDoctrine() {
         return doctrine;
     }
 

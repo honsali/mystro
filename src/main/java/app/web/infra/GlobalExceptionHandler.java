@@ -1,4 +1,6 @@
-package app.web;
+package app.web.infra;
+
+import app.web.business.ErrorResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
