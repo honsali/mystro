@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+export MAVEN_OPTS="${MAVEN_OPTS:+$MAVEN_OPTS }--enable-native-access=ALL-UNNAMED"
+
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+  echo "Usage: ./run <native-list-alias> [dd/MM/yyyy]" >&2
+  exit 2
+fi
+
+alias="$1"
+if [ "$#" -eq 1 ]; then
+  mvn -q -Dtest=LocalReadingDumpRunner -Dlocal.reading=true -Dlocal.reading.alias="$alias" test
+else
+  focus_date="$2"
+  mvn -q -Dtest=LocalZoomDumpRunner -Dlocal.zoom=true -Dlocal.reading.alias="$alias" -Dlocal.zoom.date="$focus_date" test
+fi

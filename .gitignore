@@ -1,0 +1,43 @@
+# Build output
+/target/
+*.class
+
+# Generated runtime output
+/output/
+
+# External Swiss Ephemeris runtime
+/ephe/
+/dll/
+/libs/
+
+# Local input data
+/input/
+
+# Legacy local test artifacts
+/test/
+
+# Local agent state
+/.cp
+/.cp_runtime
+/.pi/todos/
+/native-list.json
+
+# Local AI/session memory and private notes
+/SESSION_MEMORY.md
+/session_memory.md
+/.agents/
+/.codex/
+
+# Local backups
+*.old
+*.old2
+
+# IDE / editor settings
+/.settings/
+/.idea/
+/.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
