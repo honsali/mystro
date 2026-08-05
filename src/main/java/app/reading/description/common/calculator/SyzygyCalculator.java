@@ -1,12 +1,12 @@
 package app.reading.description.common.calculator;
 
-import java.time.Instant;
 import app.chart.AstroMath;
 import app.chart.CalculationContext;
 import app.chart.data.Planet;
 import app.reading.description.common.data.SyzygyType;
 import app.reading.description.common.model.PrenatalSyzygyEntry;
 import app.ephemeris.SweConst;
+import app.ephemeris.SwissEphAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ public class SyzygyCalculator {
         double moonLongitude = ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, syzygy.julianDay());
         double syzygyLongitude = syzygyLongitude(syzygy.type(), sunLongitude, moonLongitude, syzygy.julianDay(), ctx);
         double natalAscendant = AstroMath.normalize(ctx.getAscmc()[0]);
-        return new PrenatalSyzygyEntry(syzygy.type(), syzygy.julianDay(), instantFromJulianDay(syzygy.julianDay()), syzygyLongitude, AstroMath.signOf(syzygyLongitude), AstroMath.degreeInSign(syzygyLongitude), ctx.houseOf(syzygyLongitude, natalAscendant), sunLongitude, moonLongitude,
+        return new PrenatalSyzygyEntry(syzygy.type(), syzygy.julianDay(), SwissEphAdapter.julianDayUtToUtc(syzygy.julianDay()), syzygyLongitude, AstroMath.signOf(syzygyLongitude), AstroMath.degreeInSign(syzygyLongitude), ctx.houseOf(syzygyLongitude, natalAscendant), sunLongitude, moonLongitude,
                 AstroMath.rawAngularSeparation(sunLongitude, moonLongitude), AstroMath.signOf(sunLongitude), AstroMath.signOf(moonLongitude));
     }
 
@@ -124,8 +124,4 @@ public class SyzygyCalculator {
         return AstroMath.normalize(moonLongitude - sunLongitude);
     }
 
-    private Instant instantFromJulianDay(double julianDay) {
-        long epochSecond = Math.round((julianDay - 2440587.5) * 86400.0);
-        return Instant.ofEpochSecond(epochSecond);
-    }
 }

@@ -23,6 +23,7 @@ import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.reading.description.common.data.SyzygyType;
 import app.ephemeris.SweConst;
+import app.ephemeris.SwissEphAdapter;
 
 public final class LunarTimingCalculator {
     public static final String METHOD_ID = "LUNAR_RETURNS_LUNATIONS_AND_ECLIPSES_V3";
@@ -37,8 +38,6 @@ public final class LunarTimingCalculator {
     private static final double NANOS_PER_TROPICAL_YEAR = MEAN_TROPICAL_YEAR_DAYS * 86_400_000_000_000.0;
     private static final double SIDEREAL_LUNAR_MONTH_DAYS = 27.321661547;
     private static final double SYNODIC_HALF_MONTH_DAYS = 14.765294;
-    private static final double UNIX_EPOCH_JULIAN_DAY = 2440587.5;
-    private static final double SECONDS_PER_DAY = 86400.0;
     private static final double ROOT_DEGREE_TOLERANCE = 1.0e-9;
     private static final double SCAN_STEP_DAYS = 0.25;
     private static final double ECLIPSE_SEARCH_MARGIN_DAYS = 1.0;
@@ -1070,20 +1069,11 @@ public final class LunarTimingCalculator {
     }
 
     private double julianDayFromInstant(Instant instant) {
-        return UNIX_EPOCH_JULIAN_DAY
-                + instant.getEpochSecond() / SECONDS_PER_DAY
-                + instant.getNano() / (SECONDS_PER_DAY * 1_000_000_000.0);
+        return SwissEphAdapter.utcToJulianDayUt(instant);
     }
 
     private Instant instantFromJulianDay(double julianDay) {
-        double epochSeconds = (julianDay - UNIX_EPOCH_JULIAN_DAY) * SECONDS_PER_DAY;
-        long seconds = (long) Math.floor(epochSeconds);
-        long nanos = Math.round((epochSeconds - seconds) * 1_000_000_000.0);
-        if (nanos == 1_000_000_000L) {
-            seconds += 1;
-            nanos = 0;
-        }
-        return Instant.ofEpochSecond(seconds, nanos);
+        return SwissEphAdapter.julianDayUtToUtc(julianDay);
     }
 
     private int houseForSign(NatalChart chart, ZodiacSign sign) {

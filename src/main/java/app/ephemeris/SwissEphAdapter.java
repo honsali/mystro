@@ -2,7 +2,12 @@ package app.ephemeris;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Objects;
+import org.swisseph.ffm.CalendarType;
 import org.swisseph.ffm.CalculationFlag;
 import org.swisseph.ffm.EclipseResult;
 import org.swisseph.ffm.EphemerisPosition;
@@ -12,6 +17,7 @@ import org.swisseph.ffm.HorizontalCoordinateType;
 import org.swisseph.ffm.HorizontalCoordinates;
 import org.swisseph.ffm.HouseCusps;
 import org.swisseph.ffm.HouseSystem;
+import org.swisseph.ffm.JulianDate;
 import org.swisseph.ffm.RiseTransitResult;
 import org.swisseph.ffm.SwissEph;
 import org.swisseph.ffm.SwissEphException;
@@ -24,7 +30,41 @@ import org.swisseph.ffm.SwissEphException;
  * Ephemeris C 2.10.03 through the FFM binding.</p>
  */
 public final class SwissEphAdapter {
+    private static final double JULIAN_DAY_AT_UNIX_EPOCH = 2440587.5;
+    private static final double SECONDS_PER_DAY = 86_400.0;
+    private static final double NANOS_PER_SECOND = 1_000_000_000.0;
+    private static final long JULIAN_DAY_UTC_RESOLUTION_NANOS = 100_000L;
+    private static final int UT1_TO_UTC_REFINEMENT_STEPS = 4;
     private static final SwissEph NATIVE = loadNativeLibrary();
+
+    /** Converts the application's canonical UTC instant to the UT1 Julian day expected by Swiss Ephemeris. */
+    public static double utcToJulianDayUt(Instant utcInstant) {
+        Objects.requireNonNull(utcInstant, "utcInstant");
+        OffsetDateTime utc = utcInstant.atOffset(ZoneOffset.UTC);
+        double second = utc.getSecond() + utc.getNano() / NANOS_PER_SECOND;
+        JulianDate result = NATIVE.utcToJulianDay(
+                utc.getYear(), utc.getMonthValue(), utc.getDayOfMonth(),
+                utc.getHour(), utc.getMinute(), second, CalendarType.GREGORIAN);
+        return result.universalTime();
+    }
+
+    /** Converts a Swiss Ephemeris UT1 Julian day back to the application's canonical UTC instant. */
+    public static Instant julianDayUtToUtc(double julianDayUt) {
+        if (!Double.isFinite(julianDayUt)) {
+            throw new IllegalArgumentException("julianDayUt must be finite");
+        }
+
+        Instant estimate = linearJulianDayToInstant(julianDayUt);
+        for (int i = 0; i < UT1_TO_UTC_REFINEMENT_STEPS; i++) {
+            double correctionSeconds = (julianDayUt - utcToJulianDayUt(estimate)) * SECONDS_PER_DAY;
+            long correctionNanos = Math.round(correctionSeconds * NANOS_PER_SECOND);
+            if (correctionNanos == 0L) {
+                break;
+            }
+            estimate = estimate.plusNanos(correctionNanos);
+        }
+        return roundToJulianDayResolution(estimate);
+    }
 
     public int swe_calc_ut(double julianDayUt, int bodyId, int flags,
                            double[] values, StringBuilder error) {
@@ -254,6 +294,27 @@ public final class SwissEphAdapter {
             return "libswe.dylib";
         }
         return "libswe.so";
+    }
+
+    private static Instant linearJulianDayToInstant(double julianDay) {
+        double epochSeconds = (julianDay - JULIAN_DAY_AT_UNIX_EPOCH) * SECONDS_PER_DAY;
+        long seconds = (long) Math.floor(epochSeconds);
+        long nanos = Math.round((epochSeconds - seconds) * NANOS_PER_SECOND);
+        if (nanos == 1_000_000_000L) {
+            seconds += 1L;
+            nanos = 0L;
+        }
+        return Instant.ofEpochSecond(seconds, nanos);
+    }
+
+    private static Instant roundToJulianDayResolution(Instant instant) {
+        long nanos = instant.getNano();
+        long roundedNanos = Math.round((double) nanos / JULIAN_DAY_UTC_RESOLUTION_NANOS)
+                * JULIAN_DAY_UTC_RESOLUTION_NANOS;
+        if (roundedNanos == 1_000_000_000L) {
+            return Instant.ofEpochSecond(instant.getEpochSecond() + 1L);
+        }
+        return Instant.ofEpochSecond(instant.getEpochSecond(), roundedNanos);
     }
 
     private static CalculationFlag[] calculationFlags(int mask) {

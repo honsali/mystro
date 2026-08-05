@@ -25,13 +25,12 @@ import app.chart.model.PointEntry;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.ephemeris.SweConst;
+import app.ephemeris.SwissEphAdapter;
 
 public final class SolarReturnCalculator {
     public static final String METHOD_ID = "TRADITIONAL_SOLAR_RETURN_NATAL_LOCATION_V1";
     private static final String PRIMARY_DOCTRINE = "traditional";
     private static final String LOCATION_METHOD = "NATAL_LOCATION";
-    private static final double UNIX_EPOCH_JULIAN_DAY = 2440587.5;
-    private static final double SECONDS_PER_DAY = 86400.0;
     private static final double ROOT_DEGREE_TOLERANCE = 1.0e-9;
     private static final double SCAN_STEP_DAYS = 0.25;
     private static final int BISECTION_STEPS = 80;
@@ -85,16 +84,16 @@ public final class SolarReturnCalculator {
                                         double natalSunLongitude, int ageYears) {
         if (ageYears == 0) {
             Instant birthInstant = subject.getResolvedUtcInstant();
-            return new ReturnInstant(julianDayFromInstant(birthInstant), birthInstant, birthInstant.atOffset(outputOffset));
+            return new ReturnInstant(SwissEphAdapter.utcToJulianDayUt(birthInstant), birthInstant, birthInstant.atOffset(outputOffset));
         }
         double julianDay = findReturnJulianDay(subject, ephemerisContext, natalSunLongitude, ageYears);
-        Instant instant = instantFromJulianDay(julianDay);
+        Instant instant = SwissEphAdapter.julianDayUtToUtc(julianDay);
         return new ReturnInstant(julianDay, instant, instant.atOffset(outputOffset));
     }
 
     private double findReturnJulianDay(Subject subject, CalculationContext ephemerisContext, double natalSunLongitude, int ageYears) {
         OffsetDateTime approximate = subject.getLocalBirthDateTime().plusYears(ageYears);
-        double approximateJulianDay = julianDayFromInstant(approximate.toInstant());
+        double approximateJulianDay = SwissEphAdapter.utcToJulianDayUt(approximate.toInstant());
         for (double radiusDays : List.of(4.0, 8.0, 16.0)) {
             Double root = scanForRoot(ephemerisContext, natalSunLongitude,
                     approximateJulianDay - radiusDays,
@@ -234,23 +233,6 @@ public final class SolarReturnCalculator {
             );
         }
         throw new IllegalArgumentException("Unsupported point entry " + point.getClass().getName());
-    }
-
-    private double julianDayFromInstant(Instant instant) {
-        return UNIX_EPOCH_JULIAN_DAY
-                + instant.getEpochSecond() / SECONDS_PER_DAY
-                + instant.getNano() / (SECONDS_PER_DAY * 1_000_000_000.0);
-    }
-
-    private Instant instantFromJulianDay(double julianDay) {
-        double epochSeconds = (julianDay - UNIX_EPOCH_JULIAN_DAY) * SECONDS_PER_DAY;
-        long seconds = (long) Math.floor(epochSeconds);
-        long nanos = Math.round((epochSeconds - seconds) * 1_000_000_000.0);
-        if (nanos == 1_000_000_000L) {
-            seconds += 1;
-            nanos = 0;
-        }
-        return Instant.ofEpochSecond(seconds, nanos);
     }
 
     private record ReturnInstant(double julianDay, Instant instant, OffsetDateTime dateTime) {}

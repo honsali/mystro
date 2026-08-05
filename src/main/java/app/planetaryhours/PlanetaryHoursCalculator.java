@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -45,7 +44,6 @@ public final class PlanetaryHoursCalculator {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlanetaryHoursCalculator.class);
     private static final String EPHEMERIS_PATH = "ephe";
-    private static final double JULIAN_DAY_UNIX_EPOCH = 2440587.5;
     private static final double SECONDS_PER_DAY = 86_400.0;
     private static final double ONE_SECOND_IN_DAYS = 1.0 / SECONDS_PER_DAY;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -362,27 +360,11 @@ public final class PlanetaryHoursCalculator {
     }
 
     private double julianDayFromLocalMidnight(LocalDate date, ZoneOffset offset) {
-        return julianDayFromInstant(date.atStartOfDay().atOffset(offset).toInstant());
-    }
-
-    private double julianDayFromInstant(Instant instant) {
-        return JULIAN_DAY_UNIX_EPOCH
-                + instant.getEpochSecond() / SECONDS_PER_DAY
-                + instant.getNano() / (SECONDS_PER_DAY * 1_000_000_000.0);
+        return SwissEphAdapter.utcToJulianDayUt(date.atStartOfDay().atOffset(offset).toInstant());
     }
 
     private OffsetDateTime offsetDateTimeFromJulianDay(double julianDay, ZoneOffset offset) {
-        double epochSeconds = (julianDay - JULIAN_DAY_UNIX_EPOCH) * SECONDS_PER_DAY;
-        long seconds = (long) Math.floor(epochSeconds);
-        long nanos = Math.round((epochSeconds - seconds) * 1_000_000_000.0);
-        if (nanos >= 1_000_000_000L) {
-            seconds += 1;
-            nanos -= 1_000_000_000L;
-        } else if (nanos < 0L) {
-            seconds -= 1;
-            nanos += 1_000_000_000L;
-        }
-        return OffsetDateTime.ofInstant(Instant.ofEpochSecond(seconds, nanos), offset);
+        return SwissEphAdapter.julianDayUtToUtc(julianDay).atOffset(offset);
     }
 
     private Planet dayRuler(DayOfWeek dayOfWeek) {

@@ -2,7 +2,6 @@ package app.chart;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import app.chart.data.HouseSystem;
 import app.chart.data.Planet;
 import app.chart.data.Terms;
@@ -38,7 +37,7 @@ public class CalculationContext {
         this.terms = coreDoctrineInfo.getTerms();
         this.triplicity = coreDoctrineInfo.getTriplicity();
 
-        fullJulianDay = julianDayFromInstant(subject.getResolvedUtcInstant());
+        fullJulianDay = SwissEphAdapter.utcToJulianDayUt(subject.getResolvedUtcInstant());
 
         int result = calculateSwissHouses(fullJulianDay, cusps, ascmc);
         if (result < 0 || hasInvalidHouseOutput(cusps, ascmc)) {
@@ -182,10 +181,6 @@ public class CalculationContext {
             throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         swissEph.swe_set_ephe_path(EPHEMERIS_PATH);
-    }
-
-    private double julianDayFromInstant(Instant instant) {
-        return 2440587.5 + instant.getEpochSecond() / 86400.0 + instant.getNano() / 86_400_000_000_000.0;
     }
 
     private double[] eclipticCoordinatesFor(Planet planet, int swissPlanetId, double julianDay) {

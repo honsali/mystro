@@ -28,6 +28,7 @@ import app.chart.model.NatalChart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.ephemeris.SweConst;
+import app.ephemeris.SwissEphAdapter;
 
 class ExactTransitSearchCalculatorTest {
     private static final CoreDoctrineInfo CORE = new CoreDoctrineInfo(
@@ -201,7 +202,7 @@ class ExactTransitSearchCalculatorTest {
     }
 
     private double julianDay(OffsetDateTime dateTime) {
-        return 2440587.5 + dateTime.toInstant().getEpochSecond() / 86400.0 + dateTime.toInstant().getNano() / 86_400_000_000_000.0;
+        return SwissEphAdapter.utcToJulianDayUt(dateTime.toInstant());
     }
 
     private record RetrogradeLoop(OffsetDateTime firstStation, OffsetDateTime secondStation, double targetLongitude) {}

@@ -21,6 +21,7 @@ import app.chart.data.Triplicity;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.ephemeris.SweConst;
+import app.ephemeris.SwissEphAdapter;
 
 /**
  * Finds exact transit-to-natal aspect hits inside preselected short search windows.
@@ -329,7 +330,12 @@ public final class ExactTransitSearchCalculator {
         int swissPlanetId = swissPlanetId(transitPoint);
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
-        int result = ctx.getSwissEph().swe_calc_ut(julianDay(instant), swissPlanetId, ctx.planetFlags(), values, error);
+        int result = ctx.getSwissEph().swe_calc_ut(
+                SwissEphAdapter.utcToJulianDayUt(instant),
+                swissPlanetId,
+                ctx.planetFlags(),
+                values,
+                error);
         ctx.requireSwissEphemerisResult(result, planet, "exact transit search position", error);
         if (!Double.isFinite(values[0]) || !Double.isFinite(values[3])) {
             throw new IllegalArgumentException("Calculation failed. See application logs.");
@@ -391,10 +397,6 @@ public final class ExactTransitSearchCalculator {
 
     private ZoneOffset offset(TransitSearchWindow window) {
         return window.checkpointDateTime().getOffset();
-    }
-
-    private double julianDay(Instant instant) {
-        return 2440587.5 + instant.getEpochSecond() / 86400.0 + instant.getNano() / 86_400_000_000_000.0;
     }
 
     private record TransitPosition(double longitude, double speed) {}

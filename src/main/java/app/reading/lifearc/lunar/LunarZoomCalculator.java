@@ -18,6 +18,7 @@ import app.chart.model.NatalChart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.ephemeris.SweConst;
+import app.ephemeris.SwissEphAdapter;
 
 public final class LunarZoomCalculator {
     public static final String METHOD_ID = "LUNAR_30_DAY_ZOOM_V1";
@@ -125,16 +126,15 @@ public final class LunarZoomCalculator {
     }
 
     private double moonLongitude(CalculationContext ctx, Instant instant) {
-        return ctx.longitudeFor(Planet.MOON, SweConst.SE_MOON, julianDay(instant));
+        return ctx.longitudeFor(
+                Planet.MOON,
+                SweConst.SE_MOON,
+                SwissEphAdapter.utcToJulianDayUt(instant));
     }
 
     private double ingressDegreeInSign(double longitude, ZodiacSign toSign) {
         double value = AstroMath.normalize(longitude - toSign.ordinal() * 30.0);
         return value > 29.999 ? 0.0 : value;
-    }
-
-    private double julianDay(Instant instant) {
-        return 2440587.5 + instant.getEpochSecond() / 86400.0 + instant.getNano() / 86_400_000_000_000.0;
     }
 
     private Instant midpoint(Instant start, Instant end) {
