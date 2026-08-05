@@ -161,7 +161,8 @@ public final class MonthlyTransitCheckpointCalculator {
                 checkpointDateTime,
                 checkpointDateTime.toInstant(),
                 subject.getLatitude(),
-                subject.getLongitude()
+                subject.getLongitude(),
+                subject.getElevationMeters()
         );
         return basicCalculator.calculate(new CalculationContext(checkpointSubject, TRANSIT_CONVENTIONS));
     }

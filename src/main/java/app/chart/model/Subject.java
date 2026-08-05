@@ -9,12 +9,23 @@ public final class Subject {
     private final Instant resolvedUtcInstant;
     private final double latitude;
     private final double longitude;
+    private final double elevationMeters;
 
     public Subject(String id, OffsetDateTime localBirthDateTime, double latitude, double longitude) {
-        this(id, localBirthDateTime, localBirthDateTime.toInstant(), latitude, longitude);
+        this(id, localBirthDateTime, localBirthDateTime.toInstant(), latitude, longitude, 0.0);
+    }
+
+    public Subject(String id, OffsetDateTime localBirthDateTime, double latitude, double longitude,
+                   double elevationMeters) {
+        this(id, localBirthDateTime, localBirthDateTime.toInstant(), latitude, longitude, elevationMeters);
     }
 
     public Subject(String id, OffsetDateTime localBirthDateTime, Instant resolvedUtcInstant, double latitude, double longitude) {
+        this(id, localBirthDateTime, resolvedUtcInstant, latitude, longitude, 0.0);
+    }
+
+    public Subject(String id, OffsetDateTime localBirthDateTime, Instant resolvedUtcInstant,
+                   double latitude, double longitude, double elevationMeters) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Subject id is required");
         }
@@ -26,6 +37,7 @@ public final class Subject {
         }
         requireFinite("latitude", latitude);
         requireFinite("longitude", longitude);
+        requireFinite("elevationMeters", elevationMeters);
         if (latitude < -90.0 || latitude > 90.0) {
             throw new IllegalArgumentException("Latitude out of range: " + latitude);
         }
@@ -37,6 +49,7 @@ public final class Subject {
         this.resolvedUtcInstant = resolvedUtcInstant;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.elevationMeters = elevationMeters;
     }
 
     private static void requireFinite(String field, double value) {
@@ -63,6 +76,10 @@ public final class Subject {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public double getElevationMeters() {
+        return elevationMeters;
     }
 
 }

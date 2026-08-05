@@ -68,7 +68,11 @@ public final class PlanetaryHoursCalculator {
         SwissEphAdapter swissEph = new SwissEphAdapter();
         configureEphemerisPath(swissEph, input);
 
-        double[] geopos = new double[] {input.longitude(), input.latitude(), 0.0};
+        double[] geopos = new double[] {
+                input.longitude(),
+                input.latitude(),
+                input.elevationMeters()
+        };
         PlanetaryDay previousPlanetaryDay = planetaryDay(swissEph, input, input.birthDate().minusDays(1), geopos);
         PlanetaryDay currentPlanetaryDay = planetaryDay(swissEph, input, input.birthDate(), geopos);
 
@@ -97,7 +101,11 @@ public final class PlanetaryHoursCalculator {
         SwissEphAdapter swissEph = new SwissEphAdapter();
         configureEphemerisPath(swissEph, input);
 
-        double[] geopos = new double[] {input.longitude(), input.latitude(), 0.0};
+        double[] geopos = new double[] {
+                input.longitude(),
+                input.latitude(),
+                input.elevationMeters()
+        };
         PlanetaryDay planetaryDay = planetaryDay(swissEph, input, input.birthDate(), geopos);
         List<PlanetaryHourEntry> hours = fullPlanetaryDayHours(swissEph, input, planetaryDay);
 

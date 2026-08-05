@@ -29,6 +29,7 @@ class NativeListInputLoaderTest {
                     "birth_time": "12:00",
                     "latitude": 51.4769,
                     "longitude": 0.0,
+                    "elevation_meters": 46.0,
                     "utc_offset": "+00:00",
                     "inquiry_date": "15/01/2025"
                   }
@@ -42,6 +43,7 @@ class NativeListInputLoaderTest {
         assertEquals("12:00:00", input.getBirthTime());
         assertEquals(SyntheticTestData.LATITUDE, input.getLatitude());
         assertEquals(SyntheticTestData.LONGITUDE, input.getLongitude());
+        assertEquals(46.0, input.getElevationMeters());
         assertEquals("+00:00", input.getUtcOffset());
         assertEquals("2025-01-15", input.getInquiryDate());
     }

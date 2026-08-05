@@ -43,7 +43,6 @@ public final class LunarTimingCalculator {
     private static final double ECLIPSE_SEARCH_MARGIN_DAYS = 1.0;
     private static final double ECLIPSE_SEARCH_ADVANCE_DAYS = 20.0;
     private static final double LOCAL_ECLIPSE_MATCH_MARGIN_DAYS = 0.75;
-    private static final double DEFAULT_ECLIPSE_LOCATION_HEIGHT_METERS = 0.0;
     private static final int BISECTION_STEPS = 80;
     private static final CoreDoctrineInfo LUNAR_CONVENTIONS = new CoreDoctrineInfo(
             "lunar_timing",
@@ -649,7 +648,11 @@ public final class LunarTimingCalculator {
     }
 
     private double[] eclipseGeopos(Subject subject) {
-        return new double[] {subject.getLongitude(), subject.getLatitude(), DEFAULT_ECLIPSE_LOCATION_HEIGHT_METERS};
+        return new double[] {
+                subject.getLongitude(),
+                subject.getLatitude(),
+                subject.getElevationMeters()
+        };
     }
 
     private double nextEclipseSearchStart(double currentSearchStart, double eventMaximumJulianDay) {

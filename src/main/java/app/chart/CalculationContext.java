@@ -154,7 +154,11 @@ public class CalculationContext {
     }
 
     public double horizontalAltitude(double julianDay, double longitude, double latitude) {
-        double[] geopos = new double[] {subject.getLongitude(), subject.getLatitude(), 0.0};
+        double[] geopos = new double[] {
+                subject.getLongitude(),
+                subject.getLatitude(),
+                subject.getElevationMeters()
+        };
         double[] eclipticCoordinates = new double[] {longitude, latitude, 1.0};
         double[] horizontalCoordinates = new double[3];
         // swe_azalt returns true altitude in [1] and refracted apparent altitude in [2].
@@ -165,6 +169,30 @@ public class CalculationContext {
             throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
         return horizontalCoordinates[1];
+    }
+
+    public double topocentricHorizontalAltitude(Planet planet, int swissPlanetId, double julianDay) {
+        double[] values = new double[6];
+        StringBuilder error = new StringBuilder();
+        int result = swissEph.swe_calc_ut_topocentric(
+                julianDay,
+                swissPlanetId,
+                planetFlags(),
+                subject.getLongitude(),
+                subject.getLatitude(),
+                subject.getElevationMeters(),
+                values,
+                error);
+        requireSwissEphemerisResult(result, planet, "topocentric position", error);
+        if (!Double.isFinite(values[0]) || !Double.isFinite(values[1])) {
+            LOG.error(
+                    "subject={} Swiss Ephemeris returned invalid values for {} topocentric position: {}",
+                    subject.getId(),
+                    planet,
+                    error);
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
+        }
+        return horizontalAltitude(julianDay, AstroMath.normalize(values[0]), values[1]);
     }
 
     /**

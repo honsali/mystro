@@ -84,7 +84,17 @@ public final class ReadingInputMapper {
             throw new IllegalArgumentException("Longitude out of range: " + lng);
         }
 
-        return new Subject(input.getId(), OffsetDateTime.of(date, time, offset), lat, lng);
+        double elevationMeters = input.getElevationMeters() == null ? 0.0 : input.getElevationMeters();
+        if (!Double.isFinite(elevationMeters)) {
+            throw new IllegalArgumentException("elevationMeters must be finite: " + elevationMeters);
+        }
+
+        return new Subject(
+                input.getId(),
+                OffsetDateTime.of(date, time, offset),
+                lat,
+                lng,
+                elevationMeters);
     }
 
     private LocalDate toInquiryDate(ReadingInput input, LocalDate birthDate) {

@@ -193,7 +193,8 @@ public final class LocalZoomDumpRunner {
                         focusDate,
                         subject.getLocalBirthDateTime().getOffset(),
                         subject.getLatitude(),
-                        subject.getLongitude()
+                        subject.getLongitude(),
+                        subject.getElevationMeters()
                 )
         );
 
@@ -773,7 +774,8 @@ public final class LocalZoomDumpRunner {
                 focusDateTime,
                 focusDateTime.toInstant(),
                 subject.getLatitude(),
-                subject.getLongitude()
+                subject.getLongitude(),
+                subject.getElevationMeters()
         );
         NatalChart transitChart = new BasicCalculator().calculate(new CalculationContext(transitSubject, ZOOM_CONVENTIONS));
         Map<PointKey, Double> longitudes = new EnumMap<>(PointKey.class);

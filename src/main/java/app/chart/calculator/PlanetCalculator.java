@@ -67,7 +67,7 @@ public class PlanetCalculator implements Calculator {
         int house = ctx.houseOf(longitude, ascendant);
         int wholeSignHouse = ctx.wholeSignHouseOf(longitude, ascendant);
         Integer quadrantHouse = ctx.quadrantHouseOf(longitude);
-        double altitude = ctx.horizontalAltitude(longitude, values[1]);
+        double altitude = ctx.topocentricHorizontalAltitude(planet, swissPlanetId, julianDay);
         double meanDailySpeed = meanDailySpeed(planet);
         return new PlanetPosition(planet, longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude), values[1], equatorial.rightAscension(), equatorial.declination(), altitude, altitude >= 0.0, values[3], meanDailySpeed, Math.abs(values[3]) / meanDailySpeed, values[3] < 0, house,
                 wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(longitude, ctx.getTerms()), angularDistance(longitude, sunLongitude), ctx.antiscia(longitude), ctx.contraAntiscia(longitude));

@@ -35,6 +35,7 @@ public final class SwissEphAdapter {
     private static final double NANOS_PER_SECOND = 1_000_000_000.0;
     private static final long JULIAN_DAY_UTC_RESOLUTION_NANOS = 100_000L;
     private static final int UT1_TO_UTC_REFINEMENT_STEPS = 4;
+    private static final Object TOPOCENTRIC_CALCULATION_LOCK = new Object();
     private static final SwissEph NATIVE = loadNativeLibrary();
 
     /** Converts the application's canonical UTC instant to the UT1 Julian day expected by Swiss Ephemeris. */
@@ -68,6 +69,33 @@ public final class SwissEphAdapter {
 
     public int swe_calc_ut(double julianDayUt, int bodyId, int flags,
                            double[] values, StringBuilder error) {
+        return calculateUt(julianDayUt, bodyId, flags, values, error);
+    }
+
+    /**
+     * Configures the native observer and calculates a topocentric position as one atomic operation.
+     * Swiss Ephemeris stores the observer globally, so calls for different subjects must not interleave.
+     */
+    public int swe_calc_ut_topocentric(double julianDayUt, int bodyId, int flags,
+                                        double observerLongitude, double observerLatitude,
+                                        double observerAltitudeMeters,
+                                        double[] values, StringBuilder error) {
+        synchronized (TOPOCENTRIC_CALCULATION_LOCK) {
+            NATIVE.setTopocentricPosition(
+                    observerLongitude,
+                    observerLatitude,
+                    observerAltitudeMeters);
+            return calculateUt(
+                    julianDayUt,
+                    bodyId,
+                    flags | CalculationFlag.TOPOCENTRIC.value(),
+                    values,
+                    error);
+        }
+    }
+
+    private int calculateUt(double julianDayUt, int bodyId, int flags,
+                            double[] values, StringBuilder error) {
         try {
             EphemerisPosition position = NATIVE.calculateUt(
                     julianDayUt, bodyId, calculationFlags(flags));

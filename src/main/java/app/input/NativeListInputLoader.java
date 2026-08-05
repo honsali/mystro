@@ -66,6 +66,9 @@ public final class NativeListInputLoader {
         input.setUtcOffset(required(entry.utcOffset, "utc_offset"));
         input.setLatitude(required(entry.latitude, "latitude"));
         input.setLongitude(required(entry.longitude, "longitude"));
+        if (entry.elevationMeters != null) {
+            input.setElevationMeters(entry.elevationMeters);
+        }
         if (entry.inquiryDate != null && !entry.inquiryDate.isBlank()) {
             input.setInquiryDate(normalizeDate(entry.inquiryDate.trim(), "inquiry_date"));
         }
@@ -144,5 +147,8 @@ public final class NativeListInputLoader {
 
         @JsonProperty("longitude")
         private Double longitude;
+
+        @JsonProperty("elevation_meters")
+        private Double elevationMeters;
     }
 }

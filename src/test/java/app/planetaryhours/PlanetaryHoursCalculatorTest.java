@@ -117,4 +117,28 @@ class PlanetaryHoursCalculatorTest {
         assertEquals("00:03", last.getFullPlanetaryHourEnd().getTime());
         assertEquals("23:21", last.getMidpoint().getTime());
     }
+
+    @Test
+    void appliesObserverElevationToSunriseCalculations() {
+        PlanetaryHoursInput seaLevel = new PlanetaryHoursInput(
+                SyntheticTestData.SUBJECT_ID,
+                SyntheticTestData.BIRTH_DATE,
+                SyntheticTestData.BIRTH_DATE_TIME.getOffset(),
+                SyntheticTestData.LATITUDE,
+                SyntheticTestData.LONGITUDE,
+                0.0);
+        PlanetaryHoursInput highElevation = new PlanetaryHoursInput(
+                SyntheticTestData.SUBJECT_ID,
+                SyntheticTestData.BIRTH_DATE,
+                SyntheticTestData.BIRTH_DATE_TIME.getOffset(),
+                SyntheticTestData.LATITUDE,
+                SyntheticTestData.LONGITUDE,
+                2_000.0);
+
+        PlanetaryHoursCalculation seaLevelCalculation = calculator.calculateFullPlanetaryDay(seaLevel);
+        PlanetaryHoursCalculation highElevationCalculation = calculator.calculateFullPlanetaryDay(highElevation);
+
+        assertEquals("08:05", seaLevelCalculation.getSunrise().getTime());
+        assertEquals("08:06", highElevationCalculation.getSunrise().getTime());
+    }
 }

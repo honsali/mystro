@@ -12,6 +12,7 @@ public final class ReadingInput {
     private String utcOffset;
     private Double latitude;
     private Double longitude;
+    private Double elevationMeters = 0.0;
 
     public String getId() {
         return id;
@@ -67,5 +68,13 @@ public final class ReadingInput {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public Double getElevationMeters() {
+        return elevationMeters;
+    }
+
+    public void setElevationMeters(Double elevationMeters) {
+        this.elevationMeters = elevationMeters;
     }
 }

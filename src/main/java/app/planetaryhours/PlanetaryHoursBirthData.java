@@ -9,6 +9,7 @@ public final class PlanetaryHoursBirthData {
     private final String utcOffset;
     private final double latitude;
     private final double longitude;
+    private final double elevationMeters;
 
     public PlanetaryHoursBirthData(PlanetaryHoursInput input) {
         this.id = input.id();
@@ -16,6 +17,7 @@ public final class PlanetaryHoursBirthData {
         this.utcOffset = input.utcOffset().toString();
         this.latitude = input.latitude();
         this.longitude = input.longitude();
+        this.elevationMeters = input.elevationMeters();
     }
 
     public String getId() {
@@ -36,5 +38,9 @@ public final class PlanetaryHoursBirthData {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public double getElevationMeters() {
+        return elevationMeters;
     }
 }

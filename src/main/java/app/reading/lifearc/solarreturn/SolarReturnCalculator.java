@@ -175,7 +175,8 @@ public final class SolarReturnCalculator {
                 start.dateTime(),
                 start.instant(),
                 subject.getLatitude(),
-                subject.getLongitude()
+                subject.getLongitude(),
+                subject.getElevationMeters()
         );
         NatalChart chart = basicCalculator.calculate(new CalculationContext(returnSubject, RETURN_CONVENTIONS));
         PlanetPosition sun = chart.requirePlanet(Planet.SUN);

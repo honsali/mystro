@@ -21,7 +21,28 @@ class ReadingInputMapperTest {
         assertEquals("2000-01-01T12:00Z", resolved.subject().getLocalBirthDateTime().toString());
         assertEquals(SyntheticTestData.LATITUDE, resolved.subject().getLatitude());
         assertEquals(SyntheticTestData.LONGITUDE, resolved.subject().getLongitude());
+        assertEquals(0.0, resolved.subject().getElevationMeters());
         assertEquals("2025-01-15", resolved.inquiryDate().toString());
+    }
+
+    @Test
+    void propagatesExplicitElevation() {
+        ReadingInput input = validInput();
+        input.setElevationMeters(2_000.0);
+
+        ReadingInputMapper.ResolvedBundle resolved = mapper.resolve(input);
+
+        assertEquals(2_000.0, resolved.subject().getElevationMeters());
+    }
+
+    @Test
+    void rejectsNonFiniteElevation() {
+        ReadingInput input = validInput();
+        input.setElevationMeters(Double.NaN);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> mapper.resolve(input));
+
+        assertEquals("elevationMeters must be finite: NaN", ex.getMessage());
     }
 
     @Test
