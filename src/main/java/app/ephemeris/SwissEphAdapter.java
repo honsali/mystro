@@ -18,6 +18,7 @@ import org.swisseph.ffm.HorizontalCoordinates;
 import org.swisseph.ffm.HouseCusps;
 import org.swisseph.ffm.HouseSystem;
 import org.swisseph.ffm.JulianDate;
+import org.swisseph.ffm.PlanetaryPhenomena;
 import org.swisseph.ffm.RiseTransitResult;
 import org.swisseph.ffm.SwissEph;
 import org.swisseph.ffm.SwissEphException;
@@ -113,6 +114,18 @@ public final class SwissEphAdapter {
 
     public double swe_deltat(double julianDayUt) {
         return NATIVE.deltaT(julianDayUt);
+    }
+
+    public int swe_pheno_ut(double julianDayUt, int bodyId, int flags,
+                            double[] attributes, StringBuilder error) {
+        try {
+            PlanetaryPhenomena result = NATIVE.phenomenaUt(julianDayUt, bodyId, flags);
+            copy(result.attributes(), attributes);
+            append(error, result.warning());
+            return SweConstants.OK;
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
     }
 
     public int swe_houses_ex(double julianDayUt, int flags, double latitude,

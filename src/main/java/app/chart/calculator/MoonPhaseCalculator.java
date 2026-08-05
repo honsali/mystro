@@ -8,22 +8,22 @@ import app.chart.data.Planet;
 import app.chart.model.MoonPhase;
 import app.chart.model.NatalChart;
 import app.chart.model.PlanetPosition;
+import app.ephemeris.SweConst;
 
 public class MoonPhaseCalculator implements Calculator {
-
 
     public void calculate(NatalChart natalChart, CalculationContext ctx) {
         PlanetPosition sun = natalChart.requirePlanet(Planet.SUN);
         PlanetPosition moon = natalChart.requirePlanet(Planet.MOON);
-        double elongation = AstroMath.rawAngularSeparation(moon.getLongitude(), sun.getLongitude());
         double directedElongation = AstroMath.normalize(moon.getLongitude() - sun.getLongitude());
         boolean waxing = directedElongation <= 180.0;
-        double illumination = (1.0 - Math.cos(Math.toRadians(elongation))) / 2.0;
+        double illumination = ctx.illuminatedFractionFor(
+                Planet.MOON,
+                SweConst.SE_MOON,
+                ctx.getFullJulianDay());
         MoonPhase moonPhase = new MoonPhase(illumination, moonPhaseName(directedElongation), waxing);
         natalChart.setMoonPhase(moonPhase);
     }
-
-
 
     private MoonPhaseName moonPhaseName(double directedElongation) {
         if (directedElongation < 45.0)

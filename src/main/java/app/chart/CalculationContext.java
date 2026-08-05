@@ -97,6 +97,28 @@ public class CalculationContext {
         return values[1];
     }
 
+    public double illuminatedFractionFor(Planet planet, int swissPlanetId, double julianDay) {
+        double[] attributes = new double[20];
+        StringBuilder error = new StringBuilder();
+        int result = swissEph.swe_pheno_ut(
+                julianDay,
+                swissPlanetId,
+                SweConst.SEFLG_SWIEPH,
+                attributes,
+                error);
+        double illuminatedFraction = attributes[1];
+        if (result < 0 || !Double.isFinite(illuminatedFraction)
+                || illuminatedFraction < 0.0 || illuminatedFraction > 1.0) {
+            LOG.error(
+                    "subject={} Swiss Ephemeris failed to calculate {} illuminated fraction: {}",
+                    subject.getId(),
+                    planet,
+                    error);
+            throw new IllegalArgumentException("Calculation failed. See application logs.");
+        }
+        return illuminatedFraction;
+    }
+
     public void requireSwissEphemerisResult(int result, Planet planet, String calculation, StringBuilder error) {
         if (result < 0) {
             LOG.error("subject={} Swiss Ephemeris failed for {} {}: {}", subject.getId(), planet, calculation, error);

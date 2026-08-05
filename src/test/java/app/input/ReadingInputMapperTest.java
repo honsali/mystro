@@ -46,6 +46,22 @@ class ReadingInputMapperTest {
     }
 
     @Test
+    void rejectsExactGeographicPoles() {
+        for (double latitude : new double[] {-90.0, 90.0}) {
+            ReadingInput input = validInput();
+            input.setLatitude(latitude);
+
+            IllegalArgumentException ex = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> mapper.resolve(input));
+
+            assertEquals(
+                    "Latitude must be strictly between -90 and 90 degrees: " + latitude,
+                    ex.getMessage());
+        }
+    }
+
+    @Test
     void rejectsInquiryBeforeBirthDate() {
         ReadingInput input = validInput();
         input.setInquiryDate("1999-12-31");

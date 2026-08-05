@@ -72,8 +72,9 @@ public final class ReadingInputMapper {
         if (!Double.isFinite(lat)) {
             throw new IllegalArgumentException("Latitude must be finite: " + lat);
         }
-        if (lat < -90.0 || lat > 90.0) {
-            throw new IllegalArgumentException("Latitude out of range: " + lat);
+        if (lat <= -90.0 || lat >= 90.0) {
+            throw new IllegalArgumentException(
+                    "Latitude must be strictly between -90 and 90 degrees: " + lat);
         }
 
         double lng = input.getLongitude();

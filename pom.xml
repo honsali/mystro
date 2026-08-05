@@ -5,7 +5,7 @@
 
     <groupId>mystro</groupId>
     <artifactId>mystro</artifactId>
-    <version>1.34.0</version>
+    <version>1.35.0</version>
     <name>mystro</name>
 
     <properties>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.swisseph</groupId>
             <artifactId>swisseph-java-ffm</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

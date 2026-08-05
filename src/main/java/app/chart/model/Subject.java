@@ -38,8 +38,9 @@ public final class Subject {
         requireFinite("latitude", latitude);
         requireFinite("longitude", longitude);
         requireFinite("elevationMeters", elevationMeters);
-        if (latitude < -90.0 || latitude > 90.0) {
-            throw new IllegalArgumentException("Latitude out of range: " + latitude);
+        if (latitude <= -90.0 || latitude >= 90.0) {
+            throw new IllegalArgumentException(
+                    "Latitude must be strictly between -90 and 90 degrees: " + latitude);
         }
         if (longitude < -180.0 || longitude > 180.0) {
             throw new IllegalArgumentException("Longitude out of range: " + longitude);
