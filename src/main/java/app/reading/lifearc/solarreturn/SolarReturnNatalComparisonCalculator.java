@@ -169,14 +169,14 @@ public final class SolarReturnNatalComparisonCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 

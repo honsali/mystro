@@ -46,7 +46,7 @@ final class ZodiacalReleasingMarkdownRenderer {
     private void appendSummary(StringBuilder out, Subject subject, LotEntry lot, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (activeDateTime != null) {
             out.append("- Inquiry date/time: `").append(format(activeDateTime)).append("`\n");
         }

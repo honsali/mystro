@@ -42,7 +42,7 @@ public final class DorotheanMonthlyProfectionCalculator {
             throw new IllegalArgumentException("ageEndYearsInclusive must be greater than or equal to ageStartYears");
         }
 
-        OffsetDateTime birthDateTime = subject.getLocalBirthDateTime();
+        OffsetDateTime birthDateTime = subject.getUtcBirthDateTime();
         OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
 
         List<MonthlyProfectionTableRow> rows = new ArrayList<>();
@@ -108,14 +108,14 @@ public final class DorotheanMonthlyProfectionCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 

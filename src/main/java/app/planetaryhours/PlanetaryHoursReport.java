@@ -6,10 +6,11 @@ import java.util.List;
 
 public final class PlanetaryHoursReport {
 
-    public static final String METHOD_ID = "PLANETARY_HOURS_CIVIL_DAY_V1";
+    public static final String METHOD_ID = "PLANETARY_HOURS_CIVIL_DAY_V2_UTC_OUTPUT";
 
     private final String engineVersion;
     private final String methodId;
+    private final String timeBasis;
     private final PlanetaryHoursBirthData birthData;
     private final Planet dayRuler;
     private final PlanetaryHoursBoundary coverageStart;
@@ -26,6 +27,7 @@ public final class PlanetaryHoursReport {
                                 PlanetaryHoursCalculation calculation) {
         this.engineVersion = engineVersion;
         this.methodId = METHOD_ID;
+        this.timeBasis = calculation.getTimeBasis();
         this.birthData = new PlanetaryHoursBirthData(input);
         this.dayRuler = calculation.getDayRuler();
         this.coverageStart = calculation.getCoverageStart();
@@ -44,6 +46,10 @@ public final class PlanetaryHoursReport {
 
     public String getMethodId() {
         return methodId;
+    }
+
+    public String getTimeBasis() {
+        return timeBasis;
     }
 
     public PlanetaryHoursBirthData getBirthData() {

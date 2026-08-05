@@ -90,7 +90,7 @@ final class LifeArcAiBriefMarkdownRenderer {
         OffsetDateTime inquiryDateTime = inquiryDateTime(subject, inquiryDate);
         int completedAge = synthesis == null ? completedAgeYears(subject, inquiryDate) : synthesis.completedAgeYears();
         OffsetDateTime activeYearStart = synthesis == null && completedAge >= 0
-                ? subject.getLocalBirthDateTime().plusYears(completedAge)
+                ? subject.getUtcBirthDateTime().plusYears(completedAge)
                 : synthesis == null ? null : synthesis.activeYearStartDateTime();
         OffsetDateTime activeYearEnd = activeYearStart == null ? null : activeYearStart.plusYears(1);
 
@@ -121,7 +121,7 @@ final class LifeArcAiBriefMarkdownRenderer {
                                       LifeArcSynthesisTable synthesis) {
         out.append("## Subject and inquiry\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
             out.append("- Inquiry date/time: `").append(format(inquiryDateTime)).append("`\n");
@@ -823,8 +823,8 @@ final class LifeArcAiBriefMarkdownRenderer {
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 
@@ -832,7 +832,7 @@ final class LifeArcAiBriefMarkdownRenderer {
         if (inquiryDate == null) {
             return -1;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         int years = inquiryDate.getYear() - birthDate.getYear();
         if (inquiryDate.isBefore(birthDate.plusYears(years))) {
             years--;

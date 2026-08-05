@@ -21,7 +21,7 @@ public final class ReadingInputMapper {
             throw new IllegalArgumentException("Input JSON is required");
         }
         Subject subject = toSubject(input);
-        return new ResolvedBundle(subject, toInquiryDate(input, subject.getLocalBirthDateTime().toLocalDate()));
+        return new ResolvedBundle(subject, toInquiryDate(input, subject.getUtcBirthDateTime().toLocalDate()));
     }
 
     private Subject toSubject(ReadingInput input) {

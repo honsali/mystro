@@ -3,6 +3,7 @@ package app.local;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +22,7 @@ final class PlanetaryHoursMarkdownRenderer {
         out.append("# Planetary Hours\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
         out.append("- Focus date/time: `").append(format(focusDateTime)).append("`\n");
+        out.append("- Time basis: `").append(calculation.getTimeBasis()).append("`\n");
         out.append("- Planetary day ruler: `").append(calculation.getDayRuler()).append("`\n");
         out.append("- Coverage: `").append(boundary(calculation.getCoverageStart())).append("` to `")
                 .append(boundary(calculation.getCoverageEnd())).append("`\n");
@@ -57,13 +59,13 @@ final class PlanetaryHoursMarkdownRenderer {
     }
 
     private boolean active(PlanetaryHourEntry entry, OffsetDateTime focusDateTime) {
-        OffsetDateTime start = dateTimeValue(entry.getStartDate(), entry.getStartTime(), focusDateTime);
-        OffsetDateTime end = dateTimeValue(entry.getEndDate(), entry.getEndTime(), focusDateTime);
+        OffsetDateTime start = dateTimeValue(entry.getStartDate(), entry.getStartTime());
+        OffsetDateTime end = dateTimeValue(entry.getEndDate(), entry.getEndTime());
         return !focusDateTime.isBefore(start) && focusDateTime.isBefore(end);
     }
 
-    private OffsetDateTime dateTimeValue(LocalDate date, String time, OffsetDateTime focusDateTime) {
-        return OffsetDateTime.of(date, LocalTime.parse(time), focusDateTime.getOffset());
+    private OffsetDateTime dateTimeValue(LocalDate date, String time) {
+        return OffsetDateTime.of(date, LocalTime.parse(time), ZoneOffset.UTC);
     }
 
     private String dateTime(LocalDate date, String time) {
@@ -75,7 +77,7 @@ final class PlanetaryHoursMarkdownRenderer {
     }
 
     private String format(OffsetDateTime dateTime) {
-        return dateTime == null ? "—" : dateTime.format(DATE_TIME);
+        return dateTime == null ? "—" : dateTime.withOffsetSameInstant(ZoneOffset.UTC).format(DATE_TIME);
     }
 
     private String formatDecimal(double value) {

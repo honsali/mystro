@@ -45,8 +45,8 @@ class FirdariaCalculatorTest {
         FirdariaPeriod moon = table.periods().get(0);
         assertEquals(Planet.MOON, moon.ruler());
         assertEquals(9, moon.nominalYears());
-        assertEquals(subject.getLocalBirthDateTime(), moon.startDateTime());
-        assertEquals(subject.getLocalBirthDateTime().plusYears(9), moon.endDateTimeExclusive());
+        assertEquals(subject.getUtcBirthDateTime(), moon.startDateTime());
+        assertEquals(subject.getUtcBirthDateTime().plusYears(9), moon.endDateTimeExclusive());
         assertEquals(List.of(Planet.MOON, Planet.SATURN, Planet.JUPITER, Planet.MARS, Planet.SUN, Planet.VENUS, Planet.MERCURY),
                 moon.subperiods().stream().map(FirdariaSubperiod::partner).toList());
 

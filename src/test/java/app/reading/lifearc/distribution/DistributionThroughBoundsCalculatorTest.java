@@ -52,7 +52,7 @@ class DistributionThroughBoundsCalculatorTest {
         assertEquals(ascendant.getSign(), first.sign());
         assertEquals(TraditionalTables.termRuler(ascendant.getLongitude(), Terms.EGYPTIAN), first.boundRuler());
         assertEquals(0.0, first.startAgeYears(), 0.0001);
-        assertEquals(subject.getLocalBirthDateTime(), first.startDateTime());
+        assertEquals(subject.getUtcBirthDateTime(), first.startDateTime());
         assertTrue(first.endAgeYearsExclusive() > first.startAgeYears());
 
         long activeCount = table.periods().stream()

@@ -58,8 +58,8 @@ public final class MundanePrimaryDirectionCalculator {
         ActiveWindow activeWindow = activeWindow(subject, inquiryDate);
         double coverageStartAgeYears = ageStartYears;
         double coverageEndAgeYears = ageEndYearsInclusive + 1.0;
-        OffsetDateTime coverageStart = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), coverageStartAgeYears);
-        OffsetDateTime coverageEnd = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), coverageEndAgeYears);
+        OffsetDateTime coverageStart = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), coverageStartAgeYears);
+        OffsetDateTime coverageEnd = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), coverageEndAgeYears);
         List<MundanePrimaryDirectionSignificator> significators = significators(subject, chart);
         List<MundanePrimaryDirectionEvent> events = events(subject, chart, significators, activeWindow,
                 coverageStartAgeYears, coverageEndAgeYears);
@@ -200,7 +200,7 @@ public final class MundanePrimaryDirectionCalculator {
                     arcDegrees += 360.0;
                 }
                 while (arcDegrees < coverageEndAgeYears - EPSILON) {
-                    OffsetDateTime dateTime = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), arcDegrees);
+                    OffsetDateTime dateTime = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), arcDegrees);
                     rawEvents.add(new RawEvent(
                             significator,
                             promissor,
@@ -412,17 +412,17 @@ public final class MundanePrimaryDirectionCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         OffsetDateTime activeDateTime = OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
         int years = inquiryDate.getYear() - birthDate.getYear();
-        OffsetDateTime start = subject.getLocalBirthDateTime().plusYears(years);
+        OffsetDateTime start = subject.getUtcBirthDateTime().plusYears(years);
         if (start.isAfter(activeDateTime)) {
             start = start.minusYears(1);
         }

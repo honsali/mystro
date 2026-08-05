@@ -22,7 +22,7 @@ final class MonthlyProfectionMarkdownRenderer {
 
         out.append("# Monthly Profections\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(subject.getLocalBirthDateTime().format(DATE_TIME)).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(subject.getUtcBirthDateTime().format(DATE_TIME)).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }

@@ -44,7 +44,7 @@ public final class DorotheanAnnualProfectionCalculator {
     );
 
     public AnnualProfectionEntry calculate(Subject subject, NatalChart chart, LocalDate inquiryDate) {
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
@@ -94,7 +94,7 @@ public final class DorotheanAnnualProfectionCalculator {
             throw new IllegalArgumentException("ageEndYearsInclusive must be greater than or equal to ageStartYears");
         }
 
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         int activeAgeYears = -1;
         if (inquiryDate != null) {
             if (inquiryDate.isBefore(birthDate)) {

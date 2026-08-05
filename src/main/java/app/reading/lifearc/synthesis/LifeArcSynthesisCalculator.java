@@ -144,18 +144,18 @@ public final class LifeArcSynthesisCalculator {
         if (inquiryDate == null) {
             throw new IllegalArgumentException("inquiryDate is required for life-arc synthesis");
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
 
         OffsetDateTime inquiryDateTime = OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
         int completedAgeYears = completedAgeYears(subject, inquiryDate);
-        OffsetDateTime activeYearStart = subject.getLocalBirthDateTime().plusYears(completedAgeYears);
+        OffsetDateTime activeYearStart = subject.getUtcBirthDateTime().plusYears(completedAgeYears);
         OffsetDateTime activeYearEnd = activeYearStart.plusYears(1);
 
         EvidenceBuilder evidence = new EvidenceBuilder();
@@ -200,7 +200,7 @@ public final class LifeArcSynthesisCalculator {
                 .filter(ref -> ref.reference() == AnnualProfectionReference.ASCENDANT)
                 .findFirst()
                 .orElseThrow();
-        OffsetDateTime annualStart = subject.getLocalBirthDateTime().plusYears(annual.ageYears());
+        OffsetDateTime annualStart = subject.getUtcBirthDateTime().plusYears(annual.ageYears());
         OffsetDateTime annualEnd = annualStart.plusYears(1);
         String annualDetail = "Annual Ascendant profection activates H" + annualAsc.profectedHouse() + " " + annualAsc.profectedSign() + " ruled by " + annualAsc.lord() + ".";
         evidence.sign("ANNUAL_PROFECTION", annualTable.methodId(), "Annual profection", annualStart, annualEnd, annualAsc.profectedSign(), ChronocratorWeights.ANNUAL_PROFECTED_SIGN_OR_HOUSE, annualDetail);
@@ -263,7 +263,7 @@ public final class LifeArcSynthesisCalculator {
         if (chart.getLots() == null) {
             return;
         }
-        OffsetDateTime endDateTime = subject.getLocalBirthDateTime().plusYears(100);
+        OffsetDateTime endDateTime = subject.getUtcBirthDateTime().plusYears(100);
         ZodiacalReleasingCalculator calculator = new ZodiacalReleasingCalculator();
         for (String lotName : List.of("FORTUNE", "SPIRIT")) {
             LotEntry lot = chart.getLots().stream()
@@ -273,9 +273,9 @@ public final class LifeArcSynthesisCalculator {
             if (lot == null) {
                 continue;
             }
-            ZodiacalReleasingTimeline timeline = calculator.calculate(lot.sign(), subject.getLocalBirthDateTime(), endDateTime);
+            ZodiacalReleasingTimeline timeline = calculator.calculate(lot.sign(), subject.getUtcBirthDateTime(), endDateTime);
             List<ZodiacalReleasingPeriod> activePath = activeReleasingPath(timeline.periods(), inquiryDateTime);
-            evidence.lot("ZODIACAL_RELEASING", timeline.methodId(), lot.name() + " releasing", subject.getLocalBirthDateTime(), endDateTime, lot.name(), ChronocratorWeights.ZODIACAL_RELEASING_LOT_ANCHOR, "Zodiacal Releasing from " + lot.name() + ".");
+            evidence.lot("ZODIACAL_RELEASING", timeline.methodId(), lot.name() + " releasing", subject.getUtcBirthDateTime(), endDateTime, lot.name(), ChronocratorWeights.ZODIACAL_RELEASING_LOT_ANCHOR, "Zodiacal Releasing from " + lot.name() + ".");
             for (ZodiacalReleasingPeriod period : activePath) {
                 EvidenceWeight weight = ChronocratorWeights.zodiacalReleasingLevel(period.level());
                 String detail = lot.name() + " releasing L" + period.level() + " is in " + period.sign() + ".";
@@ -492,7 +492,7 @@ public final class LifeArcSynthesisCalculator {
     }
 
     private int completedAgeYears(Subject subject, LocalDate inquiryDate) {
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         int years = inquiryDate.getYear() - birthDate.getYear();
         if (inquiryDate.isBefore(birthDate.plusYears(years))) {
             years--;

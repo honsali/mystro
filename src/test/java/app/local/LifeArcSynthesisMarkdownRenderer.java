@@ -32,7 +32,7 @@ final class LifeArcSynthesisMarkdownRenderer {
     private void appendSummary(StringBuilder out, Subject subject, LifeArcSynthesisTable table) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         out.append("- Inquiry date/time: `").append(format(table.inquiryDateTime())).append("`\n");
         out.append("- Completed age: `").append(table.completedAgeYears()).append("`\n");
         out.append("- Active birthday-year window: `").append(format(table.activeYearStartDateTime()))

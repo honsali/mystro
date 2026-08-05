@@ -21,7 +21,7 @@ final class DailyProfectionMarkdownRenderer {
         StringBuilder out = new StringBuilder();
         out.append("# Daily Profections\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         out.append("- Focus date: `").append(focusDate).append("`\n");
         out.append("- Window: `").append(table.windowStartDate()).append("` to `").append(table.windowEndDate()).append("`\n");
         out.append("- Method: `").append(table.methodId()).append("`\n");

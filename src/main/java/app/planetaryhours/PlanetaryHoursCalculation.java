@@ -6,6 +6,8 @@ import java.util.List;
 
 public final class PlanetaryHoursCalculation {
 
+    private static final String TIME_BASIS = "UTC";
+
     private final Planet dayRuler;
     private final PlanetaryHoursBoundary coverageStart;
     private final PlanetaryHoursBoundary coverageEnd;
@@ -38,6 +40,10 @@ public final class PlanetaryHoursCalculation {
 
     public Planet getDayRuler() {
         return dayRuler;
+    }
+
+    public String getTimeBasis() {
+        return TIME_BASIS;
     }
 
     public PlanetaryHoursBoundary getCoverageStart() {

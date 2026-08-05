@@ -51,8 +51,8 @@ class MonthlyTransitCheckpointCalculatorTest {
         assertEquals(1, first.checkpointNumber());
         assertEquals(0, first.ageYears());
         assertEquals(1, first.monthInYear());
-        assertEquals(subject.getLocalBirthDateTime(), first.checkpointDateTime());
-        assertEquals(subject.getLocalBirthDateTime().plusMonths(1), first.periodEndDateTimeExclusive());
+        assertEquals(subject.getUtcBirthDateTime(), first.checkpointDateTime());
+        assertEquals(subject.getUtcBirthDateTime().plusMonths(1), first.periodEndDateTimeExclusive());
         assertEquals(1, first.annualProfectedHouse());
         assertEquals(natalChart.getHouses().get(0).getSign(), first.annualProfectedSign());
         assertEquals(1, first.monthlyProfectedHouse());
@@ -73,8 +73,8 @@ class MonthlyTransitCheckpointCalculatorTest {
         MonthlyTransitCheckpointRow active = table.rows().get(2);
         assertEquals(3, active.monthInYear());
         assertTrue(active.activeForInquiry());
-        assertEquals(subject.getLocalBirthDateTime().plusMonths(2), active.checkpointDateTime());
-        assertEquals(subject.getLocalBirthDateTime().plusMonths(3), active.periodEndDateTimeExclusive());
+        assertEquals(subject.getUtcBirthDateTime().plusMonths(2), active.checkpointDateTime());
+        assertEquals(subject.getUtcBirthDateTime().plusMonths(3), active.periodEndDateTimeExclusive());
     }
 
     @Test

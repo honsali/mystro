@@ -43,8 +43,8 @@ class DecennialCalculatorTest {
 
         DecennialPeriod first = table.periods().get(0);
         assertEquals(Planet.MOON, first.ruler());
-        assertEquals(subject.getLocalBirthDateTime(), first.startDateTime());
-        assertEquals(subject.getLocalBirthDateTime().plusYears(10), first.endDateTimeExclusive());
+        assertEquals(subject.getUtcBirthDateTime(), first.startDateTime());
+        assertEquals(subject.getUtcBirthDateTime().plusYears(10), first.endDateTimeExclusive());
         assertEquals(List.of(Planet.MOON, Planet.SATURN, Planet.JUPITER, Planet.MARS, Planet.SUN, Planet.VENUS, Planet.MERCURY),
                 first.subperiods().stream().map(DecennialSubperiod::partner).toList());
         assertEquals(List.of(4), first.rulerNatalCondition().ruledNatalHouses());

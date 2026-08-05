@@ -1,0 +1,18 @@
+# Prenatal-syzygy oracle generated with the official swetest64 v2.10.03 executable.
+# All births are synthetic regression fixtures; this file contains no user data.
+# The Java tests consume this fixed file and never execute swetest or access the network.
+#
+# Event generation used only official Sun/Moon output. A one-second scan located each minimum,
+# followed by a 0.001-second scan around it. The selected row minimizes the absolute Moon-Sun
+# residual (0 degrees for NEW_MOON, 180 degrees for FULL_MOON).
+#
+# Command template for each scan:
+# swetest64 -bDATE -utcHH:MM:SS -p01 -nCOUNT -sSTEP -eswe -fPJl -g, -head -edir<project>/ephe
+#
+# Houses were independently checked with:
+# swetest64 -bDATE -utcHH:MM:SS -p0 -eswe -houseLONGITUDE,LATITUDE,W -fPl -g, -head -edir<project>/ephe
+case_id,birth_utc,longitude,latitude,elevation_meters,house_system,expected_type,event_jd_ut,event_utc,sun_longitude,moon_longitude,syzygy_longitude,house
+j2000_previous_full_moon,2000-01-01T12:00:00Z,0.0,51.4769,0.0,WHOLE_SIGN,FULL_MOON,2451535.23007,1999-12-22T17:31:18.038Z,270.4153697,90.4153696,90.4153696,4
+january_2000_previous_new_moon,2000-01-10T12:00:00Z,0.0,51.4769,0.0,WHOLE_SIGN,NEW_MOON,2451550.25947,2000-01-06T18:13:38.113Z,285.7314153,285.7314153,285.7314153,9
+immediately_before_april_2024_new_moon,2024-04-08T18:20:50Z,0.0,51.4769,0.0,WHOLE_SIGN,FULL_MOON,2460394.79190,2024-03-25T07:00:19.637Z,5.1206541,185.1206540,185.1206540,1
+immediately_after_april_2024_new_moon,2024-04-08T18:20:53Z,0.0,51.4769,0.0,WHOLE_SIGN,NEW_MOON,2460409.26449,2024-04-08T18:20:51.547Z,19.4004404,19.4004405,19.4004404,7

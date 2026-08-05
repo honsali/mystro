@@ -25,7 +25,7 @@ final class SolarReturnMarkdownRenderer {
     private void appendSummary(StringBuilder out, Subject subject, SolarReturnTable table, OffsetDateTime activeDateTime) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (activeDateTime != null) {
             out.append("- Inquiry date/time: `").append(format(activeDateTime)).append("`\n");
         }
@@ -37,7 +37,7 @@ final class SolarReturnMarkdownRenderer {
         out.append("- Natal Sun target: `").append(table.natalSunSign()).append(" ")
                 .append(formatDegree(table.natalSunDegreeInSign())).append("` (`")
                 .append(formatDegree(table.natalSunLongitude())).append("` longitude)\n\n");
-        out.append("Each row is the exact tropical apparent Sun return to the natal Sun longitude, calculated for the natal/request location and fixed request UTC offset. ")
+        out.append("Each row is the exact tropical apparent Sun return to the natal Sun longitude, calculated for the natal/request location and emitted in UTC. ")
                 .append("Rows can be used both backward for validation and forward for prediction. They are timing evidence, not standalone event claims.\n\n");
     }
 

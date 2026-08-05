@@ -51,7 +51,7 @@ public final class DorotheanDailyProfectionCalculator {
         if (radiusDays < 0) {
             throw new IllegalArgumentException("radiusDays must be zero or greater");
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (focusDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("focusDate must be on or after birthDate");
         }
@@ -79,11 +79,11 @@ public final class DorotheanDailyProfectionCalculator {
     private DailyProfectionTableRow row(Subject subject, NatalChart chart, LocalDate focusDate, LocalDate date) {
         OffsetDateTime startDateTime = OffsetDateTime.of(
                 date,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
         OffsetDateTime endDateTime = startDateTime.plusDays(1);
-        MonthlyPosition monthlyPosition = monthlyPosition(subject.getLocalBirthDateTime(), startDateTime);
+        MonthlyPosition monthlyPosition = monthlyPosition(subject.getUtcBirthDateTime(), startDateTime);
         int ageYears = monthlyPosition.ageYears();
         int monthIndex = monthlyPosition.monthIndex();
         int dayIndex = (int) ChronoUnit.DAYS.between(monthlyPosition.monthStartDateTime(), startDateTime);

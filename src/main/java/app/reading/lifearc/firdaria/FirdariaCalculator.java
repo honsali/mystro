@@ -59,7 +59,7 @@ public final class FirdariaCalculator {
             throw new IllegalArgumentException("Natal chart sect is required for firdaria");
         }
 
-        OffsetDateTime birthDateTime = subject.getLocalBirthDateTime();
+        OffsetDateTime birthDateTime = subject.getUtcBirthDateTime();
         OffsetDateTime coverageStart = birthDateTime.plusYears(ageStartYears);
         OffsetDateTime coverageEnd = birthDateTime.plusYears(ageEndYearsInclusive + 1L);
         OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
@@ -191,14 +191,14 @@ public final class FirdariaCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 

@@ -19,6 +19,7 @@ class ReadingInputMapperTest {
 
         assertEquals(SyntheticTestData.SUBJECT_ID, resolved.subject().getId());
         assertEquals("2000-01-01T12:00Z", resolved.subject().getLocalBirthDateTime().toString());
+        assertEquals("2000-01-01T12:00Z", resolved.subject().getUtcBirthDateTime().toString());
         assertEquals(SyntheticTestData.LATITUDE, resolved.subject().getLatitude());
         assertEquals(SyntheticTestData.LONGITUDE, resolved.subject().getLongitude());
         assertEquals(0.0, resolved.subject().getElevationMeters());
@@ -69,6 +70,21 @@ class ReadingInputMapperTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> mapper.resolve(input));
 
         assertEquals("inquiryDate must be on or after birthDate", ex.getMessage());
+    }
+
+    @Test
+    void validatesInquiryDateAgainstCanonicalUtcBirthDate() {
+        ReadingInput input = validInput();
+        input.setBirthDate("2000-03-01");
+        input.setBirthTime("00:30:00");
+        input.setUtcOffset("+02:00");
+        input.setInquiryDate("2000-02-29");
+
+        ReadingInputMapper.ResolvedBundle resolved = mapper.resolve(input);
+
+        assertEquals("2000-03-01T00:30+02:00", resolved.subject().getLocalBirthDateTime().toString());
+        assertEquals("2000-02-29T22:30Z", resolved.subject().getUtcBirthDateTime().toString());
+        assertEquals("2000-02-29", resolved.inquiryDate().toString());
     }
 
     private ReadingInput validInput() {

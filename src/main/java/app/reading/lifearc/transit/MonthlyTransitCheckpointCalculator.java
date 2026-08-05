@@ -93,8 +93,8 @@ public final class MonthlyTransitCheckpointCalculator {
                                             OffsetDateTime activeDateTime, int checkpointNumber,
                                             int ageYears, int monthIndex) {
         long totalMonths = ageYears * 12L + monthIndex;
-        OffsetDateTime checkpointDateTime = subject.getLocalBirthDateTime().plusMonths(totalMonths);
-        OffsetDateTime periodEndDateTime = subject.getLocalBirthDateTime().plusMonths(totalMonths + 1L);
+        OffsetDateTime checkpointDateTime = subject.getUtcBirthDateTime().plusMonths(totalMonths);
+        OffsetDateTime periodEndDateTime = subject.getUtcBirthDateTime().plusMonths(totalMonths + 1L);
 
         int annualProfectedHouse = Math.floorMod(ageYears, 12) + 1;
         ZodiacSign annualProfectedSign = signForHouse(natalChart, annualProfectedHouse);
@@ -414,14 +414,14 @@ public final class MonthlyTransitCheckpointCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 

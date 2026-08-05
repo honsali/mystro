@@ -53,7 +53,7 @@ public final class SolarReturnCalculator {
         }
 
         double natalSunLongitude = natalChart.requirePlanet(Planet.SUN).getLongitude();
-        ZoneOffset outputOffset = subject.getLocalBirthDateTime().getOffset();
+        ZoneOffset outputOffset = subject.getUtcBirthDateTime().getOffset();
         CalculationContext ephemerisContext = new CalculationContext(subject, RETURN_CONVENTIONS);
 
         List<ReturnInstant> returns = new ArrayList<>();
@@ -92,7 +92,7 @@ public final class SolarReturnCalculator {
     }
 
     private double findReturnJulianDay(Subject subject, CalculationContext ephemerisContext, double natalSunLongitude, int ageYears) {
-        OffsetDateTime approximate = subject.getLocalBirthDateTime().plusYears(ageYears);
+        OffsetDateTime approximate = subject.getUtcBirthDateTime().plusYears(ageYears);
         double approximateJulianDay = SwissEphAdapter.utcToJulianDayUt(approximate.toInstant());
         for (double radiusDays : List.of(4.0, 8.0, 16.0)) {
             Double root = scanForRoot(ephemerisContext, natalSunLongitude,

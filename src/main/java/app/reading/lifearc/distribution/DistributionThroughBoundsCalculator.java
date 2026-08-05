@@ -107,8 +107,8 @@ public final class DistributionThroughBoundsCalculator {
         OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
         double coverageStartAgeYears = ageStartYears;
         double coverageEndAgeYears = ageEndYearsInclusive + 1.0;
-        OffsetDateTime coverageStart = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), coverageStartAgeYears);
-        OffsetDateTime coverageEnd = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), coverageEndAgeYears);
+        OffsetDateTime coverageStart = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), coverageStartAgeYears);
+        OffsetDateTime coverageEnd = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), coverageEndAgeYears);
         List<DistributionThroughBoundsContact> contacts = contacts(subject, chart, directedPoint.longitude(),
                 coverageEndAgeYears, directedPoint.coordinateMethod());
 
@@ -302,8 +302,8 @@ public final class DistributionThroughBoundsCalculator {
                 double emittedEndLongitudeAbs = longitudeAtArcYears(startLongitudeAbs, naturalStartLongitudeAbs,
                         naturalEndLongitudeAbs, naturalStartAgeYears, naturalEndAgeYears, emittedEndAgeYears,
                         subject.getLatitude(), chart.getTrueObliquity(), coordinateMethod);
-                OffsetDateTime startDateTime = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), emittedStartAgeYears);
-                OffsetDateTime endDateTime = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), emittedEndAgeYears);
+                OffsetDateTime startDateTime = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), emittedStartAgeYears);
+                OffsetDateTime endDateTime = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), emittedEndAgeYears);
 
                 periods.add(new DistributionThroughBoundsPeriod(
                         sequenceIndex,
@@ -373,7 +373,7 @@ public final class DistributionThroughBoundsCalculator {
                             TraditionalTables.termRuler(rayLongitudeAbs, TERMS),
                             ageYears,
                             ageYears,
-                            dateTimeAtAgeYears(subject.getLocalBirthDateTime(), ageYears),
+                            dateTimeAtAgeYears(subject.getUtcBirthDateTime(), ageYears),
                             source.longitude(),
                             source.sign(),
                             source.degreeInSign(),
@@ -543,14 +543,14 @@ public final class DistributionThroughBoundsCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 

@@ -58,7 +58,7 @@ final class LunarTimingMarkdownRenderer {
     private void appendSummary(StringBuilder out, Subject subject, LocalDate inquiryDate, LunarTimingTable table) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }
@@ -118,12 +118,12 @@ final class LunarTimingMarkdownRenderer {
         if (inquiryDate == null) {
             return;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         int completedAge = inquiryDate.getYear() - birthDate.getYear();
         if (inquiryDate.isBefore(birthDate.plusYears(completedAge))) {
             completedAge--;
         }
-        OffsetDateTime activeYearStart = subject.getLocalBirthDateTime().plusYears(completedAge);
+        OffsetDateTime activeYearStart = subject.getUtcBirthDateTime().plusYears(completedAge);
         OffsetDateTime activeYearEnd = activeYearStart.plusYears(1);
         List<EclipseEvent> trueEclipses = table.eclipseEvents().stream()
                 .filter(event -> !event.maximumDateTime().isBefore(activeYearStart) && event.maximumDateTime().isBefore(activeYearEnd))

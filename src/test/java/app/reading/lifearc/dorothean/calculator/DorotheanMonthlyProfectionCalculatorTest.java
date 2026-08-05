@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +50,8 @@ class DorotheanMonthlyProfectionCalculatorTest {
         assertEquals(3, firstMonth.yearInCycle());
         assertEquals(5, firstMonth.cycleNumber());
         assertEquals(1, firstMonth.monthInYear());
-        assertEquals(subject.getLocalBirthDateTime().plusMonths(600), firstMonth.periodStartDateTime());
-        assertEquals(subject.getLocalBirthDateTime().plusMonths(601), firstMonth.periodEndDateTimeExclusive());
+        assertEquals(subject.getUtcBirthDateTime().plusMonths(600), firstMonth.periodStartDateTime());
+        assertEquals(subject.getUtcBirthDateTime().plusMonths(601), firstMonth.periodEndDateTimeExclusive());
         assertFalse(firstMonth.activeForInquiry());
 
         MonthlyProfectionReferenceEntry firstAsc = entry(firstMonth, AnnualProfectionReference.ASCENDANT);
@@ -81,6 +83,39 @@ class DorotheanMonthlyProfectionCalculatorTest {
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, LocalDate.of(1999, 12, 31), 0, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, null, 2, 1));
+    }
+
+    @Test
+    void monthlyTimelineIsInvariantToInputOffsetAndUsesUtcCalendar() {
+        Subject offsetSubject = new Subject(
+                "offset-input",
+                OffsetDateTime.parse("2000-03-01T00:30:00+02:00"),
+                51.5,
+                0.0);
+        Subject utcSubject = new Subject(
+                "utc-input",
+                OffsetDateTime.parse("2000-02-29T22:30:00Z"),
+                51.5,
+                0.0);
+
+        MonthlyProfectionTable offsetTable = calculator.calculateTable(offsetSubject, chart(), null, 0, 0);
+        MonthlyProfectionTable utcTable = calculator.calculateTable(utcSubject, chart(), null, 0, 0);
+
+        assertEquals(
+                utcTable.rows().stream().map(MonthlyProfectionTableRow::periodStartDateTime).toList(),
+                offsetTable.rows().stream().map(MonthlyProfectionTableRow::periodStartDateTime).toList());
+        assertEquals(
+                utcTable.rows().stream().map(MonthlyProfectionTableRow::periodEndDateTimeExclusive).toList(),
+                offsetTable.rows().stream().map(MonthlyProfectionTableRow::periodEndDateTimeExclusive).toList());
+        assertEquals(
+                OffsetDateTime.parse("2000-02-29T22:30:00Z"),
+                offsetTable.rows().get(0).periodStartDateTime());
+        assertEquals(
+                OffsetDateTime.parse("2000-03-29T22:30:00Z"),
+                offsetTable.rows().get(0).periodEndDateTimeExclusive());
+        assertTrue(offsetTable.rows().stream().allMatch(row ->
+                row.periodStartDateTime().getOffset().equals(ZoneOffset.UTC)
+                        && row.periodEndDateTimeExclusive().getOffset().equals(ZoneOffset.UTC)));
     }
 
     private MonthlyProfectionReferenceEntry entry(MonthlyProfectionTableRow row, AnnualProfectionReference reference) {

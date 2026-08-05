@@ -33,7 +33,7 @@ final class PrimaryDirectionMarkdownRenderer {
     private void appendSummary(StringBuilder out, Subject subject, LocalDate inquiryDate, PrimaryDirectionTable table) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }

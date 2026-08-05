@@ -64,8 +64,8 @@ public final class LunarTimingCalculator {
         OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
         double coverageStartAgeYears = ageStartYears;
         double coverageEndAgeYears = ageEndYearsInclusive + 1.0;
-        OffsetDateTime coverageStart = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), coverageStartAgeYears);
-        OffsetDateTime coverageEnd = dateTimeAtAgeYears(subject.getLocalBirthDateTime(), coverageEndAgeYears);
+        OffsetDateTime coverageStart = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), coverageStartAgeYears);
+        OffsetDateTime coverageEnd = dateTimeAtAgeYears(subject.getUtcBirthDateTime(), coverageEndAgeYears);
         double coverageStartJulianDay = julianDayFromInstant(coverageStart.toInstant());
         double coverageEndJulianDay = julianDayFromInstant(coverageEnd.toInstant());
 
@@ -104,7 +104,7 @@ public final class LunarTimingCalculator {
         double birthJulianDay = julianDayFromInstant(subject.getResolvedUtcInstant());
         double generationEndJulianDay = coverageEndJulianDay + SIDEREAL_LUNAR_MONTH_DAYS + 2.0;
         int maxReturnNumber = Math.max(1, (int) Math.ceil((generationEndJulianDay - birthJulianDay) / SIDEREAL_LUNAR_MONTH_DAYS) + 2);
-        ZoneOffset outputOffset = subject.getLocalBirthDateTime().getOffset();
+        ZoneOffset outputOffset = subject.getUtcBirthDateTime().getOffset();
         List<ReturnInstant> instants = new ArrayList<>();
         for (int returnNumber = 0; returnNumber <= maxReturnNumber; returnNumber++) {
             ReturnInstant instant = lunarReturnInstant(subject, ephemerisContext, natalMoon.getLongitude(), outputOffset, returnNumber);
@@ -315,8 +315,8 @@ public final class LunarTimingCalculator {
         NodeDistance nodeDistance = nodeDistance(ephemerisContext, syzygyLongitude, current.julianDay());
         EclipseCandidateType eclipseType = eclipseType(current.type(), nodeDistance.orbDegrees());
         ZodiacSign syzygySign = AstroMath.signOf(syzygyLongitude);
-        OffsetDateTime dateTime = dateTime(current.julianDay(), subject.getLocalBirthDateTime().getOffset());
-        OffsetDateTime periodEndDateTime = dateTime(next.julianDay(), subject.getLocalBirthDateTime().getOffset());
+        OffsetDateTime dateTime = dateTime(current.julianDay(), subject.getUtcBirthDateTime().getOffset());
+        OffsetDateTime periodEndDateTime = dateTime(next.julianDay(), subject.getUtcBirthDateTime().getOffset());
         return new LunationEntry(
                 sequenceIndex,
                 current.type(),
@@ -409,7 +409,7 @@ public final class LunarTimingCalculator {
         double syzygyLongitude = ephemerisContext.longitudeFor(Planet.SUN, SweConst.SE_SUN, maximumJulianDay);
         ZodiacSign syzygySign = AstroMath.signOf(syzygyLongitude);
         NodeDistance nodeDistance = nodeDistance(ephemerisContext, syzygyLongitude, maximumJulianDay);
-        List<EclipseContact> globalContacts = eclipseContacts(contacts, solarContactSpecs(subject.getLocalBirthDateTime().getOffset()));
+        List<EclipseContact> globalContacts = eclipseContacts(contacts, solarContactSpecs(subject.getUtcBirthDateTime().getOffset()));
         ResolvedLocalVisibility resolvedVisibility = resolveLocalVisibility(
                 EclipseEventKind.SOLAR,
                 maximumJulianDay,
@@ -425,7 +425,7 @@ public final class LunarTimingCalculator {
                 SyzygyType.NEW_MOON,
                 solarEclipseType(result != 0 ? result : attributeResult),
                 eclipseType(SyzygyType.NEW_MOON, nodeDistance.orbDegrees()),
-                dateTime(maximumJulianDay, subject.getLocalBirthDateTime().getOffset()),
+                dateTime(maximumJulianDay, subject.getUtcBirthDateTime().getOffset()),
                 maximumJulianDay,
                 syzygyLongitude,
                 syzygySign,
@@ -492,7 +492,7 @@ public final class LunarTimingCalculator {
         double syzygyLongitude = ephemerisContext.longitudeFor(Planet.MOON, SweConst.SE_MOON, maximumJulianDay);
         ZodiacSign syzygySign = AstroMath.signOf(syzygyLongitude);
         NodeDistance nodeDistance = nodeDistance(ephemerisContext, syzygyLongitude, maximumJulianDay);
-        List<EclipseContact> globalContacts = eclipseContacts(contacts, lunarContactSpecs(subject.getLocalBirthDateTime().getOffset()));
+        List<EclipseContact> globalContacts = eclipseContacts(contacts, lunarContactSpecs(subject.getUtcBirthDateTime().getOffset()));
         ResolvedLocalVisibility resolvedVisibility = resolveLocalVisibility(
                 EclipseEventKind.LUNAR,
                 maximumJulianDay,
@@ -508,7 +508,7 @@ public final class LunarTimingCalculator {
                 SyzygyType.FULL_MOON,
                 lunarEclipseType(result != 0 ? result : attributeResult),
                 eclipseType(SyzygyType.FULL_MOON, nodeDistance.orbDegrees()),
-                dateTime(maximumJulianDay, subject.getLocalBirthDateTime().getOffset()),
+                dateTime(maximumJulianDay, subject.getUtcBirthDateTime().getOffset()),
                 maximumJulianDay,
                 syzygyLongitude,
                 syzygySign,
@@ -588,7 +588,7 @@ public final class LunarTimingCalculator {
                 rows.add(new LocalEclipseVisibilityRow(
                         result,
                         localMaximum,
-                        dateTime(localMaximum, subject.getLocalBirthDateTime().getOffset()),
+                        dateTime(localMaximum, subject.getUtcBirthDateTime().getOffset()),
                         visibleSolarContactPhases(result),
                         (result & SweConst.SE_ECL_MAX_VISIBLE) != 0,
                         nonNegative(attributes[0]),
@@ -634,7 +634,7 @@ public final class LunarTimingCalculator {
                 rows.add(new LocalEclipseVisibilityRow(
                         result,
                         localMaximum,
-                        dateTime(localMaximum, subject.getLocalBirthDateTime().getOffset()),
+                        dateTime(localMaximum, subject.getUtcBirthDateTime().getOffset()),
                         visibleLunarContactPhases(result),
                         (result & SweConst.SE_ECL_MAX_VISIBLE) != 0,
                         nonNegative(attributes[0]),
@@ -1041,14 +1041,14 @@ public final class LunarTimingCalculator {
         if (inquiryDate == null) {
             return null;
         }
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
         }
         return OffsetDateTime.of(
                 inquiryDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
     }
 

@@ -179,8 +179,8 @@ public final class LocalZoomDumpRunner {
 
         OffsetDateTime focusDateTime = OffsetDateTime.of(
                 focusDate,
-                subject.getLocalBirthDateTime().toLocalTime(),
-                subject.getLocalBirthDateTime().getOffset()
+                subject.getUtcBirthDateTime().toLocalTime(),
+                subject.getUtcBirthDateTime().getOffset()
         );
         OffsetDateTime windowStart = focusDateTime.minusDays(WINDOW_RADIUS_DAYS);
         OffsetDateTime windowEnd = focusDateTime.plusDays(WINDOW_RADIUS_DAYS);
@@ -191,7 +191,7 @@ public final class LocalZoomDumpRunner {
                 new PlanetaryHoursInput(
                         subject.getId(),
                         focusDate,
-                        subject.getLocalBirthDateTime().getOffset(),
+                        subject.getUtcBirthDateTime().getOffset(),
                         subject.getLatitude(),
                         subject.getLongitude(),
                         subject.getElevationMeters()
@@ -384,7 +384,7 @@ public final class LocalZoomDumpRunner {
     }
 
     private int activeAgeYears(Subject subject, LocalDate focusDate) {
-        LocalDate birthDate = subject.getLocalBirthDateTime().toLocalDate();
+        LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         LocalDate birthdayThisYear = MonthDay.from(birthDate).atYear(focusDate.getYear());
         int ageYears = focusDate.getYear() - birthDate.getYear();
         return focusDate.isBefore(birthdayThisYear) ? ageYears - 1 : ageYears;
@@ -394,11 +394,11 @@ public final class LocalZoomDumpRunner {
         if (chart.getLots() == null || chart.getLots().isEmpty()) {
             return List.of();
         }
-        OffsetDateTime endDateTime = subject.getLocalBirthDateTime().plusYears(100);
+        OffsetDateTime endDateTime = subject.getUtcBirthDateTime().plusYears(100);
         ZodiacalReleasingCalculator calculator = new ZodiacalReleasingCalculator();
         List<ZodiacalReleasingActiveMarkdownRenderer.LotTimeline> timelines = new ArrayList<>();
         for (LotEntry lot : chart.getLots()) {
-            ZodiacalReleasingTimeline timeline = calculator.calculate(lot.sign(), subject.getLocalBirthDateTime(), endDateTime);
+            ZodiacalReleasingTimeline timeline = calculator.calculate(lot.sign(), subject.getUtcBirthDateTime(), endDateTime);
             timelines.add(new ZodiacalReleasingActiveMarkdownRenderer.LotTimeline(lot, timeline));
         }
         return List.copyOf(timelines);

@@ -142,7 +142,7 @@ final class TopicSynthesisMarkdownRenderer {
         StringBuilder out = new StringBuilder();
         out.append("# Topic Synthesis Packets\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }
@@ -179,7 +179,7 @@ final class TopicSynthesisMarkdownRenderer {
         out.append("# Topic Packet — ").append(bucket.displayName()).append("\n\n");
         out.append("## Scope\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }

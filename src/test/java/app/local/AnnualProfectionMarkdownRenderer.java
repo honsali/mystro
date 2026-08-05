@@ -20,7 +20,7 @@ final class AnnualProfectionMarkdownRenderer {
 
         out.append("# Annual Profections\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date: `").append(subject.getLocalBirthDateTime().toLocalDate()).append("`\n");
+        out.append("- Birth date (UTC): `").append(subject.getUtcBirthDateTime().toLocalDate()).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }

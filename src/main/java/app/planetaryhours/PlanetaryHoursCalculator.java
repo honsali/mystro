@@ -46,6 +46,7 @@ public final class PlanetaryHoursCalculator {
     private static final String EPHEMERIS_PATH = "ephe";
     private static final double SECONDS_PER_DAY = 86_400.0;
     private static final double ONE_SECOND_IN_DAYS = 1.0 / SECONDS_PER_DAY;
+    private static final ZoneOffset OUTPUT_OFFSET = ZoneOffset.UTC;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final List<Planet> CHALDEAN_ORDER = List.of(
             Planet.SATURN,
@@ -87,11 +88,11 @@ public final class PlanetaryHoursCalculator {
 
         return new PlanetaryHoursCalculation(
                 currentPlanetaryDay.dayRuler(),
-                boundary(coverageStartJulianDay, input.utcOffset()),
-                boundary(coverageEndJulianDay, input.utcOffset()),
-                boundary(currentPlanetaryDay.sunriseJulianDay(), input.utcOffset()),
-                boundary(currentPlanetaryDay.sunsetJulianDay(), input.utcOffset()),
-                boundary(currentPlanetaryDay.nextSunriseJulianDay(), input.utcOffset()),
+                boundary(coverageStartJulianDay, OUTPUT_OFFSET),
+                boundary(coverageEndJulianDay, OUTPUT_OFFSET),
+                boundary(currentPlanetaryDay.sunriseJulianDay(), OUTPUT_OFFSET),
+                boundary(currentPlanetaryDay.sunsetJulianDay(), OUTPUT_OFFSET),
+                boundary(currentPlanetaryDay.nextSunriseJulianDay(), OUTPUT_OFFSET),
                 currentPlanetaryDay.dayHourLength() * SECONDS_PER_DAY / 60.0,
                 currentPlanetaryDay.nightHourLength() * SECONDS_PER_DAY / 60.0,
                 hours);
@@ -111,11 +112,11 @@ public final class PlanetaryHoursCalculator {
 
         return new PlanetaryHoursCalculation(
                 planetaryDay.dayRuler(),
-                boundary(planetaryDay.sunriseJulianDay(), input.utcOffset()),
-                boundary(planetaryDay.nextSunriseJulianDay(), input.utcOffset()),
-                boundary(planetaryDay.sunriseJulianDay(), input.utcOffset()),
-                boundary(planetaryDay.sunsetJulianDay(), input.utcOffset()),
-                boundary(planetaryDay.nextSunriseJulianDay(), input.utcOffset()),
+                boundary(planetaryDay.sunriseJulianDay(), OUTPUT_OFFSET),
+                boundary(planetaryDay.nextSunriseJulianDay(), OUTPUT_OFFSET),
+                boundary(planetaryDay.sunriseJulianDay(), OUTPUT_OFFSET),
+                boundary(planetaryDay.sunsetJulianDay(), OUTPUT_OFFSET),
+                boundary(planetaryDay.nextSunriseJulianDay(), OUTPUT_OFFSET),
                 planetaryDay.dayHourLength() * SECONDS_PER_DAY / 60.0,
                 planetaryDay.nightHourLength() * SECONDS_PER_DAY / 60.0,
                 hours);
@@ -217,7 +218,7 @@ public final class PlanetaryHoursCalculator {
                                          double displayEndJulianDay,
                                          SwissEphAdapter swissEph,
                                          PlanetaryHoursInput input) {
-        ZoneOffset offset = input.utcOffset();
+        ZoneOffset offset = OUTPUT_OFFSET;
         double midpointJulianDay = (displayStartJulianDay + displayEndJulianDay) / 2.0;
         OffsetDateTime start = offsetDateTimeFromJulianDay(displayStartJulianDay, offset);
         OffsetDateTime end = offsetDateTimeFromJulianDay(displayEndJulianDay, offset);

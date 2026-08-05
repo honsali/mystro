@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 
 import app.chart.AstroMath;
@@ -59,6 +62,23 @@ class SolarReturnCalculatorTest {
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, -1, 2));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, 3, 2));
+    }
+
+    @Test
+    void exactReturnInstantsAreAlwaysEmittedInUtc() {
+        Subject subject = new Subject(
+                "offset-solar-return",
+                OffsetDateTime.parse("2000-01-01T14:00:00+02:00"),
+                51.4769,
+                0.0);
+        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+
+        SolarReturnTable table = calculator.calculateTable(subject, natalChart, 0, 1);
+
+        assertEquals(OffsetDateTime.parse("2000-01-01T12:00:00Z"), table.rows().get(0).returnDateTime());
+        assertTrue(table.rows().stream().allMatch(row ->
+                row.returnDateTime().getOffset().equals(ZoneOffset.UTC)
+                        && row.periodEndDateTimeExclusive().getOffset().equals(ZoneOffset.UTC)));
     }
 
     private Subject subject() {

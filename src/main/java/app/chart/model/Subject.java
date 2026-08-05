@@ -2,6 +2,9 @@ package app.chart.model;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public final class Subject {
     private final String id;
@@ -34,6 +37,10 @@ public final class Subject {
         }
         if (resolvedUtcInstant == null) {
             throw new IllegalArgumentException("Subject resolved UTC instant is required");
+        }
+        if (!localBirthDateTime.toInstant().equals(resolvedUtcInstant)) {
+            throw new IllegalArgumentException(
+                    "Subject local birth date/time and resolved UTC instant must represent the same instant");
         }
         requireFinite("latitude", latitude);
         requireFinite("longitude", longitude);
@@ -69,6 +76,17 @@ public final class Subject {
 
     public Instant getResolvedUtcInstant() {
         return resolvedUtcInstant;
+    }
+
+    /**
+     * Canonical birth date/time for every calculation after input resolution.
+     *
+     * <p>The original offset date/time remains available as input metadata through
+     * {@link #getLocalBirthDateTime()}.</p>
+     */
+    @JsonIgnore
+    public OffsetDateTime getUtcBirthDateTime() {
+        return resolvedUtcInstant.atOffset(ZoneOffset.UTC);
     }
 
     public double getLatitude() {

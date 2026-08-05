@@ -47,7 +47,7 @@ final class MonthlyTransitCheckpointMarkdownRenderer {
     private void appendSummary(StringBuilder out, Subject subject, LocalDate inquiryDate, MonthlyTransitCheckpointTable table) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (inquiryDate != null) {
             out.append("- Inquiry date: `").append(inquiryDate).append("`\n");
         }
@@ -60,7 +60,7 @@ final class MonthlyTransitCheckpointMarkdownRenderer {
         out.append("- Activation aspect orb: `").append(formatDecimal(table.activationAspectOrbDegrees(), 2)).append("°`\n");
         out.append("- Age range: `").append(table.ageStartYears()).append("` to `")
                 .append(table.ageEndYearsInclusive()).append("` completed years\n\n");
-        out.append("Each checkpoint is the native's local birth date/time advanced by whole months, so the day-of-month follows the birth day and shorter months use the normal local-date plus-months end-of-month convention. ")
+        out.append("Each checkpoint is the canonical UTC birth date/time advanced by whole months, so the day-of-month follows the UTC birth day and shorter months use the normal UTC calendar plus-months end-of-month convention. ")
                 .append("Rows are monthly snapshots, not continuous transit searches. Activated contacts retain Ptolemaic degree aspects when the natal target or transiting point is activated by annual/monthly profection. Use them for compact validation and research before event-date synthesis. ")
                 .append("The overview file starts with active/top evidence and keeps the 0–100 overview compact; the generated `monthly_transit_checkpoints_full.md` companion keeps all checkpoint overlay details.\n\n");
     }

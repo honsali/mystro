@@ -5,6 +5,9 @@ import app.testing.SyntheticTestData;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PlanetaryHoursCalculatorTest {
@@ -140,5 +143,23 @@ class PlanetaryHoursCalculatorTest {
 
         assertEquals("08:05", seaLevelCalculation.getSunrise().getTime());
         assertEquals("08:06", highElevationCalculation.getSunrise().getTime());
+    }
+
+    @Test
+    void resolvesCivilDayWithInputOffsetThenEmitsBoundariesInUtc() {
+        PlanetaryHoursInput input = new PlanetaryHoursInput(
+                "offset-civil-day",
+                LocalDate.of(2000, 1, 1),
+                ZoneOffset.ofHours(2),
+                SyntheticTestData.LATITUDE,
+                SyntheticTestData.LONGITUDE);
+
+        PlanetaryHoursCalculation calculation = calculator.calculate(input);
+
+        assertEquals("UTC", calculation.getTimeBasis());
+        assertEquals(LocalDate.of(1999, 12, 31), calculation.getCoverageStart().getDate());
+        assertEquals("22:00", calculation.getCoverageStart().getTime());
+        assertEquals(LocalDate.of(2000, 1, 1), calculation.getCoverageEnd().getDate());
+        assertEquals("22:00", calculation.getCoverageEnd().getTime());
     }
 }

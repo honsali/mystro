@@ -706,8 +706,8 @@ public final class LocalReadingDumpRunner {
                 ? null
                 : OffsetDateTime.of(
                         resolved.inquiryDate(),
-                        subject.getLocalBirthDateTime().toLocalTime(),
-                        subject.getLocalBirthDateTime().getOffset()
+                        subject.getUtcBirthDateTime().toLocalTime(),
+                        subject.getUtcBirthDateTime().getOffset()
                 );
     }
 
@@ -722,14 +722,14 @@ public final class LocalReadingDumpRunner {
         Files.createDirectories(outputDir);
 
         OffsetDateTime activeDateTime = activeDateTime(subject, resolved);
-        OffsetDateTime endDateTime = subject.getLocalBirthDateTime().plusYears(100);
+        OffsetDateTime endDateTime = subject.getUtcBirthDateTime().plusYears(100);
         ZodiacalReleasingCalculator calculator = new ZodiacalReleasingCalculator();
         ZodiacalReleasingMarkdownRenderer renderer = new ZodiacalReleasingMarkdownRenderer();
 
         List<String> indexRows = new ArrayList<>();
         List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> briefs = new ArrayList<>();
         for (LotEntry lot : natalDescription.getNatalChart().getLots()) {
-            ZodiacalReleasingTimeline timeline = calculator.calculate(lot.sign(), subject.getLocalBirthDateTime(), endDateTime);
+            ZodiacalReleasingTimeline timeline = calculator.calculate(lot.sign(), subject.getUtcBirthDateTime(), endDateTime);
             String fileName = "zr_" + lot.name().toLowerCase(Locale.ROOT) + ".md";
             Path file = outputDir.resolve(fileName);
             Files.writeString(file, renderer.render(subject, natalDescription.getNatalChart(), lot, timeline, activeDateTime));
@@ -740,7 +740,7 @@ public final class LocalReadingDumpRunner {
         StringBuilder index = new StringBuilder();
         index.append("# Zodiacal Releasing files\n\n");
         index.append("- Subject: `").append(subject.getId()).append("`\n");
-        index.append("- Birth date/time: `").append(subject.getLocalBirthDateTime()).append("`\n");
+        index.append("- Birth date/time (UTC): `").append(subject.getUtcBirthDateTime()).append("`\n");
         if (activeDateTime != null) {
             index.append("- Inquiry date/time: `").append(activeDateTime).append("`\n");
         }

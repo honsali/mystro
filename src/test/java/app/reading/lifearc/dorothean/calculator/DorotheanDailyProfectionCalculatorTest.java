@@ -50,8 +50,8 @@ class DorotheanDailyProfectionCalculatorTest {
         assertEquals(12, focus.yearInCycle());
         assertEquals(1, focus.monthInYear());
         assertEquals(1, focus.dayInMonth());
-        assertEquals(subject().getLocalBirthDateTime().plusYears(47), focus.periodStartDateTime());
-        assertEquals(subject().getLocalBirthDateTime().plusYears(47).plusDays(1), focus.periodEndDateTimeExclusive());
+        assertEquals(subject().getUtcBirthDateTime().plusYears(47), focus.periodStartDateTime());
+        assertEquals(subject().getUtcBirthDateTime().plusYears(47).plusDays(1), focus.periodEndDateTimeExclusive());
 
         DailyProfectionReferenceEntry asc = entry(focus, AnnualProfectionReference.ASCENDANT);
         assertEquals(ZodiacSign.PISCES, asc.natalSign());

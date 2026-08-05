@@ -36,7 +36,7 @@ final class ZodiacalReleasingL1AllLotsMarkdownRenderer {
                                OffsetDateTime activeDateTime) {
         out.append("## Summary\n\n");
         out.append("- Subject: `").append(subject.getId()).append("`\n");
-        out.append("- Birth date/time: `").append(format(subject.getLocalBirthDateTime())).append("`\n");
+        out.append("- Birth date/time (UTC): `").append(format(subject.getUtcBirthDateTime())).append("`\n");
         if (activeDateTime != null) {
             out.append("- Inquiry date/time: `").append(format(activeDateTime)).append("`\n");
         }
@@ -126,7 +126,7 @@ final class ZodiacalReleasingL1AllLotsMarkdownRenderer {
     }
 
     private String formatAge(Subject subject, OffsetDateTime dateTime) {
-        double ageYears = Duration.between(subject.getLocalBirthDateTime(), dateTime).toDays() / 365.2425;
+        double ageYears = Duration.between(subject.getUtcBirthDateTime(), dateTime).toDays() / 365.2425;
         return String.format(Locale.ROOT, "%.1f", ageYears);
     }
 }
