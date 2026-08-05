@@ -1,7 +1,7 @@
 package app.reading.description.common.model;
 
 import java.time.Instant;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 import app.chart.data.ZodiacSign;
 
 public record PrenatalSyzygyEntry(

@@ -26,7 +26,7 @@ import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 import app.reading.description.common.model.PrenatalSyzygyEntry;
 
 /**

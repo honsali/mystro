@@ -38,7 +38,7 @@ import app.reading.description.common.calculator.LotCalculatorHouseFixture;
 import app.reading.description.common.data.AphesisBasis;
 import app.reading.description.common.data.DignityType;
 import app.reading.description.common.data.SolarCondition;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 import app.reading.description.common.data.VitalityYearsTier;
 import app.reading.description.common.model.HylegAlcocodenEntry;
 import app.reading.description.common.model.LotEntry;

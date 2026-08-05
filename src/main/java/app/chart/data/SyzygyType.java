@@ -1,4 +1,4 @@
-package app.reading.description.common.data;
+package app.chart.data;
 
 public enum SyzygyType {
     NEW_MOON,

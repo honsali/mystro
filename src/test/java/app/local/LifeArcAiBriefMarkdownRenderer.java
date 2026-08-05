@@ -17,7 +17,7 @@ import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
 import app.chart.model.NatalChart;
 import app.chart.model.Subject;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 import app.reading.description.common.model.LotEntry;
 import app.reading.lifearc.decennial.DecennialPeriod;
 import app.reading.lifearc.decennial.DecennialRulerCondition;

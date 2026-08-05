@@ -21,9 +21,11 @@ import app.chart.model.NatalChart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 import app.ephemeris.SweConst;
 import app.ephemeris.SwissEphAdapter;
+import app.chart.search.SyzygyEventSearch;
+import app.chart.search.SyzygyEventSearch.SyzygyEvent;
 
 public final class LunarTimingCalculator {
     public static final String METHOD_ID = "LUNAR_RETURNS_LUNATIONS_AND_ECLIPSES_V3";
@@ -37,7 +39,6 @@ public final class LunarTimingCalculator {
     private static final double MEAN_TROPICAL_YEAR_DAYS = 365.2422;
     private static final double NANOS_PER_TROPICAL_YEAR = MEAN_TROPICAL_YEAR_DAYS * 86_400_000_000_000.0;
     private static final double SIDEREAL_LUNAR_MONTH_DAYS = 27.321661547;
-    private static final double SYNODIC_HALF_MONTH_DAYS = 14.765294;
     private static final double ROOT_DEGREE_TOLERANCE = 1.0e-9;
     private static final double SCAN_STEP_DAYS = 0.25;
     private static final double ECLIPSE_SEARCH_MARGIN_DAYS = 1.0;
@@ -51,6 +52,7 @@ public final class LunarTimingCalculator {
             Terms.EGYPTIAN,
             Triplicity.DOROTHEAN
     );
+    private static final SyzygyEventSearch SYZYGY_EVENT_SEARCH = new SyzygyEventSearch();
 
     public LunarTimingTable calculateTable(Subject subject, NatalChart natalChart, LocalDate inquiryDate,
                                            int ageStartYears, int ageEndYearsInclusive) {
@@ -197,11 +199,11 @@ public final class LunarTimingCalculator {
     private List<LunationEntry> lunations(Subject subject, NatalChart natalChart, CalculationContext ephemerisContext,
                                           OffsetDateTime activeDateTime,
                                           double coverageStartJulianDay, double coverageEndJulianDay) {
-        List<SyzygyInstant> instants = syzygyInstants(ephemerisContext, coverageStartJulianDay, coverageEndJulianDay);
+        List<SyzygyEvent> instants = syzygyInstants(ephemerisContext, coverageStartJulianDay, coverageEndJulianDay);
         List<LunationEntry> entries = new ArrayList<>();
         int sequenceIndex = 1;
         for (int i = 0; i < instants.size() - 1; i++) {
-            SyzygyInstant current = instants.get(i);
+            SyzygyEvent current = instants.get(i);
             if (current.julianDay() < coverageStartJulianDay - ROOT_DEGREE_TOLERANCE) {
                 continue;
             }
@@ -214,100 +216,22 @@ public final class LunarTimingCalculator {
         return List.copyOf(entries);
     }
 
-    private List<SyzygyInstant> syzygyInstants(CalculationContext ephemerisContext,
-                                               double coverageStartJulianDay, double coverageEndJulianDay) {
-        SyzygyInstant previous = previousSyzygy(coverageStartJulianDay, ephemerisContext);
-        List<SyzygyInstant> instants = new ArrayList<>();
+    private List<SyzygyEvent> syzygyInstants(CalculationContext ephemerisContext,
+                                             double coverageStartJulianDay, double coverageEndJulianDay) {
+        SyzygyEvent previous = SYZYGY_EVENT_SEARCH.previous(coverageStartJulianDay, ephemerisContext);
+        List<SyzygyEvent> instants = new ArrayList<>();
         instants.add(previous);
-        SyzygyInstant current = previous;
-        while (current.julianDay() < coverageEndJulianDay + SYNODIC_HALF_MONTH_DAYS + 2.0) {
-            double targetElongation = current.targetElongation() + 180.0;
-            double approximateJulianDay = current.julianDay() + SYNODIC_HALF_MONTH_DAYS;
-            double julianDay = findSyzygyJulianDay(ephemerisContext, targetElongation, approximateJulianDay);
-            current = new SyzygyInstant(syzygyTypeFor(targetElongation), targetElongation, julianDay);
+        SyzygyEvent current = previous;
+        while (current.julianDay() < coverageEndJulianDay) {
+            current = SYZYGY_EVENT_SEARCH.next(current, ephemerisContext);
             instants.add(current);
         }
         return List.copyOf(instants);
     }
 
-    private SyzygyInstant previousSyzygy(double startJulianDay, CalculationContext ephemerisContext) {
-        double laterJulianDay = startJulianDay;
-        double laterElongation = lunarElongation(laterJulianDay, ephemerisContext);
-
-        for (double earlierJulianDay = startJulianDay - SCAN_STEP_DAYS;
-             earlierJulianDay >= startJulianDay - 35.0;
-             earlierJulianDay -= SCAN_STEP_DAYS) {
-            double earlierElongation = unwrapBackward(lunarElongation(earlierJulianDay, ephemerisContext), laterElongation);
-            Double targetElongation = crossedSyzygyElongation(earlierElongation, laterElongation, laterJulianDay == startJulianDay);
-            if (targetElongation != null) {
-                double julianDay = refineSyzygy(earlierJulianDay, laterJulianDay, targetElongation, ephemerisContext);
-                return new SyzygyInstant(syzygyTypeFor(targetElongation), targetElongation, julianDay);
-            }
-            laterJulianDay = earlierJulianDay;
-            laterElongation = earlierElongation;
-        }
-        throw new IllegalArgumentException("Could not find previous syzygy within 35 days");
-    }
-
-    private Double crossedSyzygyElongation(double earlierElongation, double laterElongation, boolean initialInterval) {
-        double targetElongation = Math.floor(laterElongation / 180.0) * 180.0;
-        if (initialInterval && Math.abs(laterElongation - targetElongation) < ROOT_DEGREE_TOLERANCE) {
-            targetElongation -= 180.0;
-        }
-        return targetElongation >= earlierElongation && targetElongation <= laterElongation ? targetElongation : null;
-    }
-
-    private double findSyzygyJulianDay(CalculationContext ephemerisContext, double targetElongation, double approximateJulianDay) {
-        for (double radiusDays : List.of(2.0, 4.0, 8.0)) {
-            double low = approximateJulianDay - radiusDays;
-            double high = approximateJulianDay + radiusDays;
-            double lowValue = unwrappedLunarElongation(low, targetElongation, ephemerisContext) - targetElongation;
-            double highValue = unwrappedLunarElongation(high, targetElongation, ephemerisContext) - targetElongation;
-            if (Math.abs(lowValue) <= ROOT_DEGREE_TOLERANCE) {
-                return low;
-            }
-            if (Math.abs(highValue) <= ROOT_DEGREE_TOLERANCE) {
-                return high;
-            }
-            if (lowValue <= 0.0 && highValue >= 0.0) {
-                return refineSyzygy(low, high, targetElongation, ephemerisContext);
-            }
-        }
-        throw new IllegalArgumentException("Could not bracket syzygy target elongation " + targetElongation);
-    }
-
-    private double refineSyzygy(double lowJulianDay, double highJulianDay, double targetElongation,
-                                CalculationContext ephemerisContext) {
-        double low = lowJulianDay;
-        double high = highJulianDay;
-        double lowValue = unwrappedLunarElongation(low, targetElongation, ephemerisContext) - targetElongation;
-        double highValue = unwrappedLunarElongation(high, targetElongation, ephemerisContext) - targetElongation;
-        if (Math.abs(lowValue) <= ROOT_DEGREE_TOLERANCE) {
-            return low;
-        }
-        if (Math.abs(highValue) <= ROOT_DEGREE_TOLERANCE) {
-            return high;
-        }
-        for (int i = 0; i < BISECTION_STEPS; i++) {
-            double middle = (low + high) / 2.0;
-            double middleValue = unwrappedLunarElongation(middle, targetElongation, ephemerisContext) - targetElongation;
-            if (Math.abs(middleValue) <= ROOT_DEGREE_TOLERANCE) {
-                return middle;
-            }
-            if (middleValue < 0.0) {
-                low = middle;
-                lowValue = middleValue;
-            } else {
-                high = middle;
-                highValue = middleValue;
-            }
-        }
-        return Math.abs(lowValue) < Math.abs(highValue) ? low : high;
-    }
-
     private LunationEntry lunationEntry(int sequenceIndex, Subject subject, NatalChart natalChart,
                                         CalculationContext ephemerisContext, OffsetDateTime activeDateTime,
-                                        SyzygyInstant current, SyzygyInstant next) {
+                                        SyzygyEvent current, SyzygyEvent next) {
         double sunLongitude = ephemerisContext.longitudeFor(Planet.SUN, SweConst.SE_SUN, current.julianDay());
         double moonLongitude = ephemerisContext.longitudeFor(Planet.MOON, SweConst.SE_MOON, current.julianDay());
         double moonLatitude = ephemerisContext.latitudeFor(Planet.MOON, SweConst.SE_MOON, current.julianDay());
@@ -1007,36 +931,6 @@ public final class LunarTimingCalculator {
                 || (leftDifference >= 0.0 && rightDifference <= 0.0);
     }
 
-    private double lunarElongation(double julianDay, CalculationContext ephemerisContext) {
-        double sunLongitude = ephemerisContext.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
-        double moonLongitude = ephemerisContext.longitudeFor(Planet.MOON, SweConst.SE_MOON, julianDay);
-        return AstroMath.normalize(moonLongitude - sunLongitude);
-    }
-
-    private double unwrappedLunarElongation(double julianDay, double referenceElongation,
-                                            CalculationContext ephemerisContext) {
-        double elongation = lunarElongation(julianDay, ephemerisContext);
-        while (elongation - referenceElongation > 180.0) {
-            elongation -= 360.0;
-        }
-        while (elongation - referenceElongation <= -180.0) {
-            elongation += 360.0;
-        }
-        return elongation;
-    }
-
-    private double unwrapBackward(double earlierElongation, double laterElongation) {
-        while (earlierElongation > laterElongation) {
-            earlierElongation -= 360.0;
-        }
-        return earlierElongation;
-    }
-
-    private SyzygyType syzygyTypeFor(double targetElongation) {
-        long halfCycle = Math.round(targetElongation / 180.0);
-        return Math.floorMod(halfCycle, 2) == 0 ? SyzygyType.NEW_MOON : SyzygyType.FULL_MOON;
-    }
-
     private OffsetDateTime activeDateTime(Subject subject, LocalDate inquiryDate) {
         if (inquiryDate == null) {
             return null;
@@ -1093,8 +987,6 @@ public final class LunarTimingCalculator {
     }
 
     private record ReturnInstant(int returnNumber, double julianDay, Instant instant, OffsetDateTime dateTime) {}
-
-    private record SyzygyInstant(SyzygyType type, double targetElongation, double julianDay) {}
 
     private record EclipseContactSpec(int index, EclipseContactPhase phase, ZoneOffset outputOffset) {}
 

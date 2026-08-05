@@ -1,22 +1,31 @@
-# Test-data privacy policy
+# Test-Data Privacy Policy
 
-Mystro's committed tests and documentation must use synthetic, non-personal natal data only.
+> Documentation axis: which data may be committed as tests, oracles, examples, and snapshots.
 
-## Canonical synthetic fixture
+## Allowed fixtures
 
-Calculation tests share `app.testing.SyntheticTestData`, which uses the conventional J2000
-reference date and Greenwich. This fixture does not describe a Mystro user. Tests that need a
-different boundary condition may define another fixture only when its synthetic purpose is clear
-from the identifier and surrounding test.
+Committed calculation tests use synthetic, non-personal data. The canonical reusable fixture is
+`app.testing.SyntheticTestData`, based on the conventional J2000 instant and Greenwich.
 
-## Never commit
+A boundary test may define a different date or location when its synthetic purpose is explicit in
+the test identifier. Fixed Swiss Ephemeris oracle rows are allowed when they are documented as
+synthetic regression cases.
 
-- real names or aliases connected to natal data;
-- real birth dates, birth times, or birth coordinates;
-- `native-list.json` or generated files under `output/`;
-- session transcripts, assistant memory, private notes, or copied user prompts;
-- snapshots generated from a real natal chart, even if the name is removed.
+## Local-only data
 
-Before publishing, search the complete working tree for the private alias and each identifying
-field separately. Renaming a subject is not anonymization because a natal chart can fingerprint
-the underlying birth data.
+The following data stays local and Git-ignored:
+
+- a real name or alias connected to natal data;
+- a real birth date, birth time, UTC offset, or birth coordinates;
+- `native-list.json`;
+- generated files under `output/`;
+- snapshots derived from a real natal chart, even after removing the name;
+- assistant transcripts, session memory, private prompts, or local notes.
+
+The combined birth instant and coordinates can identify the underlying chart even when its subject
+name changes.
+
+## Review rule
+
+When a test needs data outside the canonical fixture, reviewers must be able to understand from the
+code alone why the values are synthetic and which boundary they exercise.

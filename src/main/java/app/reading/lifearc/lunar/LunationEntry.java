@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 
 import app.chart.data.Planet;
 import app.chart.data.ZodiacSign;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 
 public record LunationEntry(
         int sequenceIndex,

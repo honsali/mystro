@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import app.chart.data.Planet;
 import app.chart.data.ZodiacSign;
 import app.chart.model.Subject;
-import app.reading.description.common.data.SyzygyType;
+import app.chart.data.SyzygyType;
 import app.reading.lifearc.lunar.EclipseCandidateType;
 import app.reading.lifearc.lunar.EclipseContact;
 import app.reading.lifearc.lunar.EclipseEvent;

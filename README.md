@@ -1,30 +1,33 @@
 # Mystro
 
-Mystro is an offline Java command-line calculation engine for traditional astrology. The current
-application loads one alias from a local `native-list.json`, calculates a Valens-led natal
-description, and writes `output/<alias>/reading_output.json`.
+Mystro is an offline Java 25 calculation engine for traditional astrology. It reads one local
+subject by alias, produces a Valens-led natal reading bundle, and writes calculated evidence for
+use by humans or an external AI assistant.
+
+> Documentation axis: installation and first successful run only.
 
 ## Requirements
 
-- Java 25
-- Maven 3.9 or newer
-- `org.swisseph:swisseph-java-ffm:0.2.0`
-- Swiss Ephemeris C 2.10.03 shared library:
-  - `dll/swedll64.dll` on Windows
-  - `dll/libswe.so` on Linux
-  - `dll/libswe.dylib` on macOS
-- Swiss Ephemeris runtime data in `ephe/`
+- JDK 25;
+- Maven 3.9 or newer;
+- `org.swisseph:swisseph-java-ffm:0.3.0` from GitHub Packages;
+- Swiss Ephemeris C 2.10.03 native library;
+- Swiss Ephemeris data files.
 
-The legacy-compatible `libs/` directory is also searched. The native library can instead be configured with
-`-Dswisseph.library.path=<absolute-path>` or the `SWISSEPH_LIBRARY` environment variable. Native
-access must be enabled with `--enable-native-access=ALL-UNNAMED`. Mystro's shaded executable JAR
-declares this access in its manifest; Maven-based launches still need `MAVEN_OPTS`. The native
-binary and the `ephe/` data are not supplied by the Java binding.
+From the repository root, provide the platform library and ephemeris data locally:
 
-The Java dependency is resolved from GitHub Packages. Version `0.2.0` must be published there
-before building Mystro in a fresh Maven environment. That environment must authenticate the
-repository id `github` in its Maven settings until the artifact is also published to a repository
-that supports anonymous Maven downloads.
+```text
+dll/swedll64.dll     # Windows
+dll/libswe.so        # Linux
+dll/libswe.dylib     # macOS
+ephe/                # Swiss Ephemeris data
+```
+
+`dll/`, `ephe/`, and `native-list.json` are intentionally ignored by Git. The native library may
+instead be selected with `-Dswisseph.library.path=<absolute-path>` or the
+`SWISSEPH_LIBRARY` environment variable.
+
+GitHub Packages may require Maven credentials for repository id `github` in a fresh environment.
 
 ## Build and verify
 
@@ -35,9 +38,7 @@ mvn package -DskipTests
 
 ## Local input
 
-`native-list.json` is intentionally ignored. This synthetic example uses the J2000 reference date
-and Greenwich; replace it locally with the subject you want to calculate, but never commit real
-natal data.
+Create an ignored `native-list.json` in the repository root. This example is synthetic:
 
 ```json
 [
@@ -47,39 +48,41 @@ natal data.
     "birth_time": "12:00",
     "latitude": 51.4769,
     "longitude": 0.0,
+    "elevation_meters": 0.0,
     "utc_offset": "+00:00",
     "inquiry_date": "15/01/2025"
   }
 ]
 ```
 
-Run the natal JSON calculation:
+`birth_date` and `inquiry_date` use `dd/MM/yyyy`. `birth_time` accepts `HH:mm` or `HH:mm:ss`.
+`inquiry_date` and `elevation_meters` are optional.
+
+## Run the natal calculation
+
+POSIX shell:
 
 ```bash
 MAVEN_OPTS="--enable-native-access=ALL-UNNAMED" mvn -q compile exec:java -Dexec.args="demo"
 ```
 
-PowerShell equivalent:
+PowerShell:
 
 ```powershell
 $env:MAVEN_OPTS="--enable-native-access=ALL-UNNAMED"
 mvn -q compile exec:java '-Dexec.args=demo'
 ```
 
-Generate the gated local research packs:
+The result is written to `output/demo/reading_output.json`.
 
-```bash
-./run demo
-./run demo 15/06/2024
-```
+## Documentation map
 
-The Windows equivalents are `run.bat demo` and `run.bat demo 15/06/2024`.
+Each document owns one subject:
 
-## Documentation
-
-- `docs/PROJECT_VISION.md`
-- `docs/READING_TASKS_SPEC.md`
-- `docs/SPECIFICATION.md`
-- `docs/LOCAL_MODULE2_WORKFLOW.md`
-- `docs/TEST_DATA_POLICY.md`
-- `docs/PUBLISHING_CHECKLIST.md`
+- [Project vision](docs/PROJECT_VISION.md) — product purpose and boundaries;
+- [Reading tasks](docs/READING_TASKS_SPEC.md) — traditional-astrology task taxonomy;
+- [Technical specification](docs/SPECIFICATION.md) — current architecture and contracts;
+- [Local life-arc workflow](docs/LOCAL_MODULE2_WORKFLOW.md) — macro and zoom report generation;
+- [AI analysis questions](docs/QUESTIONS_ANALYSE_IA_FR.md) — downstream interpretation prompts;
+- [Test-data policy](docs/TEST_DATA_POLICY.md) — privacy rules for committed fixtures;
+- [Publishing checklist](docs/PUBLISHING_CHECKLIST.md) — repository publication checks.
