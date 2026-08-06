@@ -15,7 +15,7 @@ import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -43,7 +43,7 @@ public final class DorotheanAnnualProfectionCalculator {
             AnnualProfectionReference.LOT_SPIRIT
     );
 
-    public AnnualProfectionEntry calculate(Subject subject, NatalChart chart, LocalDate inquiryDate) {
+    public AnnualProfectionEntry calculate(Subject subject, Chart chart, LocalDate inquiryDate) {
         LocalDate birthDate = subject.getUtcBirthDateTime().toLocalDate();
         if (inquiryDate.isBefore(birthDate)) {
             throw new IllegalArgumentException("inquiryDate must be on or after birthDate");
@@ -85,7 +85,7 @@ public final class DorotheanAnnualProfectionCalculator {
         );
     }
 
-    public AnnualProfectionTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public AnnualProfectionTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                 int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");
@@ -118,7 +118,7 @@ public final class DorotheanAnnualProfectionCalculator {
         );
     }
 
-    private AnnualProfectionTableRow tableRow(NatalChart chart, LocalDate birthDate, int ageYears, int activeAgeYears) {
+    private AnnualProfectionTableRow tableRow(Chart chart, LocalDate birthDate, int ageYears, int activeAgeYears) {
         LocalDate startDate = birthAnniversary(birthDate, birthDate.getYear() + ageYears);
         LocalDate endDate = birthAnniversary(birthDate, birthDate.getYear() + ageYears + 1);
         int yearInCycle = Math.floorMod(ageYears, 12) + 1;
@@ -140,7 +140,7 @@ public final class DorotheanAnnualProfectionCalculator {
         );
     }
 
-    private AnnualProfectionReferenceEntry referenceProfection(NatalChart chart, AnnualProfectionReference reference, int ageYears) {
+    private AnnualProfectionReferenceEntry referenceProfection(Chart chart, AnnualProfectionReference reference, int ageYears) {
         ZodiacSign natalSign = natalSign(chart, reference);
         ZodiacSign profectedSign = advanceSign(natalSign, ageYears);
         Planet lord = TraditionalTables.domicileRuler(profectedSign);
@@ -153,7 +153,7 @@ public final class DorotheanAnnualProfectionCalculator {
         );
     }
 
-    private ZodiacSign natalSign(NatalChart chart, AnnualProfectionReference reference) {
+    private ZodiacSign natalSign(Chart chart, AnnualProfectionReference reference) {
         return switch (reference) {
             case ASCENDANT -> sign(point(chart, PointKey.ASCENDANT));
             case MIDHEAVEN -> sign(point(chart, PointKey.MIDHEAVEN));
@@ -164,7 +164,7 @@ public final class DorotheanAnnualProfectionCalculator {
         };
     }
 
-    private PointEntry point(NatalChart chart, PointKey point) {
+    private PointEntry point(Chart chart, PointKey point) {
         PointEntry entry = chart.getPoints().get(point);
         if (entry == null) {
             throw new IllegalArgumentException("Missing natal point " + point);
@@ -172,7 +172,7 @@ public final class DorotheanAnnualProfectionCalculator {
         return entry;
     }
 
-    private ZodiacSign lotSign(NatalChart chart, String lotName) {
+    private ZodiacSign lotSign(Chart chart, String lotName) {
         if (chart.getLots() == null) {
             throw new IllegalArgumentException("Missing natal lots");
         }
@@ -202,7 +202,7 @@ public final class DorotheanAnnualProfectionCalculator {
         return MonthDay.from(birthDate).atYear(year);
     }
 
-    private ZodiacSign signForHouse(NatalChart chart, int house) {
+    private ZodiacSign signForHouse(Chart chart, int house) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getHouse() == house)
                 .map(HousePosition::getSign)
@@ -210,7 +210,7 @@ public final class DorotheanAnnualProfectionCalculator {
                 .orElseThrow(() -> new IllegalArgumentException("Missing natal house " + house));
     }
 
-    private Integer houseForSign(NatalChart chart, ZodiacSign sign) {
+    private Integer houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)
@@ -218,7 +218,7 @@ public final class DorotheanAnnualProfectionCalculator {
                 .orElse(null);
     }
 
-    private List<ActivatedNatalPointEntry> activatedPoints(NatalChart chart, ZodiacSign activatedSign, Set<String> activeConditionRefs) {
+    private List<ActivatedNatalPointEntry> activatedPoints(Chart chart, ZodiacSign activatedSign, Set<String> activeConditionRefs) {
         List<ActivatedNatalPointEntry> entries = new ArrayList<>();
         for (Map.Entry<PointKey, PointEntry> pointEntry : chart.getPoints().entrySet()) {
             PointEntry point = pointEntry.getValue();
@@ -236,7 +236,7 @@ public final class DorotheanAnnualProfectionCalculator {
         return List.copyOf(entries);
     }
 
-    private List<ActivatedLotEntry> activatedLots(NatalChart chart, ZodiacSign activatedSign, Set<String> activeConditionRefs) {
+    private List<ActivatedLotEntry> activatedLots(Chart chart, ZodiacSign activatedSign, Set<String> activeConditionRefs) {
         if (chart.getLots() == null) {
             return List.of();
         }
@@ -245,8 +245,8 @@ public final class DorotheanAnnualProfectionCalculator {
             if (lot.sign() != activatedSign) {
                 continue;
             }
-            String lotAssessmentRef = lotAssessmentRef(lot.name());
-            activeConditionRefs.add(lotAssessmentRef);
+            String lotRef = lotRef(lot.name());
+            activeConditionRefs.add(lotRef);
             activeConditionRefs.add(planetRef(lot.ruler()));
             entries.add(new ActivatedLotEntry(
                     lot.name(),
@@ -255,13 +255,13 @@ public final class DorotheanAnnualProfectionCalculator {
                     lot.sign(),
                     lot.house(),
                     lot.ruler(),
-                    lotAssessmentRef
+                    lotRef
             ));
         }
         return List.copyOf(entries);
     }
 
-    private List<ActivatedTopicAssessmentRef> activatedTopicAssessmentRefs(NatalChart chart, Set<String> activeConditionRefs) {
+    private List<ActivatedTopicAssessmentRef> activatedTopicAssessmentRefs(Chart chart, Set<String> activeConditionRefs) {
         if (chart.getTopicAssessments() == null) {
             return List.of();
         }
@@ -291,7 +291,7 @@ public final class DorotheanAnnualProfectionCalculator {
         throw new IllegalArgumentException("Unsupported point entry " + point.getClass().getName());
     }
 
-    private Integer house(PointEntry point, NatalChart chart, ZodiacSign sign) {
+    private Integer house(PointEntry point, Chart chart, ZodiacSign sign) {
         if (point instanceof PlanetPointEntry planetPoint) {
             return planetPoint.house();
         }
@@ -327,8 +327,8 @@ public final class DorotheanAnnualProfectionCalculator {
         return planet.name();
     }
 
-    private String lotAssessmentRef(String lotName) {
-        return "lotAssessments.lot=" + lotName;
+    private String lotRef(String lotName) {
+        return "lots.name=" + lotName;
     }
 
     private record AnnualPeriod(LocalDate startDate, LocalDate endDateExclusive, int ageYears) {}

@@ -7,8 +7,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Objects;
-import org.swisseph.ffm.CalendarType;
 import org.swisseph.ffm.CalculationFlag;
+import org.swisseph.ffm.CalendarType;
 import org.swisseph.ffm.EclipseResult;
 import org.swisseph.ffm.EphemerisPosition;
 import org.swisseph.ffm.FixedStarPosition;
@@ -26,9 +26,10 @@ import org.swisseph.ffm.SwissEphException;
 /**
  * Transitional Mystro adapter over {@code swisseph-java-ffm}.
  *
- * <p>It preserves the raw array-oriented call shape currently used by the
- * calculation layer while delegating every astronomical operation to Swiss
- * Ephemeris C 2.10.03 through the FFM binding.</p>
+ * <p>
+ * It preserves the raw array-oriented call shape currently used by the calculation layer while
+ * delegating every astronomical operation to Swiss Ephemeris C 2.10.03 through the FFM binding.
+ * </p>
  */
 public final class SwissEphAdapter {
     private static final double JULIAN_DAY_AT_UNIX_EPOCH = 2440587.5;
@@ -39,7 +40,10 @@ public final class SwissEphAdapter {
     private static final Object TOPOCENTRIC_CALCULATION_LOCK = new Object();
     private static final SwissEph NATIVE = loadNativeLibrary();
 
-    /** Converts the application's canonical UTC instant to the UT1 Julian day expected by Swiss Ephemeris. */
+    /**
+     * Converts the application's canonical UTC instant to the UT1 Julian day expected by Swiss
+     * Ephemeris.
+     */
     public static double utcToJulianDayUt(Instant utcInstant) {
         Objects.requireNonNull(utcInstant, "utcInstant");
         OffsetDateTime utc = utcInstant.atOffset(ZoneOffset.UTC);
@@ -66,229 +70,6 @@ public final class SwissEphAdapter {
             estimate = estimate.plusNanos(correctionNanos);
         }
         return roundToJulianDayResolution(estimate);
-    }
-
-    public int swe_calc_ut(double julianDayUt, int bodyId, int flags,
-                           double[] values, StringBuilder error) {
-        return calculateUt(julianDayUt, bodyId, flags, values, error);
-    }
-
-    /**
-     * Configures the native observer and calculates a topocentric position as one atomic operation.
-     * Swiss Ephemeris stores the observer globally, so calls for different subjects must not interleave.
-     */
-    public int swe_calc_ut_topocentric(double julianDayUt, int bodyId, int flags,
-                                        double observerLongitude, double observerLatitude,
-                                        double observerAltitudeMeters,
-                                        double[] values, StringBuilder error) {
-        synchronized (TOPOCENTRIC_CALCULATION_LOCK) {
-            NATIVE.setTopocentricPosition(
-                    observerLongitude,
-                    observerLatitude,
-                    observerAltitudeMeters);
-            return calculateUt(
-                    julianDayUt,
-                    bodyId,
-                    flags | CalculationFlag.TOPOCENTRIC.value(),
-                    values,
-                    error);
-        }
-    }
-
-    private int calculateUt(double julianDayUt, int bodyId, int flags,
-                            double[] values, StringBuilder error) {
-        try {
-            EphemerisPosition position = NATIVE.calculateUt(
-                    julianDayUt, bodyId, calculationFlags(flags));
-            copyPosition(position, values);
-            append(error, position.warning());
-            return position.returnedFlags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public void swe_set_ephe_path(String path) {
-        NATIVE.setEphemerisPath(path);
-    }
-
-    public double swe_deltat(double julianDayUt) {
-        return NATIVE.deltaT(julianDayUt);
-    }
-
-    public int swe_pheno_ut(double julianDayUt, int bodyId, int flags,
-                            double[] attributes, StringBuilder error) {
-        try {
-            PlanetaryPhenomena result = NATIVE.phenomenaUt(julianDayUt, bodyId, flags);
-            copy(result.attributes(), attributes);
-            append(error, result.warning());
-            return SweConstants.OK;
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_houses_ex(double julianDayUt, int flags, double latitude,
-                             double longitude, int houseSystemCode,
-                             double[] cusps, double[] additionalPoints) {
-        try {
-            HouseCusps result = NATIVE.housesEx(
-                    julianDayUt, flags, latitude, longitude, houseSystem(houseSystemCode));
-            copy(result.cusps(), cusps);
-            copy(result.additionalPoints(), additionalPoints);
-            return SweConstants.OK;
-        } catch (SwissEphException | IllegalArgumentException exception) {
-            return SweConstants.ERR;
-        }
-    }
-
-    public void swe_azalt(double julianDayUt, int coordinateType, double[] geographicPosition,
-                          double atmosphericPressure, double atmosphericTemperature,
-                          double[] input, double[] output) {
-        HorizontalCoordinates result = NATIVE.azimuthAltitude(
-                julianDayUt,
-                coordinateType == SweConstants.SE_ECL2HOR
-                        ? HorizontalCoordinateType.ECLIPTIC
-                        : HorizontalCoordinateType.EQUATORIAL,
-                geographicPosition(geographicPosition),
-                atmosphericPressure,
-                atmosphericTemperature,
-                input[0], input[1], input[2]);
-        output[0] = result.azimuth();
-        output[1] = result.trueAltitude();
-        output[2] = result.apparentAltitude();
-    }
-
-    public int swe_fixstar_ut(StringBuilder star, double julianDayUt, int flags,
-                              double[] values, StringBuilder error) {
-        try {
-            FixedStarPosition result = NATIVE.fixedStarUt(julianDayUt, star.toString(), flags);
-            star.setLength(0);
-            star.append(result.name());
-            copyPosition(result.position(), values);
-            append(error, result.position().warning());
-            return result.position().returnedFlags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_rise_trans(double startJulianDayUt, int bodyId, StringBuilder star,
-                              int ephemerisFlags, int eventFlags, double[] geographicPosition,
-                              double atmosphericPressure, double atmosphericTemperature,
-                              DoubleRef result, StringBuilder error) {
-        try {
-            RiseTransitResult nativeResult = star == null || star.isEmpty()
-                    ? NATIVE.riseTransit(
-                            startJulianDayUt, bodyId, ephemerisFlags, eventFlags,
-                            geographicPosition(geographicPosition), atmosphericPressure,
-                            atmosphericTemperature)
-                    : NATIVE.riseTransit(
-                            startJulianDayUt, star.toString(), ephemerisFlags, eventFlags,
-                            geographicPosition(geographicPosition), atmosphericPressure,
-                            atmosphericTemperature);
-            append(error, nativeResult.message());
-            result.value = nativeResult.julianDayUt();
-            return nativeResult.found() ? SweConstants.OK : -2;
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_sol_eclipse_when_glob(double startJulianDayUt, int ephemerisFlags,
-                                          int eclipseTypeFlags, double[] times, int backward,
-                                          StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.solarEclipseWhenGlobal(
-                    startJulianDayUt, ephemerisFlags, eclipseTypeFlags, backward != 0);
-            copyEclipse(result, times, null, null, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_sol_eclipse_when_loc(double startJulianDayUt, int ephemerisFlags,
-                                         double[] geographicPosition, double[] times,
-                                         double[] attributes, int backward, StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.solarEclipseWhenLocal(
-                    startJulianDayUt, ephemerisFlags,
-                    geographicPosition(geographicPosition), backward != 0);
-            copyEclipse(result, times, attributes, null, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_sol_eclipse_where(double julianDayUt, int ephemerisFlags,
-                                      double[] geographicPositions, double[] attributes,
-                                      StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.solarEclipseWhere(julianDayUt, ephemerisFlags);
-            copyEclipse(result, null, attributes, geographicPositions, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_sol_eclipse_how(double julianDayUt, int ephemerisFlags,
-                                    double[] geographicPosition, double[] attributes,
-                                    StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.solarEclipseHow(
-                    julianDayUt, ephemerisFlags, geographicPosition(geographicPosition));
-            copyEclipse(result, null, attributes, null, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_lun_eclipse_when(double startJulianDayUt, int ephemerisFlags,
-                                     int eclipseTypeFlags, double[] times, int backward,
-                                     StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.lunarEclipseWhen(
-                    startJulianDayUt, ephemerisFlags, eclipseTypeFlags, backward != 0);
-            copyEclipse(result, times, null, null, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_lun_eclipse_when_loc(double startJulianDayUt, int ephemerisFlags,
-                                         double[] geographicPosition, double[] times,
-                                         double[] attributes, int backward, StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.lunarEclipseWhenLocal(
-                    startJulianDayUt, ephemerisFlags,
-                    geographicPosition(geographicPosition), backward != 0);
-            copyEclipse(result, times, attributes, null, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public int swe_lun_eclipse_how(double julianDayUt, int ephemerisFlags,
-                                    double[] geographicPosition, double[] attributes,
-                                    StringBuilder error) {
-        try {
-            EclipseResult result = NATIVE.lunarEclipseHow(
-                    julianDayUt, ephemerisFlags, geographicPosition(geographicPosition));
-            copyEclipse(result, null, attributes, null, error);
-            return result.flags();
-        } catch (SwissEphException exception) {
-            return failure(error, exception);
-        }
-    }
-
-    public String version() {
-        return NATIVE.version();
     }
 
     private static SwissEph loadNativeLibrary() {
@@ -394,8 +175,8 @@ public final class SwissEphAdapter {
     }
 
     private static void copyEclipse(EclipseResult result, double[] times,
-                                    double[] attributes, double[] geographicPositions,
-                                    StringBuilder error) {
+            double[] attributes, double[] geographicPositions,
+            StringBuilder error) {
         copy(result.times(), times);
         copy(result.attributes(), attributes);
         copy(result.geographicPositions(), geographicPositions);
@@ -416,6 +197,230 @@ public final class SwissEphAdapter {
     private static void append(StringBuilder target, String message) {
         if (target != null && message != null && !message.isBlank()) {
             target.append(message);
+        }
+    }
+
+    public int swe_calc_ut(double julianDayUt, int bodyId, int flags,
+            double[] values, StringBuilder error) {
+        return calculateUt(julianDayUt, bodyId, flags, values, error);
+    }
+
+    /**
+     * Configures the native observer and calculates a topocentric position as one atomic operation.
+     * Swiss Ephemeris stores the observer globally, so calls for different subjects must not
+     * interleave.
+     */
+    public int swe_calc_ut_topocentric(double julianDayUt, int bodyId, int flags,
+            double observerLongitude, double observerLatitude,
+            double observerAltitudeMeters,
+            double[] values, StringBuilder error) {
+        synchronized (TOPOCENTRIC_CALCULATION_LOCK) {
+            NATIVE.setTopocentricPosition(
+                    observerLongitude,
+                    observerLatitude,
+                    observerAltitudeMeters);
+            return calculateUt(
+                    julianDayUt,
+                    bodyId,
+                    flags | CalculationFlag.TOPOCENTRIC.value(),
+                    values,
+                    error);
+        }
+    }
+
+    public void swe_set_ephe_path(String path) {
+        NATIVE.setEphemerisPath(path);
+    }
+
+    public double swe_deltat(double julianDayUt) {
+        return NATIVE.deltaT(julianDayUt);
+    }
+
+    public int swe_pheno_ut(double julianDayUt, int bodyId, int flags,
+            double[] attributes, StringBuilder error) {
+        try {
+            PlanetaryPhenomena result = NATIVE.phenomenaUt(julianDayUt, bodyId, flags);
+            copy(result.attributes(), attributes);
+            append(error, result.warning());
+            return SweConstants.OK;
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_houses_ex(double julianDayUt, int flags, double latitude,
+            double longitude, int houseSystemCode,
+            double[] cusps, double[] additionalPoints) {
+        try {
+            HouseCusps result = NATIVE.housesEx(
+                    julianDayUt, flags, latitude, longitude, houseSystem(houseSystemCode));
+            copy(result.cusps(), cusps);
+            copy(result.additionalPoints(), additionalPoints);
+            return SweConstants.OK;
+        } catch (SwissEphException | IllegalArgumentException exception) {
+            return SweConstants.ERR;
+        }
+    }
+
+    public void swe_azalt(double julianDayUt, int coordinateType, double[] geographicPosition,
+            double atmosphericPressure, double atmosphericTemperature,
+            double[] input, double[] output) {
+        HorizontalCoordinates result = NATIVE.azimuthAltitude(
+                julianDayUt,
+                coordinateType == SweConstants.SE_ECL2HOR
+                        ? HorizontalCoordinateType.ECLIPTIC
+                        : HorizontalCoordinateType.EQUATORIAL,
+                geographicPosition(geographicPosition),
+                atmosphericPressure,
+                atmosphericTemperature,
+                input[0], input[1], input[2]);
+        output[0] = result.azimuth();
+        output[1] = result.trueAltitude();
+        output[2] = result.apparentAltitude();
+    }
+
+    public int swe_fixstar_ut(StringBuilder star, double julianDayUt, int flags,
+            double[] values, StringBuilder error) {
+        try {
+            FixedStarPosition result = NATIVE.fixedStarUt(julianDayUt, star.toString(), flags);
+            star.setLength(0);
+            star.append(result.name());
+            copyPosition(result.position(), values);
+            append(error, result.position().warning());
+            return result.position().returnedFlags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_rise_trans(double startJulianDayUt, int bodyId, StringBuilder star,
+            int ephemerisFlags, int eventFlags, double[] geographicPosition,
+            double atmosphericPressure, double atmosphericTemperature,
+            DoubleRef result, StringBuilder error) {
+        try {
+            RiseTransitResult nativeResult = star == null || star.isEmpty()
+                    ? NATIVE.riseTransit(
+                            startJulianDayUt, bodyId, ephemerisFlags, eventFlags,
+                            geographicPosition(geographicPosition), atmosphericPressure,
+                            atmosphericTemperature)
+                    : NATIVE.riseTransit(
+                            startJulianDayUt, star.toString(), ephemerisFlags, eventFlags,
+                            geographicPosition(geographicPosition), atmosphericPressure,
+                            atmosphericTemperature);
+            append(error, nativeResult.message());
+            result.value = nativeResult.julianDayUt();
+            return nativeResult.found() ? SweConstants.OK : -2;
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_sol_eclipse_when_glob(double startJulianDayUt, int ephemerisFlags,
+            int eclipseTypeFlags, double[] times, int backward,
+            StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.solarEclipseWhenGlobal(
+                    startJulianDayUt, ephemerisFlags, eclipseTypeFlags, backward != 0);
+            copyEclipse(result, times, null, null, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_sol_eclipse_when_loc(double startJulianDayUt, int ephemerisFlags,
+            double[] geographicPosition, double[] times,
+            double[] attributes, int backward, StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.solarEclipseWhenLocal(
+                    startJulianDayUt, ephemerisFlags,
+                    geographicPosition(geographicPosition), backward != 0);
+            copyEclipse(result, times, attributes, null, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_sol_eclipse_where(double julianDayUt, int ephemerisFlags,
+            double[] geographicPositions, double[] attributes,
+            StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.solarEclipseWhere(julianDayUt, ephemerisFlags);
+            copyEclipse(result, null, attributes, geographicPositions, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_sol_eclipse_how(double julianDayUt, int ephemerisFlags,
+            double[] geographicPosition, double[] attributes,
+            StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.solarEclipseHow(
+                    julianDayUt, ephemerisFlags, geographicPosition(geographicPosition));
+            copyEclipse(result, null, attributes, null, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_lun_eclipse_when(double startJulianDayUt, int ephemerisFlags,
+            int eclipseTypeFlags, double[] times, int backward,
+            StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.lunarEclipseWhen(
+                    startJulianDayUt, ephemerisFlags, eclipseTypeFlags, backward != 0);
+            copyEclipse(result, times, null, null, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_lun_eclipse_when_loc(double startJulianDayUt, int ephemerisFlags,
+            double[] geographicPosition, double[] times,
+            double[] attributes, int backward, StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.lunarEclipseWhenLocal(
+                    startJulianDayUt, ephemerisFlags,
+                    geographicPosition(geographicPosition), backward != 0);
+            copyEclipse(result, times, attributes, null, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public int swe_lun_eclipse_how(double julianDayUt, int ephemerisFlags,
+            double[] geographicPosition, double[] attributes,
+            StringBuilder error) {
+        try {
+            EclipseResult result = NATIVE.lunarEclipseHow(
+                    julianDayUt, ephemerisFlags, geographicPosition(geographicPosition));
+            copyEclipse(result, null, attributes, null, error);
+            return result.flags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
+        }
+    }
+
+    public String version() {
+        return NATIVE.version();
+    }
+
+    private int calculateUt(double julianDayUt, int bodyId, int flags,
+            double[] values, StringBuilder error) {
+        try {
+            EphemerisPosition position = NATIVE.calculateUt(
+                    julianDayUt, bodyId, calculationFlags(flags));
+            copyPosition(position, values);
+            append(error, position.warning());
+            return position.returnedFlags();
+        } catch (SwissEphException exception) {
+            return failure(error, exception);
         }
     }
 }

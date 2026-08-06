@@ -6,13 +6,14 @@ import java.time.ZoneOffset;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public final class Subject {
-    private final String id;
-    private final OffsetDateTime localBirthDateTime;
-    private final Instant resolvedUtcInstant;
-    private final double latitude;
-    private final double longitude;
-    private final double elevationMeters;
+public record Subject(
+        String id,
+        OffsetDateTime localBirthDateTime,
+        Instant resolvedUtcInstant,
+        double latitude,
+        double longitude,
+        double elevationMeters
+) {
 
     public Subject(String id, OffsetDateTime localBirthDateTime, double latitude, double longitude) {
         this(id, localBirthDateTime, localBirthDateTime.toInstant(), latitude, longitude, 0.0);
@@ -23,47 +24,9 @@ public final class Subject {
         this(id, localBirthDateTime, localBirthDateTime.toInstant(), latitude, longitude, elevationMeters);
     }
 
-    public Subject(String id, OffsetDateTime localBirthDateTime, Instant resolvedUtcInstant, double latitude, double longitude) {
-        this(id, localBirthDateTime, resolvedUtcInstant, latitude, longitude, 0.0);
-    }
-
     public Subject(String id, OffsetDateTime localBirthDateTime, Instant resolvedUtcInstant,
-                   double latitude, double longitude, double elevationMeters) {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("Subject id is required");
-        }
-        if (localBirthDateTime == null) {
-            throw new IllegalArgumentException("Subject local birth date/time is required");
-        }
-        if (resolvedUtcInstant == null) {
-            throw new IllegalArgumentException("Subject resolved UTC instant is required");
-        }
-        if (!localBirthDateTime.toInstant().equals(resolvedUtcInstant)) {
-            throw new IllegalArgumentException(
-                    "Subject local birth date/time and resolved UTC instant must represent the same instant");
-        }
-        requireFinite("latitude", latitude);
-        requireFinite("longitude", longitude);
-        requireFinite("elevationMeters", elevationMeters);
-        if (latitude <= -90.0 || latitude >= 90.0) {
-            throw new IllegalArgumentException(
-                    "Latitude must be strictly between -90 and 90 degrees: " + latitude);
-        }
-        if (longitude < -180.0 || longitude > 180.0) {
-            throw new IllegalArgumentException("Longitude out of range: " + longitude);
-        }
-        this.id = id;
-        this.localBirthDateTime = localBirthDateTime;
-        this.resolvedUtcInstant = resolvedUtcInstant;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.elevationMeters = elevationMeters;
-    }
-
-    private static void requireFinite(String field, double value) {
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Subject " + field + " must be finite: " + value);
-        }
+                   double latitude, double longitude) {
+        this(id, localBirthDateTime, resolvedUtcInstant, latitude, longitude, 0.0);
     }
 
     public String getId() {
@@ -78,12 +41,6 @@ public final class Subject {
         return resolvedUtcInstant;
     }
 
-    /**
-     * Canonical birth date/time for every calculation after input resolution.
-     *
-     * <p>The original offset date/time remains available as input metadata through
-     * {@link #getLocalBirthDateTime()}.</p>
-     */
     @JsonIgnore
     public OffsetDateTime getUtcBirthDateTime() {
         return resolvedUtcInstant.atOffset(ZoneOffset.UTC);
@@ -100,5 +57,4 @@ public final class Subject {
     public double getElevationMeters() {
         return elevationMeters;
     }
-
 }

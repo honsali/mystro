@@ -9,7 +9,7 @@ import app.chart.CalculationContext;
 import app.chart.Calculator;
 import app.chart.data.Angularity;
 import app.chart.data.Planet;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.ephemeris.SweConst;
 
@@ -20,7 +20,7 @@ public class PlanetCalculator implements Calculator {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlanetCalculator.class);
 
-    public void calculate(NatalChart natalChart, CalculationContext ctx) {
+    public void calculate(Chart chart, CalculationContext ctx) {
         double julianDay = ctx.getFullJulianDay();
         double ascendant = AstroMath.normalize(ctx.getAscmc()[0]);
         double sunLongitude = ctx.longitudeFor(Planet.SUN, SweConst.SE_SUN, julianDay);
@@ -49,7 +49,7 @@ public class PlanetCalculator implements Calculator {
                 southNodeAltitude, southNodeAltitude >= 0.0, northNode.getSpeed(), southNodeMeanDailySpeed, Math.abs(northNode.getSpeed()) / southNodeMeanDailySpeed, northNode.getRetrograde(), house, wholeSignHouse, quadrantHouse, angularity(house), ctx.termRuler(southNodeLongitude, ctx.getTerms()),
                 angularDistance(southNodeLongitude, sunLongitude), ctx.antiscia(southNodeLongitude), ctx.contraAntiscia(southNodeLongitude));
         planets.add(southNodePlanet);
-        natalChart.setPlanets(planets);
+        chart.setPlanets(planets);
     }
 
     private void addPlanet(List<PlanetPosition> planets, Planet planet, int swissPlanetId, double julianDay, double ascendant, double sunLongitude, CalculationContext ctx) {

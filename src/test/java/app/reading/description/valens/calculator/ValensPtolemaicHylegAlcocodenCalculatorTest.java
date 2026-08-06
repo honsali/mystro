@@ -28,7 +28,7 @@ import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
 import app.chart.model.BasicSect;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
@@ -49,7 +49,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
 
     @Test
     void degreeZoneMakesCandidateEligibleOutsideProrogativeHouse() {
-        NatalChart chart = baseChart(100.0, Sect.DIURNAL);
+        Chart chart = baseChart(100.0, Sect.DIURNAL);
         chart.setPlanets(List.of(position(Planet.SUN, 124.0, 2, Angularity.SUCCEDENT), position(Planet.MOON, 250.0, 6, Angularity.SUCCEDENT), position(Planet.MERCURY, 200.0, 8, Angularity.SUCCEDENT), position(Planet.VENUS, 110.0, 5, Angularity.SUCCEDENT),
                 position(Planet.MARS, 40.0, 4, Angularity.SUCCEDENT), position(Planet.JUPITER, 10.0, 1, Angularity.SUCCEDENT), position(Planet.SATURN, 300.0, 10, Angularity.SUCCEDENT)));
         chart.setLots(List.of(fortune(250.0, 6)));
@@ -66,7 +66,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
 
     @Test
     void vitalityYearsUsesAngularityTierAndBeneficMaleficMinorYearModifiers() {
-        NatalChart chart = baseChart(0.0, Sect.DIURNAL);
+        Chart chart = baseChart(0.0, Sect.DIURNAL);
         chart.setPlanets(List.of(position(Planet.SUN, 40.0, 10, Angularity.SUCCEDENT), position(Planet.MOON, 190.0, 4, Angularity.SUCCEDENT), position(Planet.MERCURY, 300.0, 8, Angularity.SUCCEDENT), position(Planet.VENUS, 40.0, 10, Angularity.SUCCEDENT),
                 position(Planet.MARS, 130.0, 1, Angularity.SUCCEDENT), position(Planet.JUPITER, 160.0, 2, Angularity.SUCCEDENT), position(Planet.SATURN, 220.0, 7, Angularity.SUCCEDENT)));
         chart.setLots(List.of(fortune(250.0, 8)));
@@ -92,7 +92,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
 
     @Test
     void usesUnreversedPtolemaicFortuneAsFallbackCandidate() {
-        NatalChart chart = baseChart(100.0, Sect.NOCTURNAL);
+        Chart chart = baseChart(100.0, Sect.NOCTURNAL);
         chart.setPlanets(List.of(position(Planet.SUN, 10.0, 6, Angularity.SUCCEDENT), position(Planet.MOON, 40.0, 6, Angularity.SUCCEDENT), position(Planet.MERCURY, 200.0, 8, Angularity.SUCCEDENT), position(Planet.VENUS, 300.0, 8, Angularity.SUCCEDENT),
                 position(Planet.MARS, 220.0, 8, Angularity.SUCCEDENT), position(Planet.JUPITER, 10.0, 6, Angularity.SUCCEDENT), position(Planet.SATURN, 300.0, 8, Angularity.SUCCEDENT)));
         chart.setLots(List.of(fortune(70.0, 12)));
@@ -109,7 +109,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
 
     @Test
     void ptolemaicWaterTriplicityIncludesMarsAsCommonRuler() {
-        NatalChart chart = baseChart(210.0, Sect.NOCTURNAL);
+        Chart chart = baseChart(210.0, Sect.NOCTURNAL);
         chart.setPlanets(List.of(position(Planet.SUN, 80.0, 2, Angularity.SUCCEDENT), position(Planet.MOON, 40.0, 2, Angularity.SUCCEDENT), position(Planet.MERCURY, 90.0, 2, Angularity.SUCCEDENT), position(Planet.VENUS, 0.0, 2, Angularity.SUCCEDENT),
                 position(Planet.MARS, 210.0, 1, Angularity.SUCCEDENT), position(Planet.JUPITER, 30.0, 2, Angularity.SUCCEDENT), position(Planet.SATURN, 300.0, 2, Angularity.SUCCEDENT)));
         chart.setSyzygy(syzygy(80.0, 2));
@@ -124,7 +124,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
 
     @Test
     void ptolemaicWaterTriplicityIncludesSectCoRuler() {
-        NatalChart chart = baseChart(210.0, Sect.NOCTURNAL);
+        Chart chart = baseChart(210.0, Sect.NOCTURNAL);
         chart.setPlanets(List.of(position(Planet.SUN, 80.0, 2, Angularity.SUCCEDENT), position(Planet.MOON, 40.0, 2, Angularity.SUCCEDENT), position(Planet.MERCURY, 90.0, 2, Angularity.SUCCEDENT), position(Planet.VENUS, 0.0, 2, Angularity.SUCCEDENT),
                 position(Planet.MARS, 240.0, 2, Angularity.SUCCEDENT), position(Planet.JUPITER, 300.0, 2, Angularity.SUCCEDENT), position(Planet.SATURN, 300.0, 2, Angularity.SUCCEDENT)));
         chart.setSyzygy(syzygy(80.0, 2));
@@ -143,7 +143,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
         assertTier(Angularity.SUCCEDENT, VitalityYearsTier.MEAN, 45.0);
         assertTier(Angularity.CADENT, VitalityYearsTier.LEAST, 8.0);
 
-        NatalChart chart = chartForVenusTier(Angularity.SUCCEDENT, SolarCondition.UNDER_BEAMS);
+        Chart chart = chartForVenusTier(Angularity.SUCCEDENT, SolarCondition.UNDER_BEAMS);
         HylegAlcocodenEntry entry = calculator.calculate(ctx(), chart);
 
         assertEquals(1, entry.vitalityYears().modifiers().size());
@@ -159,8 +159,8 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
         assertEquals(baseYears, entry.vitalityYears().indicatedYears());
     }
 
-    private NatalChart chartForVenusTier(Angularity venusAngularity, SolarCondition venusSolarCondition) {
-        NatalChart chart = baseChart(0.0, Sect.DIURNAL);
+    private Chart chartForVenusTier(Angularity venusAngularity, SolarCondition venusSolarCondition) {
+        Chart chart = baseChart(0.0, Sect.DIURNAL);
         chart.setPlanets(List.of(position(Planet.SUN, 40.0, 10, Angularity.SUCCEDENT), position(Planet.MOON, 190.0, 4, Angularity.SUCCEDENT), position(Planet.MERCURY, 300.0, 8, Angularity.SUCCEDENT), position(Planet.VENUS, 40.0, 10, venusAngularity),
                 position(Planet.MARS, 10.0, 1, Angularity.SUCCEDENT), position(Planet.JUPITER, 280.0, 9, Angularity.SUCCEDENT), position(Planet.SATURN, 220.0, 7, Angularity.SUCCEDENT)));
         chart.setLots(List.of(fortune(250.0, 8)));
@@ -170,8 +170,8 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
         return chart;
     }
 
-    private NatalChart baseChart(double ascendant, Sect sect) {
-        NatalChart chart = new NatalChart();
+    private Chart baseChart(double ascendant, Sect sect) {
+        Chart chart = new Chart();
         chart.setAngles(List.of(new ChartAngle(AngleType.ASCENDANT, ascendant, AstroMath.signOf(ascendant), AstroMath.degreeInSign(ascendant))));
         chart.setSect(new BasicSect(sect, sect == Sect.DIURNAL ? Planet.SUN : Planet.MOON, sect == Sect.DIURNAL ? Planet.MOON : Planet.SUN, Planet.JUPITER, Planet.VENUS, Planet.SATURN, Planet.MARS, sect == Sect.DIURNAL, sect != Sect.DIURNAL, 1.0, -1.0, Map.of()));
         chart.setPoints(new LinkedHashMap<>());
@@ -188,7 +188,7 @@ class ValensPtolemaicHylegAlcocodenCalculatorTest {
     }
 
     private LotEntry fortune(double longitude, int house) {
-        return new LotEntry("FORTUNE", "Fortune", "valens", longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude), house, Planet.JUPITER, "test");
+        return new LotEntry("FORTUNE", "Fortune", "valens", longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude), house, Planet.JUPITER, "test", List.of());
     }
 
     private PrenatalSyzygyEntry syzygy(double longitude, int house) {

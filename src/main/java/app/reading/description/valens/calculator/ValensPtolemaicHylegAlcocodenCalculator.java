@@ -16,7 +16,7 @@ import app.chart.data.PointKey;
 import app.chart.data.Sect;
 import app.chart.data.Terms;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
@@ -36,7 +36,7 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
     private final SyzygyCalculator syzygyCalculator = new SyzygyCalculator();
     private final DoctrineLotMath lotMath = new DoctrineLotMath();
 
-    public HylegAlcocodenEntry calculate(CalculationContext ctx, NatalChart chart) {
+    public HylegAlcocodenEntry calculate(CalculationContext ctx, Chart chart) {
         boolean diurnal = chart.getSect().getSect() == Sect.DIURNAL;
         List<HylegAlcocodenEntry.HylegCandidate> candidates = candidates(ctx, chart, diurnal);
         HylegAlcocodenEntry.HylegCandidate selected = candidates.stream().filter(HylegAlcocodenEntry.HylegCandidate::eligible).findFirst().orElse(candidates.get(0));
@@ -50,7 +50,7 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
                 hyleg, alcocoden, vitalityYears(chart, alcocoden), List.copyOf(candidates));
     }
 
-    private List<HylegAlcocodenEntry.HylegCandidate> candidates(CalculationContext ctx, NatalChart chart, boolean diurnal) {
+    private List<HylegAlcocodenEntry.HylegCandidate> candidates(CalculationContext ctx, Chart chart, boolean diurnal) {
         List<HylegAlcocodenEntry.HylegCandidate> candidates = new ArrayList<>();
         if (diurnal) {
             addPlanetCandidate(candidates, chart, Planet.SUN, "Sect light checked first in a diurnal nativity.");
@@ -65,29 +65,29 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
         return candidates;
     }
 
-    private void addPlanetCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, NatalChart chart, Planet planet, String eligibleReason) {
+    private void addPlanetCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, Chart chart, Planet planet, String eligibleReason) {
         PlanetPosition position = chart.requirePlanet(planet);
         candidates.add(candidate(chart, planet.name(), position.getLongitude(), position.getHouse(), eligibleReason));
     }
 
-    private void addSyzygyCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, CalculationContext ctx, NatalChart chart) {
+    private void addSyzygyCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, CalculationContext ctx, Chart chart) {
         PrenatalSyzygyEntry syzygy = chart.getSyzygy() == null ? syzygyCalculator.calculate(ctx) : chart.getSyzygy();
         double asc = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
         candidates.add(candidate(chart, "PRENATAL_SYZYGY", syzygy.longitude(), ctx.houseOf(syzygy.longitude(), asc), "Prenatal syzygy checked after the luminaries."));
     }
 
-    private void addAngleCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, NatalChart chart) {
+    private void addAngleCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, Chart chart) {
         double asc = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
         candidates.add(candidate(chart, "ASCENDANT", asc, 1, "Ascendant checked after luminaries and syzygy."));
     }
 
-    private void addFortuneCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, CalculationContext ctx, NatalChart chart) {
+    private void addFortuneCandidate(List<HylegAlcocodenEntry.HylegCandidate> candidates, CalculationContext ctx, Chart chart) {
         double asc = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
         double fortune = lotMath.lot(asc, chart.requirePlanet(Planet.SUN).getLongitude(), chart.requirePlanet(Planet.MOON).getLongitude());
         candidates.add(candidate(chart, "PTOLEMAIC_FORTUNE", fortune, ctx.houseOf(fortune, asc), "Ptolemaic Lot of Fortune checked as final fallback candidate using unreversed Sun-to-Moon arc."));
     }
 
-    private HylegAlcocodenEntry.HylegCandidate candidate(NatalChart chart, String point, double longitude, int house, String eligibleReason) {
+    private HylegAlcocodenEntry.HylegCandidate candidate(Chart chart, String point, double longitude, int house, String eligibleReason) {
         boolean degreeZoneEligible = inAscendantApheticDegreeZone(chart, longitude);
         boolean houseEligible = PTOLEMAIC_PROROGATIVE_HOUSES.contains(house);
         AphesisBasis aphesisBasis = degreeZoneEligible ? AphesisBasis.DEGREE_ZONE : houseEligible ? AphesisBasis.WHOLE_HOUSE : null;
@@ -96,13 +96,13 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
                 eligible ? eligibleReason + " Aphesis basis: " + aphesisBasis + "." : "Not in Ascendant aphetic degree zone (ASC-5° to ASC+25°) or configured Ptolemaic prorogative houses: 1, 10, 11, 7, 9.");
     }
 
-    private boolean inAscendantApheticDegreeZone(NatalChart chart, double longitude) {
+    private boolean inAscendantApheticDegreeZone(Chart chart, double longitude) {
         double asc = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
         double deltaFromAsc = AstroMath.normalize(longitude - asc);
         return deltaFromAsc <= 25.0 || deltaFromAsc >= 355.0;
     }
 
-    private HylegAlcocodenEntry.AlcocodenPoint alcocoden(NatalChart chart, HylegAlcocodenEntry.HylegPoint hyleg, boolean diurnal) {
+    private HylegAlcocodenEntry.AlcocodenPoint alcocoden(Chart chart, HylegAlcocodenEntry.HylegPoint hyleg, boolean diurnal) {
         Map<Planet, List<DignityType>> claims = dignityClaims(hyleg.longitude(), diurnal);
         Planet selected = null;
         List<DignityType> selectedClaims = List.of();
@@ -125,7 +125,7 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
         return new HylegAlcocodenEntry.AlcocodenPoint(selected, selectedScore, selectedClaims, true, "Selected as the strongest Ptolemaic dignity lord configured to the hyleg by sign.");
     }
 
-    private HylegAlcocodenEntry.VitalityYearsIndicator vitalityYears(NatalChart chart, HylegAlcocodenEntry.AlcocodenPoint alcocoden) {
+    private HylegAlcocodenEntry.VitalityYearsIndicator vitalityYears(Chart chart, HylegAlcocodenEntry.AlcocodenPoint alcocoden) {
         if (alcocoden == null) {
             return null;
         }
@@ -139,7 +139,7 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
                 "Traditional vitality-years indicator: Ptolemaic planetary years by alcocoden angularity with benefic/malefic minor-year modifiers. This is symbolic vitality doctrine, not a deterministic lifespan prediction.");
     }
 
-    private List<HylegAlcocodenEntry.VitalityYearsModifier> vitalityModifiers(NatalChart chart, Planet alcocoden) {
+    private List<HylegAlcocodenEntry.VitalityYearsModifier> vitalityModifiers(Chart chart, Planet alcocoden) {
         List<HylegAlcocodenEntry.VitalityYearsModifier> modifiers = new ArrayList<>();
         for (Planet planet : BENEFICS) {
             if (planet == alcocoden) {
@@ -166,7 +166,7 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
         return List.copyOf(modifiers);
     }
 
-    private PairwiseRelation.AspectByDegree aspectByDegree(NatalChart chart, Planet first, Planet second) {
+    private PairwiseRelation.AspectByDegree aspectByDegree(Chart chart, Planet first, Planet second) {
         if (chart.getPairwiseRelations() == null) {
             return null;
         }
@@ -176,7 +176,7 @@ public final class ValensPtolemaicHylegAlcocodenCalculator {
                 .filter(aspect -> aspect != null).findFirst().orElse(null);
     }
 
-    private PlanetPointEntry planetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry planetPoint(Chart chart, Planet planet) {
         if (chart.getPoints() == null) {
             return null;
         }

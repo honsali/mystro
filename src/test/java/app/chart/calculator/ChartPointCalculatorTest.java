@@ -13,7 +13,7 @@ import app.chart.data.AspectType;
 import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPosition;
 import app.reading.description.common.data.DignityType;
@@ -58,8 +58,8 @@ class ChartPointCalculatorTest {
 
     @Test
     void filtersDeterministicallyForSameChart() {
-        NatalChart first = syntheticChart();
-        NatalChart second = syntheticChart();
+        Chart first = syntheticChart();
+        Chart second = syntheticChart();
 
         calculator.calculate(first, null);
         calculator.calculate(second, null);
@@ -71,8 +71,8 @@ class ChartPointCalculatorTest {
         return new PairwiseRelation(a, b, null, aspectBySign, aspectByDegree, reception);
     }
 
-    private NatalChart syntheticChart() {
-        NatalChart chart = new NatalChart();
+    private Chart syntheticChart() {
+        Chart chart = new Chart();
         chart.setPoints(Map.of());
         chart.setPlanets(List.of(position(Planet.SUN, 0.0, 1.0), position(Planet.MOON, 30.0, 12.0), position(Planet.MERCURY, 60.0, 1.2), position(Planet.NORTH_NODE, 100.0, 0.0)));
         chart.setAngles(List.of(angle(AngleType.ASCENDANT, 0.0), angle(AngleType.MIDHEAVEN, 90.0)));

@@ -17,7 +17,7 @@ import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
@@ -32,7 +32,7 @@ class ValensFixedStarCalculatorTest {
         double expectedAldebaranLongitudeAtJ2000 = 69.79031729409506;
         FixedStarDefinition aldebaran = new FixedStarDefinition("Aldebaran", ",alTau", 0.86, List.of(Planet.MARS), "test-source");
         ValensFixedStarCalculator calculator = new ValensFixedStarCalculator(List.of(aldebaran), new ValensFixedStarCalculator.SwissEphemerisFixedStarPositionResolver());
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setLots(List.of(lot("FORTUNE", expectedAldebaranLongitudeAtJ2000)));
 
         List<FixedStarEntry> entries = calculator.calculate(j2000Context(), chart);
@@ -50,7 +50,7 @@ class ValensFixedStarCalculatorTest {
     void brightStarsGetOneDegreeOrbOnlyForLuminariesAndAngles() {
         FixedStarDefinition brightStar = new FixedStarDefinition("Bright Star", ",bright", 1.0, List.of(Planet.JUPITER), "test-source");
         ValensFixedStarCalculator calculator = calculatorWithFixedLongitude(brightStar, 10.0);
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setAngles(List.of(new ChartAngle(AngleType.ASCENDANT, 11.0, ZodiacSign.ARIES, 11.0)));
         chart.setPlanets(List.of(planet(Planet.MERCURY, 11.0)));
 
@@ -67,7 +67,7 @@ class ValensFixedStarCalculatorTest {
         FixedStarDefinition mediumStar = new FixedStarDefinition("Medium Star", ",medium", 2.5, List.of(Planet.VENUS), "test-source");
         FixedStarDefinition faintStar = new FixedStarDefinition("Faint Star", ",faint", 2.51, List.of(Planet.SATURN), "test-source");
         ValensFixedStarCalculator calculator = new ValensFixedStarCalculator(List.of(mediumStar, faintStar), (ctx, star) -> star.name().equals("Medium Star") ? 20.0 : 30.0);
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(planet(Planet.VENUS, 20.0 + 40.0 / 60.0)));
         chart.setLots(List.of(lot("SPIRIT", 30.5)));
 
@@ -89,7 +89,7 @@ class ValensFixedStarCalculatorTest {
     void returnsEmptyListWhenNoConjunctionFallsWithinOrb() {
         FixedStarDefinition star = new FixedStarDefinition("Unconfigured Star", ",none", 1.0, List.of(Planet.MARS), "test-source");
         ValensFixedStarCalculator calculator = calculatorWithFixedLongitude(star, 0.0);
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setAngles(List.of(new ChartAngle(AngleType.MIDHEAVEN, 2.0, ZodiacSign.ARIES, 2.0)));
         chart.setLots(List.of(lot("FORTUNE", 3.0)));
 
@@ -113,6 +113,6 @@ class ValensFixedStarCalculatorTest {
 
     private LotEntry lot(String name, double longitude) {
         double normalized = AstroMath.normalize(longitude);
-        return new LotEntry(name, "Lot of " + name, "test", normalized, AstroMath.signOf(normalized), AstroMath.degreeInSign(normalized), 1, Planet.MOON, "test formula");
+        return new LotEntry(name, "Lot of " + name, "test", normalized, AstroMath.signOf(normalized), AstroMath.degreeInSign(normalized), 1, Planet.MOON, "test formula", List.of());
     }
 }

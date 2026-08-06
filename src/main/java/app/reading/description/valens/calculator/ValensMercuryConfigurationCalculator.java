@@ -8,7 +8,7 @@ import app.chart.data.AspectType;
 import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.SolarOrientation;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.reading.description.common.data.MorningEveningStar;
@@ -24,7 +24,7 @@ public final class ValensMercuryConfigurationCalculator {
     private static final List<Planet> CONFIGURED_PLANET_ORDER = List.of(Planet.SATURN, Planet.JUPITER, Planet.MARS, Planet.VENUS, Planet.MOON, Planet.SUN);
     private static final String METHOD = "Ptolemaic quality-of-soul: Mercury phase, solar condition, motion, and configurations (Tetrabiblos III.13; Valens Anthology I).";
 
-    public MercuryConfigurationEntry calculate(NatalChart chart) {
+    public MercuryConfigurationEntry calculate(Chart chart) {
         PlanetPointEntry mercury = requirePlanetPoint(chart, Planet.MERCURY);
         PlanetPointEntry sun = requirePlanetPoint(chart, Planet.SUN);
         PlanetPointEntry moon = requirePlanetPoint(chart, Planet.MOON);
@@ -67,12 +67,12 @@ public final class ValensMercuryConfigurationCalculator {
         return orientedDistance == 1 || orientedDistance == 5 || orientedDistance == 7 || orientedDistance == 11;
     }
 
-    private List<ConfiguredPlanetEntry> configuredPlanets(NatalChart chart) {
+    private List<ConfiguredPlanetEntry> configuredPlanets(Chart chart) {
         return CONFIGURED_PLANET_ORDER.stream().map(planet -> configuredPlanet(chart, planet)).filter(entry -> entry != null)
                 .sorted(Comparator.comparingInt((ConfiguredPlanetEntry entry) -> CONFIGURED_PLANET_ORDER.indexOf(entry.planet())).thenComparingDouble(entry -> entry.byDegreeOrb() == null ? Double.POSITIVE_INFINITY : entry.byDegreeOrb())).toList();
     }
 
-    private ConfiguredPlanetEntry configuredPlanet(NatalChart chart, Planet planet) {
+    private ConfiguredPlanetEntry configuredPlanet(Chart chart, Planet planet) {
         PairwiseRelation relation = relation(chart, Planet.MERCURY, planet);
         if (relation == null || relation.getAspectBySign() == null) {
             return null;
@@ -93,13 +93,13 @@ public final class ValensMercuryConfigurationCalculator {
         return new AspectRelationEntry(aspect, bySign.getSignDistance(), byDegree == null ? null : byDegree.getOrbFromExact(), motion);
     }
 
-    private PairwiseRelation relation(NatalChart chart, Planet first, Planet second) {
+    private PairwiseRelation relation(Chart chart, Planet first, Planet second) {
         PointKey firstKey = PointKey.of(first);
         PointKey secondKey = PointKey.of(second);
         return chart.getPairwiseRelations().stream().filter(relation -> (relation.getPointAName() == firstKey && relation.getPointBName() == secondKey) || (relation.getPointAName() == secondKey && relation.getPointBName() == firstKey)).findFirst().orElse(null);
     }
 
-    private PlanetPointEntry requirePlanetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry requirePlanetPoint(Chart chart, Planet planet) {
         PointKey pointKey = PointKey.of(planet);
         if (chart.getPoints().get(pointKey) instanceof PlanetPointEntry planetPoint) {
             return planetPoint;

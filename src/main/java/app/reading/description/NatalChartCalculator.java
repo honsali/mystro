@@ -1,11 +1,11 @@
-package app.reading.description.valens;
+package app.reading.description;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.reading.description.common.calculator.EssentialDignityCalculator;
@@ -26,7 +26,7 @@ import app.reading.description.valens.calculator.ValensSolarConditionCalculator;
 import app.reading.description.valens.calculator.ValensTopicAssessmentCalculator;
 import app.reading.description.valens.calculator.ValensTriplicityLifePhaseCalculator;
 
-public final class ValensNatalDescriptionSpecialist {
+public final class NatalChartCalculator {
     private final CoreDoctrineInfo coreDoctrineInfo = new CoreDoctrineInfo("valens", "Vettius Valens", HouseSystem.WHOLE_SIGN, Terms.EGYPTIAN, Triplicity.DOROTHEAN);
     private final SyzygyCalculator syzygyCalculator = new SyzygyCalculator();
     private final EssentialDignityCalculator dignityCalculator = new EssentialDignityCalculator(Triplicity.DOROTHEAN);
@@ -50,14 +50,14 @@ public final class ValensNatalDescriptionSpecialist {
         return coreDoctrineInfo;
     }
 
-    public NatalChart calculate(Subject subject, BasicCalculator basicCalculator) {
+    public Chart calculate(Subject subject, ChartCalculator chartCalculator) {
         CalculationContext ctx = new CalculationContext(subject, coreDoctrineInfo);
-        NatalChart chart = basicCalculator.calculate(ctx);
+        Chart chart = chartCalculator.calculate(ctx);
         enrich(ctx, chart);
         return chart;
     }
 
-    public void enrich(CalculationContext ctx, NatalChart chart) {
+    public void enrich(CalculationContext ctx, Chart chart) {
         chart.setSyzygy(syzygyCalculator.calculate(ctx));
         chart.setLots(lotCalculator.calculate(ctx, chart));
         chart.applyAspects(aspectCalculator.calculate(chart));
@@ -72,7 +72,7 @@ public final class ValensNatalDescriptionSpecialist {
         chart.setFixedStars(fixedStarCalculator.calculate(ctx, chart));
         chart.applyBeneficMaleficAssessments(beneficMaleficAssessmentCalculator.calculate(chart));
         chart.setHouseTopicRulers(houseTopicRulerCalculator.calculate(chart));
-        chart.setLotAssessments(lotAssessmentCalculator.calculate(chart));
+        chart.setLots(lotAssessmentCalculator.calculate(chart));
         chart.setDerivedHouseFrames(derivedHouseFrameCalculator.calculate(chart));
         chart.setTopicAssessments(topicAssessmentCalculator.calculate(chart));
     }

@@ -13,7 +13,7 @@ import app.chart.data.AspectType;
 import app.chart.data.Planet;
 import app.chart.data.ZodiacSign;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.reading.description.common.model.HylegAlcocodenEntry;
@@ -48,7 +48,7 @@ public final class PrimaryDirectionCalculator {
             new RaySpec(PrimaryDirectionContactType.RAY, AspectType.OPPOSITION, 180.0, "OPPOSITION")
     );
 
-    public PrimaryDirectionTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public PrimaryDirectionTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                 int ageStartYears, int ageEndYearsInclusive) {
         return calculateTable(
                 subject,
@@ -62,7 +62,7 @@ public final class PrimaryDirectionCalculator {
         );
     }
 
-    public PrimaryDirectionTable calculateDirectConverseTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public PrimaryDirectionTable calculateDirectConverseTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                               int ageStartYears, int ageEndYearsInclusive) {
         return calculateTable(
                 subject,
@@ -76,7 +76,7 @@ public final class PrimaryDirectionCalculator {
         );
     }
 
-    private PrimaryDirectionTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private PrimaryDirectionTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                  int ageStartYears, int ageEndYearsInclusive,
                                                  String methodId, String directionMethod,
                                                  List<PrimaryDirectionPolarity> directions) {
@@ -116,7 +116,7 @@ public final class PrimaryDirectionCalculator {
         );
     }
 
-    private List<PrimaryDirectionSignificator> significators(Subject subject, NatalChart chart) {
+    private List<PrimaryDirectionSignificator> significators(Subject subject, Chart chart) {
         List<PrimaryDirectionSignificator> significators = new ArrayList<>();
         HylegAlcocodenEntry.HylegPoint hyleg = chart.getPtolemaicHylegAlcocoden() == null
                 ? null
@@ -154,7 +154,7 @@ public final class PrimaryDirectionCalculator {
         return PrimaryDirectionCoordinate.OBLIQUE_ASCENSION_AT_BIRTH_LATITUDE;
     }
 
-    private PrimaryDirectionSignificator significator(Subject subject, NatalChart chart, String role, String point,
+    private PrimaryDirectionSignificator significator(Subject subject, Chart chart, String role, String point,
                                                       boolean selectedHyleg, PrimaryDirectionCoordinate coordinate,
                                                       double longitude, ZodiacSign sign, double degreeInSign,
                                                       int house, double eclipticLatitude) {
@@ -176,7 +176,7 @@ public final class PrimaryDirectionCalculator {
         );
     }
 
-    private List<PrimaryDirectionEvent> events(Subject subject, NatalChart chart,
+    private List<PrimaryDirectionEvent> events(Subject subject, Chart chart,
                                                List<PrimaryDirectionSignificator> significators,
                                                List<PrimaryDirectionPolarity> directions,
                                                ActiveWindow activeWindow,
@@ -265,7 +265,7 @@ public final class PrimaryDirectionCalculator {
         };
     }
 
-    private List<PromissorSpec> promissors(NatalChart chart) {
+    private List<PromissorSpec> promissors(Chart chart) {
         List<PromissorSpec> promissors = new ArrayList<>();
         for (Planet planet : TRADITIONAL_PLANETS) {
             PlanetPosition source = chart.requirePlanet(planet);
@@ -339,7 +339,7 @@ public final class PrimaryDirectionCalculator {
         return AstroMath.normalize(rightAscension - ascensionalDifference);
     }
 
-    private double latitudeForPoint(NatalChart chart, String point) {
+    private double latitudeForPoint(Chart chart, String point) {
         Planet planet = planetForPoint(point);
         if (planet == null) {
             return 0.0;
@@ -356,7 +356,7 @@ public final class PrimaryDirectionCalculator {
         }
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(candidate -> candidate.getHouse())

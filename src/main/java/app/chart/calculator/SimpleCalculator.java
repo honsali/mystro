@@ -4,14 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import app.chart.CalculationContext;
 import app.chart.Calculator;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.ephemeris.SweConst;
 
 public class SimpleCalculator implements Calculator {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleCalculator.class);
 
-    public void calculate(NatalChart natalChart, CalculationContext ctx) {
+    public void calculate(Chart chart, CalculationContext ctx) {
 
         double[] values = new double[6];
         StringBuilder error = new StringBuilder();
@@ -28,16 +28,16 @@ public class SimpleCalculator implements Calculator {
             throw new IllegalArgumentException("Calculation failed. See application logs.");
         }
 
-        natalChart.setResolvedUtcInstant(ctx.getSubject().getResolvedUtcInstant());
-        natalChart.setJulianDayUt(julianDayUt);
-        natalChart.setJulianDayTt(julianDayUt + deltaTSeconds / 86400.0);
-        natalChart.setDeltaTSeconds(deltaTSeconds);
-        natalChart.setArmc(ctx.getArmc());
-        natalChart.setLocalApparentSiderealTimeHours(ctx.getArmc() / 15.0);
-        natalChart.setTrueObliquity(values[0]);
-        natalChart.setMeanObliquity(values[1]);
-        natalChart.setNutationLongitude(values[2]);
-        natalChart.setNutationObliquity(values[3]);
+        chart.setResolvedUtcInstant(ctx.getSubject().getResolvedUtcInstant());
+        chart.setJulianDayUt(julianDayUt);
+        chart.setJulianDayTt(julianDayUt + deltaTSeconds / 86400.0);
+        chart.setDeltaTSeconds(deltaTSeconds);
+        chart.setArmc(ctx.getArmc());
+        chart.setLocalApparentSiderealTimeHours(ctx.getArmc() / 15.0);
+        chart.setTrueObliquity(values[0]);
+        chart.setMeanObliquity(values[1]);
+        chart.setNutationLongitude(values[2]);
+        chart.setNutationObliquity(values[3]);
     }
 
     private boolean hasInvalidEclipticNutationValues(double[] values) {

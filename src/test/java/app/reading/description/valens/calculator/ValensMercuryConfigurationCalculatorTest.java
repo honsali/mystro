@@ -21,7 +21,7 @@ import app.chart.data.PointType;
 import app.chart.data.SectCondition;
 import app.chart.data.SolarOrientation;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
@@ -37,7 +37,7 @@ class ValensMercuryConfigurationCalculatorTest {
 
     @Test
     void calculatesOrientalMorningMercuryAndMoonRelation() {
-        NatalChart chart = chart(
+        Chart chart = chart(
                 point(Planet.SUN, 40.0, ZodiacSign.TAURUS, 1.0, 1.0, false, SolarOrientation.ORIENTAL, null, List.of(), List.of()),
                 point(Planet.MOON, 300.0, ZodiacSign.AQUARIUS, 13.0, 1.0, false, SolarOrientation.OCCIDENTAL, null, List.of(), List.of()),
                 point(Planet.MERCURY, 70.0, ZodiacSign.GEMINI, 1.2, 1.2, false, SolarOrientation.ORIENTAL, SolarCondition.FREE_OF_SUN, List.of(DignityType.DOMICILE), List.of()),
@@ -67,7 +67,7 @@ class ValensMercuryConfigurationCalculatorTest {
 
     @Test
     void marksOccidentalEveningAndAversionToMoon() {
-        NatalChart chart = chart(
+        Chart chart = chart(
                 point(Planet.SUN, 100.0, ZodiacSign.CANCER, 1.0, 1.0, false, SolarOrientation.ORIENTAL, null, List.of(), List.of()),
                 point(Planet.MOON, 30.0, ZodiacSign.TAURUS, 13.0, 1.0, false, SolarOrientation.OCCIDENTAL, null, List.of(), List.of()),
                 point(Planet.MERCURY, 0.0, ZodiacSign.ARIES, 0.7, 0.8, false, SolarOrientation.OCCIDENTAL, SolarCondition.COMBUST, List.of(), List.of(DignityType.FALL)),
@@ -85,7 +85,7 @@ class ValensMercuryConfigurationCalculatorTest {
 
     @Test
     void stationaryCazimiMercuryJoinedToSunTakesStationaryPrecedence() {
-        NatalChart chart = chart(
+        Chart chart = chart(
                 point(Planet.SUN, 5.0, ZodiacSign.ARIES, 1.0, 1.0, false, SolarOrientation.ORIENTAL, null, List.of(), List.of()),
                 point(Planet.MOON, 185.0, ZodiacSign.LIBRA, 13.0, 1.0, false, SolarOrientation.OCCIDENTAL, null, List.of(), List.of()),
                 point(Planet.MERCURY, 5.2, ZodiacSign.ARIES, 0.04, 0.03, true, SolarOrientation.ORIENTAL, SolarCondition.CAZIMI, List.of(), List.of()),
@@ -99,8 +99,8 @@ class ValensMercuryConfigurationCalculatorTest {
         assertTrue(entry.joinedToSun());
     }
 
-    private NatalChart chart(PlanetPointEntry sun, PlanetPointEntry moon, PlanetPointEntry mercury, List<PairwiseRelation> relations) {
-        NatalChart chart = new NatalChart();
+    private Chart chart(PlanetPointEntry sun, PlanetPointEntry moon, PlanetPointEntry mercury, List<PairwiseRelation> relations) {
+        Chart chart = new Chart();
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
         points.put(PointKey.SUN, sun);
         points.put(PointKey.MOON, moon);

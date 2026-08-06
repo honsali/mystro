@@ -21,7 +21,7 @@ import app.chart.data.PointType;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -59,13 +59,13 @@ class DorotheanAnnualProfectionCalculatorTest {
                 entry.activatedNatalPoints().stream().map(activated -> activated.point()).toList());
         assertEquals(PointType.NODE, entry.activatedNatalPoints().get(1).type());
         assertEquals(List.of("FORTUNE"), entry.activatedLots().stream().map(activated -> activated.name()).toList());
-        assertEquals("lotAssessments.lot=FORTUNE", entry.activatedLots().get(0).lotAssessmentRef());
+        assertEquals("lots.name=FORTUNE", entry.activatedLots().get(0).lotRef());
 
         ActivatedTopicAssessmentRef topicRef = entry.activatedTopicAssessmentRefs().get(0);
         assertEquals("mind-speech", topicRef.topic());
         assertEquals("TEST_TOPIC_ACTIVE", topicRef.methodId());
         assertIterableEquals(
-                List.of("houseTopicRulers.house=3", "MERCURY", "SUN", "lotAssessments.lot=FORTUNE"),
+                List.of("houseTopicRulers.house=3", "MERCURY", "SUN", "lots.name=FORTUNE"),
                 topicRef.matchedConditionRefs()
         );
         assertEquals(1, entry.activatedTopicAssessmentRefs().size());
@@ -93,7 +93,7 @@ class DorotheanAnnualProfectionCalculatorTest {
     @Test
     void calculateTableKeepsReferenceOrderAndRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart chart = chart();
+        Chart chart = chart();
 
         AnnualProfectionTable table = calculator.calculateTable(subject, chart, LocalDate.of(2026, 6, 3), 26, 26);
         AnnualProfectionTable inactiveTable = calculator.calculateTable(subject, chart, null, 0, 0);
@@ -130,8 +130,8 @@ class DorotheanAnnualProfectionCalculatorTest {
         );
     }
 
-    private NatalChart chart() {
-        NatalChart chart = new NatalChart();
+    private Chart chart() {
+        Chart chart = new Chart();
         chart.setHouses(housesFromAriesAscendant());
 
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
@@ -144,16 +144,16 @@ class DorotheanAnnualProfectionCalculatorTest {
         chart.setPoints(points);
 
         chart.setLots(List.of(
-                new LotEntry("FORTUNE", "Lot of Fortune", "valens", 70.0, ZodiacSign.GEMINI, 10.0, 3, Planet.MERCURY, "fixture"),
-                new LotEntry("SPIRIT", "Lot of Spirit", "valens", 120.0, ZodiacSign.LEO, 0.0, 5, Planet.SUN, "fixture")
+                new LotEntry("FORTUNE", "Lot of Fortune", "valens", 70.0, ZodiacSign.GEMINI, 10.0, 3, Planet.MERCURY, "fixture", List.of()),
+                new LotEntry("SPIRIT", "Lot of Spirit", "valens", 120.0, ZodiacSign.LEO, 0.0, 5, Planet.SUN, "fixture", List.of())
         ));
         chart.setTopicAssessments(List.of(
                 topic("mind-speech", "TEST_TOPIC_ACTIVE", List.of(
                         evidence("houseTopicRulers.house=3"),
                         evidence("MERCURY"),
                         evidence("SUN"),
-                        evidence("lotAssessments.lot=FORTUNE"),
-                        evidence("lotAssessments.lot=SPIRIT")
+                        evidence("lots.name=FORTUNE"),
+                        evidence("lots.name=SPIRIT")
                 )),
                 topic("unactivated-topic", "TEST_TOPIC_INACTIVE", List.of(evidence("JUPITER")))
         ));

@@ -8,7 +8,7 @@ import app.chart.TraditionalTables;
 import app.chart.data.Planet;
 import app.chart.data.Sect;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.TriplicityRulers;
 import app.reading.description.common.data.DignityType;
@@ -21,7 +21,7 @@ public final class EssentialDignityCalculator {
         this.triplicity = triplicity;
     }
 
-    public Map<Planet, PlanetDignityEntry> calculate(NatalChart chart) {
+    public Map<Planet, PlanetDignityEntry> calculate(Chart chart) {
         Map<Planet, PlanetDignityEntry> result = new LinkedHashMap<>();
         boolean diurnal = chart.getSect().getSect() == Sect.DIURNAL;
         for (PlanetPosition position : chart.getPlanets()) {

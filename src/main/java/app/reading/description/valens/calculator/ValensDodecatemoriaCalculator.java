@@ -9,7 +9,7 @@ import app.chart.data.PointKey;
 import app.chart.data.PointType;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.reading.description.common.model.DodecatemoriaEntry;
@@ -19,14 +19,14 @@ public final class ValensDodecatemoriaCalculator {
     private static final double TWELFTH_PART_SIZE = 2.5;
     private static final String FORMULA = "Dodecatemoria: sign start + 12 × degree within sign";
 
-    public List<DodecatemoriaEntry> calculate(NatalChart chart) {
+    public List<DodecatemoriaEntry> calculate(Chart chart) {
         List<DodecatemoriaEntry> entries = new ArrayList<>();
         addPointEntries(entries, chart);
         addLotEntries(entries, chart);
         return List.copyOf(entries);
     }
 
-    private void addPointEntries(List<DodecatemoriaEntry> entries, NatalChart chart) {
+    private void addPointEntries(List<DodecatemoriaEntry> entries, Chart chart) {
         if (chart.getPoints() == null) {
             return;
         }
@@ -34,7 +34,7 @@ public final class ValensDodecatemoriaCalculator {
             if (isSkippedPoint(point.getValue())) {
                 continue;
             }
-            entries.add(entry(point.getKey().name(), "POINT", null, longitude(point.getValue())));
+            entries.add(entry("points." + point.getKey().name(), longitude(point.getValue())));
         }
     }
 
@@ -52,21 +52,21 @@ public final class ValensDodecatemoriaCalculator {
         throw new IllegalArgumentException("Unsupported point entry " + point.getClass().getName());
     }
 
-    private void addLotEntries(List<DodecatemoriaEntry> entries, NatalChart chart) {
+    private void addLotEntries(List<DodecatemoriaEntry> entries, Chart chart) {
         if (chart.getLots() == null) {
             return;
         }
         for (LotEntry lot : chart.getLots()) {
-            entries.add(entry(lot.name(), "LOT", lot.doctrine(), lot.longitude()));
+            entries.add(entry("lots.name=" + lot.name(), lot.longitude()));
         }
     }
 
-    private DodecatemoriaEntry entry(String sourceName, String sourceType, String sourceDoctrine, double sourceLongitude) {
+    private DodecatemoriaEntry entry(String sourceRef, double sourceLongitude) {
         double normalizedSource = AstroMath.normalize(sourceLongitude);
         ZodiacSign sourceSign = AstroMath.signOf(normalizedSource);
         double sourceDegreeInSign = AstroMath.degreeInSign(normalizedSource);
         double longitude = AstroMath.normalize(sourceSign.ordinal() * 30.0 + sourceDegreeInSign * 12.0);
         ZodiacSign sign = AstroMath.signOf(longitude);
-        return new DodecatemoriaEntry(sourceName, sourceType, sourceDoctrine, normalizedSource, sourceSign, sourceDegreeInSign, (int) Math.floor(sourceDegreeInSign / TWELFTH_PART_SIZE) + 1, longitude, sign, AstroMath.degreeInSign(longitude), TraditionalTables.domicileRuler(sign), FORMULA);
+        return new DodecatemoriaEntry(sourceRef, (int) Math.floor(sourceDegreeInSign / TWELFTH_PART_SIZE) + 1, longitude, sign, AstroMath.degreeInSign(longitude), TraditionalTables.domicileRuler(sign), FORMULA);
     }
 }

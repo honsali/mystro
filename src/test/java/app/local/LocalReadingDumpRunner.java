@@ -1,25 +1,28 @@
 package app.local;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import app.AppVersion;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.model.Subject;
+import app.input.InquiryDateResolver;
+import app.input.NatalInput;
+import app.input.NatalInputLoader;
+import app.input.SubjectFactory;
+import app.io.MystroObjectMapper;
 import app.reading.ReadingBundleReport;
 import app.reading.description.NatalDescriptionReadingCalculator;
 import app.reading.description.NatalDescriptionReadingReport;
 import app.reading.description.common.model.LotEntry;
-import app.reading.description.valens.ValensNatalDescriptionSpecialist;
+import app.reading.description.NatalChartCalculator;
 import app.reading.lifearc.decennial.DecennialCalculator;
 import app.reading.lifearc.decennial.DecennialTable;
 import app.reading.lifearc.distribution.DistributionThroughBoundsCalculator;
@@ -36,48 +39,79 @@ import app.reading.lifearc.primarydirection.MundanePrimaryDirectionCalculator;
 import app.reading.lifearc.primarydirection.MundanePrimaryDirectionTable;
 import app.reading.lifearc.primarydirection.PrimaryDirectionCalculator;
 import app.reading.lifearc.primarydirection.PrimaryDirectionTable;
-import app.reading.lifearc.synthesis.LifeArcSynthesisCalculator;
-import app.reading.lifearc.synthesis.LifeArcSynthesisTable;
 import app.reading.lifearc.solarreturn.SolarReturnCalculator;
 import app.reading.lifearc.solarreturn.SolarReturnNatalComparisonCalculator;
 import app.reading.lifearc.solarreturn.SolarReturnNatalComparisonTable;
 import app.reading.lifearc.solarreturn.SolarReturnTable;
+import app.reading.lifearc.synthesis.LifeArcSynthesisCalculator;
+import app.reading.lifearc.synthesis.LifeArcSynthesisTable;
 import app.reading.lifearc.zodiacalreleasing.ZodiacalReleasingCalculator;
 import app.reading.lifearc.zodiacalreleasing.ZodiacalReleasingTimeline;
-import app.input.NativeListInputLoader;
-import app.input.ReadingInput;
-import app.input.ReadingInputMapper;
-import app.io.MystroObjectMapper;
 
 /**
  * Local-only reading dump harness.
  *
- * <p>Run with:
+ * <p>
+ * Run with:
+ *
  * <pre>
  * mvn -Dtest=LocalReadingDumpRunner -Dlocal.reading=true -Dlocal.reading.alias=demo test
  * </pre>
  *
- * <p>Default output directory: {@code output/<native-list-alias>/}
- * <p>Default local output index: {@code output/<native-list-alias>/index.md}
- * <p>Default natal-only JSON output: {@code output/<native-list-alias>/reading_output.json}
- * <p>Default annual-profections Markdown output: {@code output/<native-list-alias>/annual_profections.md}
- * <p>Default monthly-profections Markdown output: {@code output/<native-list-alias>/monthly_profections.md}
- * <p>Default firdaria Markdown output: {@code output/<native-list-alias>/firdaria.md}
- * <p>Default decennials Markdown output: {@code output/<native-list-alias>/decennials.md}
- * <p>Default distributions-through-bounds Markdown output: {@code output/<native-list-alias>/distributions_through_bounds.md}
- * <p>Default extended distributions-through-bounds Markdown output: {@code output/<native-list-alias>/distributions_extended.md}
- * <p>Default primary-directions Markdown output: {@code output/<native-list-alias>/primary_directions.md}
- * <p>Default mundane/semi-arc primary-direction prototype Markdown output: {@code output/<native-list-alias>/primary_directions_mundane.md}
- * <p>Default lunar-timing overview Markdown output: {@code output/<native-list-alias>/lunar_timing.md}
- * <p>Default lunar-timing eclipse tables Markdown output: {@code output/<native-list-alias>/lunar_timing_eclipses.md}
- * <p>Default lunar-timing full Markdown output: {@code output/<native-list-alias>/lunar_timing_full.md}
- * <p>Default solar-return Markdown output: {@code output/<native-list-alias>/solar_returns.md}
- * <p>Default solar-return-to-natal comparison Markdown output: {@code output/<native-list-alias>/solar_return_natal_comparison.md}
- * <p>Default life-arc-synthesis Markdown output: {@code output/<native-list-alias>/life_arc_synthesis.md}
- * <p>Default topic-synthesis Markdown output directory: {@code output/<native-list-alias>/topics/}
- * <p>Default AI brief Markdown output: {@code output/<native-list-alias>/life_arc_ai_brief.md}
- * <p>Default Zodiacal Releasing L1 all-lots Markdown output: {@code output/<native-list-alias>/zodiacal_releasing_l1_all_lots.md}
- * <p>Default Zodiacal Releasing Markdown output directory: {@code output/<native-list-alias>/zodiacal_releasing/}
+ * <p>
+ * Default output directory: {@code output/<native-list-alias>/}
+ * <p>
+ * Default local output index: {@code output/<native-list-alias>/index.md}
+ * <p>
+ * Default natal-only JSON output: {@code output/<native-list-alias>/reading_output.json}
+ * <p>
+ * Default annual-profections Markdown output:
+ * {@code output/<native-list-alias>/annual_profections.md}
+ * <p>
+ * Default monthly-profections Markdown output:
+ * {@code output/<native-list-alias>/monthly_profections.md}
+ * <p>
+ * Default firdaria Markdown output: {@code output/<native-list-alias>/firdaria.md}
+ * <p>
+ * Default decennials Markdown output: {@code output/<native-list-alias>/decennials.md}
+ * <p>
+ * Default distributions-through-bounds Markdown output:
+ * {@code output/<native-list-alias>/distributions_through_bounds.md}
+ * <p>
+ * Default extended distributions-through-bounds Markdown output:
+ * {@code output/<native-list-alias>/distributions_extended.md}
+ * <p>
+ * Default primary-directions Markdown output:
+ * {@code output/<native-list-alias>/primary_directions.md}
+ * <p>
+ * Default mundane/semi-arc primary-direction prototype Markdown output:
+ * {@code output/<native-list-alias>/primary_directions_mundane.md}
+ * <p>
+ * Default lunar-timing overview Markdown output: {@code output/<native-list-alias>/lunar_timing.md}
+ * <p>
+ * Default lunar-timing eclipse tables Markdown output:
+ * {@code output/<native-list-alias>/lunar_timing_eclipses.md}
+ * <p>
+ * Default lunar-timing full Markdown output:
+ * {@code output/<native-list-alias>/lunar_timing_full.md}
+ * <p>
+ * Default solar-return Markdown output: {@code output/<native-list-alias>/solar_returns.md}
+ * <p>
+ * Default solar-return-to-natal comparison Markdown output:
+ * {@code output/<native-list-alias>/solar_return_natal_comparison.md}
+ * <p>
+ * Default life-arc-synthesis Markdown output:
+ * {@code output/<native-list-alias>/life_arc_synthesis.md}
+ * <p>
+ * Default topic-synthesis Markdown output directory: {@code output/<native-list-alias>/topics/}
+ * <p>
+ * Default AI brief Markdown output: {@code output/<native-list-alias>/life_arc_ai_brief.md}
+ * <p>
+ * Default Zodiacal Releasing L1 all-lots Markdown output:
+ * {@code output/<native-list-alias>/zodiacal_releasing_l1_all_lots.md}
+ * <p>
+ * Default Zodiacal Releasing Markdown output directory:
+ * {@code output/<native-list-alias>/zodiacal_releasing/}
  */
 public final class LocalReadingDumpRunner {
 
@@ -118,292 +152,272 @@ public final class LocalReadingDumpRunner {
         Path zodiacalReleasingOutputDir = Path.of(System.getProperty("local.zodiacalReleasing.outputDir", outputDir.resolve("zodiacal_releasing").toString()));
 
         ObjectMapper objectMapper = MystroObjectMapper.create();
-        ReadingInput request = new NativeListInputLoader().load(alias, objectMapper);
+        NatalInput request = new NatalInputLoader().load(alias);
 
-        ReadingInputMapper mapper = new ReadingInputMapper();
         NatalDescriptionReadingCalculator natalDescriptionReadingCalculator = new NatalDescriptionReadingCalculator(
-                new BasicCalculator(),
-                new ValensNatalDescriptionSpecialist()
-        );
-        ReadingInputMapper.ResolvedBundle resolved = mapper.resolve(request);
-        Subject subject = resolved.subject();
+                new ChartCalculator(),
+                new NatalChartCalculator());
+        Subject subject = new SubjectFactory().create(request);
+        LocalDate inquiryDate = new InquiryDateResolver().resolve(
+                request.inquiryDate(),
+                subject.getUtcBirthDateTime().toLocalDate());
         NatalDescriptionReadingReport natalDescription = natalDescriptionReadingCalculator.calculate(subject);
 
         ReadingBundleReport report = new ReadingBundleReport(AppVersion.get(), subject, List.of(natalDescription));
 
-            Path parent = output.getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
-            Files.writeString(output, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(report) + System.lineSeparator());
-            System.out.println("Wrote Mystro local natal-only reading bundle to " + output.toAbsolutePath());
-
-            AnnualProfectionTable annualProfectionTable = new DorotheanAnnualProfectionCalculator().calculateTable(
-                    subject,
-                    natalDescription.getNatalChart(),
-                    resolved.inquiryDate(),
-                    0,
-                    100
-            );
-            Path annualProfectionsParent = annualProfectionsOutput.getParent();
-            if (annualProfectionsParent != null) {
-                Files.createDirectories(annualProfectionsParent);
-            }
-            String markdown = new AnnualProfectionMarkdownRenderer().render(subject, resolved.inquiryDate(), annualProfectionTable);
-            Files.writeString(annualProfectionsOutput, markdown);
-            System.out.println("Wrote annual profections table to " + annualProfectionsOutput.toAbsolutePath());
-
-            MonthlyProfectionTable monthlyProfectionTable = writeMonthlyProfectionFile(subject, natalDescription, resolved, monthlyProfectionsOutput);
-            FirdariaTable firdariaTable = writeFirdariaFile(subject, natalDescription, resolved, firdariaOutput);
-            DecennialTable decennialTable = writeDecennialFile(subject, natalDescription, resolved, decennialsOutput);
-            DistributionThroughBoundsTable distributionsThroughBoundsTable = writeDistributionsThroughBoundsFile(subject, natalDescription, resolved, distributionsThroughBoundsOutput);
-            List<DistributionThroughBoundsTable> distributionsExtendedTables = writeExtendedDistributionsThroughBoundsFile(subject, natalDescription, resolved, distributionsExtendedOutput);
-            PrimaryDirectionTable primaryDirectionTable = writePrimaryDirectionsFile(subject, natalDescription, resolved, primaryDirectionsOutput);
-            PrimaryDirectionTable primaryDirectionVariantTable = calculatePrimaryDirectionVariantTable(subject, natalDescription, resolved);
-            MundanePrimaryDirectionTable mundanePrimaryDirectionTable = writeMundanePrimaryDirectionsFile(subject, natalDescription, resolved, mundanePrimaryDirectionsOutput);
-            LunarTimingTable lunarTimingTable = writeLunarTimingFile(subject, natalDescription, resolved, lunarTimingOutput, lunarTimingEclipsesOutput, lunarTimingFullOutput);
-            SolarReturnTable solarReturnTable = writeSolarReturnFile(subject, natalDescription, resolved, solarReturnsOutput);
-            SolarReturnNatalComparisonTable solarReturnNatalComparisonTable = writeSolarReturnNatalComparisonFile(subject, natalDescription, resolved, solarReturnTable, solarReturnNatalComparisonOutput);
-            LifeArcSynthesisTable lifeArcSynthesisTable = writeLifeArcSynthesisFile(subject, natalDescription, resolved, lifeArcSynthesisOutput);
-            writeTopicSynthesisFiles(subject, natalDescription, resolved, lifeArcSynthesisTable, topicSynthesisOutputDir);
-            List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> zodiacalReleasingBriefs = writeZodiacalReleasingFiles(subject, natalDescription, resolved, zodiacalReleasingOutputDir, zodiacalReleasingL1AllLotsOutput);
-            writeLifeArcAiBriefFile(
-                    subject,
-                    natalDescription,
-                    resolved,
-                    lifeArcAiBriefOutput,
-                    outputIndex,
-                    output,
-                    annualProfectionsOutput,
-                    monthlyProfectionsOutput,
-                    firdariaOutput,
-                    decennialsOutput,
-                    distributionsThroughBoundsOutput,
-                    distributionsExtendedOutput,
-                    primaryDirectionsOutput,
-                    mundanePrimaryDirectionsOutput,
-                    lunarTimingOutput,
-                    lunarTimingEclipsesOutput,
-                    lunarTimingFullOutput,
-                    solarReturnsOutput,
-                    solarReturnNatalComparisonOutput,
-                    zodiacalReleasingL1AllLotsOutput,
-                    lifeArcSynthesisOutput,
-                    topicSynthesisOutputDir,
-                    zodiacalReleasingOutputDir,
-                    annualProfectionTable,
-                    monthlyProfectionTable,
-                    firdariaTable,
-                    decennialTable,
-                    distributionsThroughBoundsTable,
-                    distributionsExtendedTables,
-                    primaryDirectionTable,
-                    primaryDirectionVariantTable,
-                    mundanePrimaryDirectionTable,
-                    lunarTimingTable,
-                    solarReturnTable,
-                    solarReturnNatalComparisonTable,
-                    lifeArcSynthesisTable,
-                    zodiacalReleasingBriefs
-            );
-            writeOutputIndexFile(
-                    subject,
-                    resolved,
-                    outputIndex,
-                    lifeArcAiBriefOutput,
-                    output,
-                    annualProfectionsOutput,
-                    monthlyProfectionsOutput,
-                    firdariaOutput,
-                    decennialsOutput,
-                    distributionsThroughBoundsOutput,
-                    distributionsExtendedOutput,
-                    primaryDirectionsOutput,
-                    mundanePrimaryDirectionsOutput,
-                    lunarTimingOutput,
-                    lunarTimingEclipsesOutput,
-                    lunarTimingFullOutput,
-                    solarReturnsOutput,
-                    solarReturnNatalComparisonOutput,
-                    zodiacalReleasingL1AllLotsOutput,
-                    lifeArcSynthesisOutput,
-                    topicSynthesisOutputDir,
-                    zodiacalReleasingOutputDir
-            );
-    }
-
-    private MonthlyProfectionTable writeMonthlyProfectionFile(Subject subject,
-                                                              NatalDescriptionReadingReport natalDescription,
-                                                              ReadingInputMapper.ResolvedBundle resolved,
-                                                              Path output) throws Exception {
-        MonthlyProfectionTable table = new DorotheanMonthlyProfectionCalculator().calculateTable(
-                subject,
-                natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
-                0,
-                100
-        );
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new MonthlyProfectionMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        Files.writeString(output, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(report) + System.lineSeparator());
+        System.out.println("Wrote Mystro local natal-only reading bundle to " + output.toAbsolutePath());
+
+        AnnualProfectionTable annualProfectionTable = new DorotheanAnnualProfectionCalculator().calculateTable(
+                subject,
+                natalDescription.getNatalChart(),
+                inquiryDate,
+                0,
+                100);
+        Path annualProfectionsParent = annualProfectionsOutput.getParent();
+        if (annualProfectionsParent != null) {
+            Files.createDirectories(annualProfectionsParent);
+        }
+        String markdown = new AnnualProfectionMarkdownRenderer().render(subject, inquiryDate, annualProfectionTable);
+        Files.writeString(annualProfectionsOutput, markdown);
+        System.out.println("Wrote annual profections table to " + annualProfectionsOutput.toAbsolutePath());
+
+        MonthlyProfectionTable monthlyProfectionTable = writeMonthlyProfectionFile(subject, natalDescription, inquiryDate, monthlyProfectionsOutput);
+        FirdariaTable firdariaTable = writeFirdariaFile(subject, natalDescription, inquiryDate, firdariaOutput);
+        DecennialTable decennialTable = writeDecennialFile(subject, natalDescription, inquiryDate, decennialsOutput);
+        DistributionThroughBoundsTable distributionsThroughBoundsTable = writeDistributionsThroughBoundsFile(subject, natalDescription, inquiryDate, distributionsThroughBoundsOutput);
+        List<DistributionThroughBoundsTable> distributionsExtendedTables = writeExtendedDistributionsThroughBoundsFile(subject, natalDescription, inquiryDate, distributionsExtendedOutput);
+        PrimaryDirectionTable primaryDirectionTable = writePrimaryDirectionsFile(subject, natalDescription, inquiryDate, primaryDirectionsOutput);
+        PrimaryDirectionTable primaryDirectionVariantTable = calculatePrimaryDirectionVariantTable(subject, natalDescription, inquiryDate);
+        MundanePrimaryDirectionTable mundanePrimaryDirectionTable = writeMundanePrimaryDirectionsFile(subject, natalDescription, inquiryDate, mundanePrimaryDirectionsOutput);
+        LunarTimingTable lunarTimingTable = writeLunarTimingFile(subject, natalDescription, inquiryDate, lunarTimingOutput, lunarTimingEclipsesOutput, lunarTimingFullOutput);
+        SolarReturnTable solarReturnTable = writeSolarReturnFile(subject, natalDescription, inquiryDate, solarReturnsOutput);
+        SolarReturnNatalComparisonTable solarReturnNatalComparisonTable = writeSolarReturnNatalComparisonFile(subject, natalDescription, inquiryDate, solarReturnTable, solarReturnNatalComparisonOutput);
+        LifeArcSynthesisTable lifeArcSynthesisTable = writeLifeArcSynthesisFile(subject, natalDescription, inquiryDate, lifeArcSynthesisOutput);
+        writeTopicSynthesisFiles(subject, natalDescription, inquiryDate, lifeArcSynthesisTable, topicSynthesisOutputDir);
+        List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> zodiacalReleasingBriefs = writeZodiacalReleasingFiles(subject, natalDescription, inquiryDate, zodiacalReleasingOutputDir, zodiacalReleasingL1AllLotsOutput);
+        writeLifeArcAiBriefFile(
+                subject,
+                natalDescription,
+                inquiryDate,
+                lifeArcAiBriefOutput,
+                outputIndex,
+                output,
+                annualProfectionsOutput,
+                monthlyProfectionsOutput,
+                firdariaOutput,
+                decennialsOutput,
+                distributionsThroughBoundsOutput,
+                distributionsExtendedOutput,
+                primaryDirectionsOutput,
+                mundanePrimaryDirectionsOutput,
+                lunarTimingOutput,
+                lunarTimingEclipsesOutput,
+                lunarTimingFullOutput,
+                solarReturnsOutput,
+                solarReturnNatalComparisonOutput,
+                zodiacalReleasingL1AllLotsOutput,
+                lifeArcSynthesisOutput,
+                topicSynthesisOutputDir,
+                zodiacalReleasingOutputDir,
+                annualProfectionTable,
+                monthlyProfectionTable,
+                firdariaTable,
+                decennialTable,
+                distributionsThroughBoundsTable,
+                distributionsExtendedTables,
+                primaryDirectionTable,
+                primaryDirectionVariantTable,
+                mundanePrimaryDirectionTable,
+                lunarTimingTable,
+                solarReturnTable,
+                solarReturnNatalComparisonTable,
+                lifeArcSynthesisTable,
+                zodiacalReleasingBriefs);
+        writeOutputIndexFile(
+                subject,
+                inquiryDate,
+                outputIndex,
+                lifeArcAiBriefOutput,
+                output,
+                annualProfectionsOutput,
+                monthlyProfectionsOutput,
+                firdariaOutput,
+                decennialsOutput,
+                distributionsThroughBoundsOutput,
+                distributionsExtendedOutput,
+                primaryDirectionsOutput,
+                mundanePrimaryDirectionsOutput,
+                lunarTimingOutput,
+                lunarTimingEclipsesOutput,
+                lunarTimingFullOutput,
+                solarReturnsOutput,
+                solarReturnNatalComparisonOutput,
+                zodiacalReleasingL1AllLotsOutput,
+                lifeArcSynthesisOutput,
+                topicSynthesisOutputDir,
+                zodiacalReleasingOutputDir);
+    }
+
+    private MonthlyProfectionTable writeMonthlyProfectionFile(Subject subject, NatalDescriptionReadingReport natalDescription, LocalDate inquiryDate, Path output) throws Exception {
+        MonthlyProfectionTable table = new DorotheanMonthlyProfectionCalculator().calculateTable(subject, natalDescription.getNatalChart(), inquiryDate, 0, 100);
+        Path parent = output.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+        String markdown = new MonthlyProfectionMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote monthly profections table to " + output.toAbsolutePath());
         return table;
     }
 
     private FirdariaTable writeFirdariaFile(Subject subject,
-                                   NatalDescriptionReadingReport natalDescription,
-                                   ReadingInputMapper.ResolvedBundle resolved,
-                                   Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         FirdariaTable table = new FirdariaCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new FirdariaMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        String markdown = new FirdariaMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote firdaria table to " + output.toAbsolutePath());
         return table;
     }
 
     private DecennialTable writeDecennialFile(Subject subject,
-                                    NatalDescriptionReadingReport natalDescription,
-                                    ReadingInputMapper.ResolvedBundle resolved,
-                                    Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         DecennialTable table = new DecennialCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new DecennialMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        String markdown = new DecennialMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote decennials table to " + output.toAbsolutePath());
         return table;
     }
 
     private DistributionThroughBoundsTable writeDistributionsThroughBoundsFile(Subject subject,
-                                                      NatalDescriptionReadingReport natalDescription,
-                                                      ReadingInputMapper.ResolvedBundle resolved,
-                                                      Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         DistributionThroughBoundsTable table = new DistributionThroughBoundsCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new DistributionThroughBoundsMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        String markdown = new DistributionThroughBoundsMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote distributions through bounds to " + output.toAbsolutePath());
         return table;
     }
 
     private List<DistributionThroughBoundsTable> writeExtendedDistributionsThroughBoundsFile(Subject subject,
-                                                                                             NatalDescriptionReadingReport natalDescription,
-                                                                                             ReadingInputMapper.ResolvedBundle resolved,
-                                                                                             Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         List<DistributionThroughBoundsTable> tables = new DistributionThroughBoundsCalculator().calculateExtendedTables(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new DistributionThroughBoundsMarkdownRenderer().renderExtended(subject, resolved.inquiryDate(), tables);
+        String markdown = new DistributionThroughBoundsMarkdownRenderer().renderExtended(subject, inquiryDate, tables);
         Files.writeString(output, markdown);
         System.out.println("Wrote extended distributions through bounds to " + output.toAbsolutePath());
         return tables;
     }
 
     private PrimaryDirectionTable writePrimaryDirectionsFile(Subject subject,
-                                            NatalDescriptionReadingReport natalDescription,
-                                            ReadingInputMapper.ResolvedBundle resolved,
-                                            Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         PrimaryDirectionTable table = new PrimaryDirectionCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new PrimaryDirectionMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        String markdown = new PrimaryDirectionMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote primary directions to " + output.toAbsolutePath());
         return table;
     }
 
     private PrimaryDirectionTable calculatePrimaryDirectionVariantTable(Subject subject,
-                                                                        NatalDescriptionReadingReport natalDescription,
-                                                                        ReadingInputMapper.ResolvedBundle resolved) {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate) {
         return new PrimaryDirectionCalculator().calculateDirectConverseTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
     }
 
     private MundanePrimaryDirectionTable writeMundanePrimaryDirectionsFile(Subject subject,
-                                                                            NatalDescriptionReadingReport natalDescription,
-                                                                            ReadingInputMapper.ResolvedBundle resolved,
-                                                                            Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         MundanePrimaryDirectionTable table = new MundanePrimaryDirectionCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new MundanePrimaryDirectionMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        String markdown = new MundanePrimaryDirectionMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote mundane/semi-arc primary direction prototype to " + output.toAbsolutePath());
         return table;
     }
 
     private LunarTimingTable writeLunarTimingFile(Subject subject,
-                                      NatalDescriptionReadingReport natalDescription,
-                                      ReadingInputMapper.ResolvedBundle resolved,
-                                      Path output,
-                                      Path eclipsesOutput,
-                                      Path fullOutput) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output,
+            Path eclipsesOutput,
+            Path fullOutput) throws Exception {
         LunarTimingTable table = new LunarTimingCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
@@ -417,9 +431,9 @@ public final class LocalReadingDumpRunner {
             Files.createDirectories(fullParent);
         }
         LunarTimingMarkdownRenderer renderer = new LunarTimingMarkdownRenderer();
-        Files.writeString(output, renderer.render(subject, resolved.inquiryDate(), table));
-        Files.writeString(eclipsesOutput, renderer.renderEclipseTables(subject, resolved.inquiryDate(), table));
-        Files.writeString(fullOutput, renderer.renderFullTables(subject, resolved.inquiryDate(), table));
+        Files.writeString(output, renderer.render(subject, inquiryDate, table));
+        Files.writeString(eclipsesOutput, renderer.renderEclipseTables(subject, inquiryDate, table));
+        Files.writeString(fullOutput, renderer.renderFullTables(subject, inquiryDate, table));
         System.out.println("Wrote lunar timing overview to " + output.toAbsolutePath());
         System.out.println("Wrote lunar timing eclipse tables to " + eclipsesOutput.toAbsolutePath());
         System.out.println("Wrote lunar timing full tables to " + fullOutput.toAbsolutePath());
@@ -427,58 +441,55 @@ public final class LocalReadingDumpRunner {
     }
 
     private SolarReturnTable writeSolarReturnFile(Subject subject,
-                                                  NatalDescriptionReadingReport natalDescription,
-                                                  ReadingInputMapper.ResolvedBundle resolved,
-                                                  Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
         SolarReturnTable table = new SolarReturnCalculator().calculateTable(
                 subject,
                 natalDescription.getNatalChart(),
                 0,
-                100
-        );
+                100);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new SolarReturnMarkdownRenderer().render(subject, table, activeDateTime(subject, resolved));
+        String markdown = new SolarReturnMarkdownRenderer().render(subject, table, activeDateTime(subject, inquiryDate));
         Files.writeString(output, markdown);
         System.out.println("Wrote solar returns table to " + output.toAbsolutePath());
         return table;
     }
 
     private SolarReturnNatalComparisonTable writeSolarReturnNatalComparisonFile(Subject subject,
-                                                                                NatalDescriptionReadingReport natalDescription,
-                                                                                ReadingInputMapper.ResolvedBundle resolved,
-                                                                                SolarReturnTable solarReturnTable,
-                                                                                Path output) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            SolarReturnTable solarReturnTable,
+            Path output) throws Exception {
         SolarReturnNatalComparisonTable table = new SolarReturnNatalComparisonCalculator().calculate(
                 subject,
                 natalDescription.getNatalChart(),
                 solarReturnTable,
-                resolved.inquiryDate()
-        );
+                inquiryDate);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        String markdown = new SolarReturnNatalComparisonMarkdownRenderer().render(subject, resolved.inquiryDate(), table);
+        String markdown = new SolarReturnNatalComparisonMarkdownRenderer().render(subject, inquiryDate, table);
         Files.writeString(output, markdown);
         System.out.println("Wrote solar return to natal comparison to " + output.toAbsolutePath());
         return table;
     }
 
     private LifeArcSynthesisTable writeLifeArcSynthesisFile(Subject subject,
-                                           NatalDescriptionReadingReport natalDescription,
-                                           ReadingInputMapper.ResolvedBundle resolved,
-                                           Path output) throws Exception {
-        if (resolved.inquiryDate() == null) {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output) throws Exception {
+        if (inquiryDate == null) {
             return null;
         }
         LifeArcSynthesisTable table = new LifeArcSynthesisCalculator().calculate(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate()
-        );
+                inquiryDate);
         Path parent = output.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
@@ -490,61 +501,61 @@ public final class LocalReadingDumpRunner {
     }
 
     private void writeTopicSynthesisFiles(Subject subject,
-                                          NatalDescriptionReadingReport natalDescription,
-                                          ReadingInputMapper.ResolvedBundle resolved,
-                                          LifeArcSynthesisTable lifeArcSynthesisTable,
-                                          Path outputDir) throws Exception {
-        if (resolved.inquiryDate() == null) {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            LifeArcSynthesisTable lifeArcSynthesisTable,
+            Path outputDir) throws Exception {
+        if (inquiryDate == null) {
             return;
         }
         Files.createDirectories(outputDir);
         TopicSynthesisMarkdownRenderer renderer = new TopicSynthesisMarkdownRenderer();
         List<TopicSynthesisMarkdownRenderer.TopicPacket> packets = renderer.packets(natalDescription.getNatalChart(), lifeArcSynthesisTable);
         for (TopicSynthesisMarkdownRenderer.TopicPacket packet : packets) {
-            Files.writeString(outputDir.resolve(packet.bucket().fileName()), renderer.renderTopic(subject, resolved.inquiryDate(), packet));
+            Files.writeString(outputDir.resolve(packet.bucket().fileName()), renderer.renderTopic(subject, inquiryDate, packet));
         }
-        Files.writeString(outputDir.resolve("index.md"), renderer.renderIndex(subject, resolved.inquiryDate(), outputDir, packets));
+        Files.writeString(outputDir.resolve("index.md"), renderer.renderIndex(subject, inquiryDate, outputDir, packets));
         System.out.println("Wrote topic synthesis packets to " + outputDir.toAbsolutePath());
     }
 
     private void writeLifeArcAiBriefFile(Subject subject,
-                                         NatalDescriptionReadingReport natalDescription,
-                                         ReadingInputMapper.ResolvedBundle resolved,
-                                         Path output,
-                                         Path outputIndexOutput,
-                                         Path readingBundleOutput,
-                                         Path annualProfectionsOutput,
-                                         Path monthlyProfectionsOutput,
-                                         Path firdariaOutput,
-                                         Path decennialsOutput,
-                                         Path distributionsThroughBoundsOutput,
-                                         Path distributionsExtendedOutput,
-                                         Path primaryDirectionsOutput,
-                                         Path mundanePrimaryDirectionsOutput,
-                                         Path lunarTimingOutput,
-                                         Path lunarTimingEclipsesOutput,
-                                         Path lunarTimingFullOutput,
-                                         Path solarReturnsOutput,
-                                         Path solarReturnNatalComparisonOutput,
-                                         Path zodiacalReleasingL1AllLotsOutput,
-                                         Path lifeArcSynthesisOutput,
-                                         Path topicSynthesisOutputDir,
-                                         Path zodiacalReleasingOutputDir,
-                                         AnnualProfectionTable annualProfectionTable,
-                                         MonthlyProfectionTable monthlyProfectionTable,
-                                         FirdariaTable firdariaTable,
-                                         DecennialTable decennialTable,
-                                         DistributionThroughBoundsTable distributionsThroughBoundsTable,
-                                         List<DistributionThroughBoundsTable> distributionsExtendedTables,
-                                         PrimaryDirectionTable primaryDirectionTable,
-                                         PrimaryDirectionTable primaryDirectionVariantTable,
-                                         MundanePrimaryDirectionTable mundanePrimaryDirectionTable,
-                                         LunarTimingTable lunarTimingTable,
-                                         SolarReturnTable solarReturnTable,
-                                         SolarReturnNatalComparisonTable solarReturnNatalComparisonTable,
-                                         LifeArcSynthesisTable lifeArcSynthesisTable,
-                                         List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> zodiacalReleasingBriefs) throws Exception {
-        if (resolved.inquiryDate() == null) {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path output,
+            Path outputIndexOutput,
+            Path readingBundleOutput,
+            Path annualProfectionsOutput,
+            Path monthlyProfectionsOutput,
+            Path firdariaOutput,
+            Path decennialsOutput,
+            Path distributionsThroughBoundsOutput,
+            Path distributionsExtendedOutput,
+            Path primaryDirectionsOutput,
+            Path mundanePrimaryDirectionsOutput,
+            Path lunarTimingOutput,
+            Path lunarTimingEclipsesOutput,
+            Path lunarTimingFullOutput,
+            Path solarReturnsOutput,
+            Path solarReturnNatalComparisonOutput,
+            Path zodiacalReleasingL1AllLotsOutput,
+            Path lifeArcSynthesisOutput,
+            Path topicSynthesisOutputDir,
+            Path zodiacalReleasingOutputDir,
+            AnnualProfectionTable annualProfectionTable,
+            MonthlyProfectionTable monthlyProfectionTable,
+            FirdariaTable firdariaTable,
+            DecennialTable decennialTable,
+            DistributionThroughBoundsTable distributionsThroughBoundsTable,
+            List<DistributionThroughBoundsTable> distributionsExtendedTables,
+            PrimaryDirectionTable primaryDirectionTable,
+            PrimaryDirectionTable primaryDirectionVariantTable,
+            MundanePrimaryDirectionTable mundanePrimaryDirectionTable,
+            LunarTimingTable lunarTimingTable,
+            SolarReturnTable solarReturnTable,
+            SolarReturnNatalComparisonTable solarReturnNatalComparisonTable,
+            LifeArcSynthesisTable lifeArcSynthesisTable,
+            List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> zodiacalReleasingBriefs) throws Exception {
+        if (inquiryDate == null) {
             return;
         }
         Path parent = output.getParent();
@@ -571,12 +582,11 @@ public final class LocalReadingDumpRunner {
                 zodiacalReleasingL1AllLotsOutput,
                 lifeArcSynthesisOutput,
                 topicSynthesisOutputDir,
-                zodiacalReleasingOutputDir
-        );
+                zodiacalReleasingOutputDir);
         String markdown = new LifeArcAiBriefMarkdownRenderer().render(
                 subject,
                 natalDescription.getNatalChart(),
-                resolved.inquiryDate(),
+                inquiryDate,
                 output,
                 fileReferences,
                 annualProfectionTable,
@@ -592,40 +602,39 @@ public final class LocalReadingDumpRunner {
                 solarReturnTable,
                 solarReturnNatalComparisonTable,
                 lifeArcSynthesisTable,
-                zodiacalReleasingBriefs
-        );
+                zodiacalReleasingBriefs);
         Files.writeString(output, markdown);
         System.out.println("Wrote life-arc AI brief to " + output.toAbsolutePath());
     }
 
     private void writeOutputIndexFile(Subject subject,
-                                      ReadingInputMapper.ResolvedBundle resolved,
-                                      Path outputIndex,
-                                      Path lifeArcAiBriefOutput,
-                                      Path readingBundleOutput,
-                                      Path annualProfectionsOutput,
-                                      Path monthlyProfectionsOutput,
-                                      Path firdariaOutput,
-                                      Path decennialsOutput,
-                                      Path distributionsThroughBoundsOutput,
-                                      Path distributionsExtendedOutput,
-                                      Path primaryDirectionsOutput,
-                                      Path mundanePrimaryDirectionsOutput,
-                                      Path lunarTimingOutput,
-                                      Path lunarTimingEclipsesOutput,
-                                      Path lunarTimingFullOutput,
-                                      Path solarReturnsOutput,
-                                      Path solarReturnNatalComparisonOutput,
-                                      Path zodiacalReleasingL1AllLotsOutput,
-                                      Path lifeArcSynthesisOutput,
-                                      Path topicSynthesisOutputDir,
-                                      Path zodiacalReleasingOutputDir) throws Exception {
+            LocalDate inquiryDate,
+            Path outputIndex,
+            Path lifeArcAiBriefOutput,
+            Path readingBundleOutput,
+            Path annualProfectionsOutput,
+            Path monthlyProfectionsOutput,
+            Path firdariaOutput,
+            Path decennialsOutput,
+            Path distributionsThroughBoundsOutput,
+            Path distributionsExtendedOutput,
+            Path primaryDirectionsOutput,
+            Path mundanePrimaryDirectionsOutput,
+            Path lunarTimingOutput,
+            Path lunarTimingEclipsesOutput,
+            Path lunarTimingFullOutput,
+            Path solarReturnsOutput,
+            Path solarReturnNatalComparisonOutput,
+            Path zodiacalReleasingL1AllLotsOutput,
+            Path lifeArcSynthesisOutput,
+            Path topicSynthesisOutputDir,
+            Path zodiacalReleasingOutputDir) throws Exception {
         Path parent = outputIndex.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
         List<LifeArcAiBriefMarkdownRenderer.FileReference> fileReferences = lifeArcFileReferences(
-                resolved.inquiryDate() != null,
+                inquiryDate != null,
                 outputIndex,
                 readingBundleOutput,
                 annualProfectionsOutput,
@@ -644,38 +653,37 @@ public final class LocalReadingDumpRunner {
                 zodiacalReleasingL1AllLotsOutput,
                 lifeArcSynthesisOutput,
                 topicSynthesisOutputDir,
-                zodiacalReleasingOutputDir
-        );
+                zodiacalReleasingOutputDir);
         List<LifeArcAiBriefMarkdownRenderer.FileReference> indexReferences = new ArrayList<>();
-        if (resolved.inquiryDate() != null) {
+        if (inquiryDate != null) {
             indexReferences.add(new LifeArcAiBriefMarkdownRenderer.FileReference("Life-arc AI brief", lifeArcAiBriefOutput, "Compact active-period orientation and recommended reading order"));
         }
         indexReferences.addAll(fileReferences);
-        String markdown = new LocalOutputIndexMarkdownRenderer().render(subject, resolved.inquiryDate(), outputIndex, indexReferences);
+        String markdown = new LocalOutputIndexMarkdownRenderer().render(subject, inquiryDate, outputIndex, indexReferences);
         Files.writeString(outputIndex, markdown);
         System.out.println("Wrote local output index to " + outputIndex.toAbsolutePath());
     }
 
     private List<LifeArcAiBriefMarkdownRenderer.FileReference> lifeArcFileReferences(boolean includeInquiryOutputs,
-                                                                                     Path outputIndexOutput,
-                                                                                     Path readingBundleOutput,
-                                                                                     Path annualProfectionsOutput,
-                                                                                     Path monthlyProfectionsOutput,
-                                                                                     Path firdariaOutput,
-                                                                                     Path decennialsOutput,
-                                                                                     Path distributionsThroughBoundsOutput,
-                                                                                     Path distributionsExtendedOutput,
-                                                                                     Path primaryDirectionsOutput,
-                                                                                     Path mundanePrimaryDirectionsOutput,
-                                                                                     Path lunarTimingOutput,
-                                                                                     Path lunarTimingEclipsesOutput,
-                                                                                     Path lunarTimingFullOutput,
-                                                                                     Path solarReturnsOutput,
-                                                                                     Path solarReturnNatalComparisonOutput,
-                                                                                     Path zodiacalReleasingL1AllLotsOutput,
-                                                                                     Path lifeArcSynthesisOutput,
-                                                                                     Path topicSynthesisOutputDir,
-                                                                                     Path zodiacalReleasingOutputDir) {
+            Path outputIndexOutput,
+            Path readingBundleOutput,
+            Path annualProfectionsOutput,
+            Path monthlyProfectionsOutput,
+            Path firdariaOutput,
+            Path decennialsOutput,
+            Path distributionsThroughBoundsOutput,
+            Path distributionsExtendedOutput,
+            Path primaryDirectionsOutput,
+            Path mundanePrimaryDirectionsOutput,
+            Path lunarTimingOutput,
+            Path lunarTimingEclipsesOutput,
+            Path lunarTimingFullOutput,
+            Path solarReturnsOutput,
+            Path solarReturnNatalComparisonOutput,
+            Path zodiacalReleasingL1AllLotsOutput,
+            Path lifeArcSynthesisOutput,
+            Path topicSynthesisOutputDir,
+            Path zodiacalReleasingOutputDir) {
         List<LifeArcAiBriefMarkdownRenderer.FileReference> references = new ArrayList<>();
         references.add(new LifeArcAiBriefMarkdownRenderer.FileReference("Output index", outputIndexOutput, "Master local output map and large-file notes"));
         references.add(new LifeArcAiBriefMarkdownRenderer.FileReference("Reading bundle JSON", readingBundleOutput, "Natal promise and public reading-bundle context"));
@@ -701,27 +709,26 @@ public final class LocalReadingDumpRunner {
         return List.copyOf(references);
     }
 
-    private OffsetDateTime activeDateTime(Subject subject, ReadingInputMapper.ResolvedBundle resolved) {
-        return resolved.inquiryDate() == null
+    private OffsetDateTime activeDateTime(Subject subject, LocalDate inquiryDate) {
+        return inquiryDate == null
                 ? null
                 : OffsetDateTime.of(
-                        resolved.inquiryDate(),
+                        inquiryDate,
                         subject.getUtcBirthDateTime().toLocalTime(),
-                        subject.getUtcBirthDateTime().getOffset()
-                );
+                        subject.getUtcBirthDateTime().getOffset());
     }
 
     private List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> writeZodiacalReleasingFiles(Subject subject,
-                                                                                                      NatalDescriptionReadingReport natalDescription,
-                                                                                                      ReadingInputMapper.ResolvedBundle resolved,
-                                                                                                      Path outputDir,
-                                                                                                      Path l1AllLotsOutput) throws Exception {
+            NatalDescriptionReadingReport natalDescription,
+            LocalDate inquiryDate,
+            Path outputDir,
+            Path l1AllLotsOutput) throws Exception {
         if (natalDescription.getNatalChart().getLots() == null || natalDescription.getNatalChart().getLots().isEmpty()) {
             return List.of();
         }
         Files.createDirectories(outputDir);
 
-        OffsetDateTime activeDateTime = activeDateTime(subject, resolved);
+        OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
         OffsetDateTime endDateTime = subject.getUtcBirthDateTime().plusYears(100);
         ZodiacalReleasingCalculator calculator = new ZodiacalReleasingCalculator();
         ZodiacalReleasingMarkdownRenderer renderer = new ZodiacalReleasingMarkdownRenderer();
@@ -760,8 +767,7 @@ public final class LocalReadingDumpRunner {
                 subject,
                 natalDescription.getNatalChart(),
                 briefs,
-                activeDateTime
-        ));
+                activeDateTime));
         System.out.println("Wrote Zodiacal Releasing L1 all-lots file to " + l1AllLotsOutput.toAbsolutePath());
         System.out.println("Wrote Zodiacal Releasing files to " + outputDir.toAbsolutePath());
         return List.copyOf(briefs);

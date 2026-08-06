@@ -2,12 +2,11 @@ package app;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import app.input.NativeListInputLoader;
-import app.input.ReadingInput;
-import app.input.ReadingInputMapper;
+import app.chart.model.Subject;
+import app.input.NatalInput;
+import app.input.NatalInputLoader;
+import app.input.SubjectFactory;
 import app.io.MystroObjectMapper;
 import app.reading.ReadingBundleReport;
 
@@ -24,30 +23,17 @@ public final class Main {
             return;
         }
 
-        String alias = requireAlias(args[0]);
+        NatalInput natalInput = new NatalInputLoader().load(args[0]);
+        Subject subject = new SubjectFactory().create(natalInput);
+        ReadingBundleReport report = new ReadingBundleCalculator().calculate(AppVersion.get(), subject);
+
         ObjectMapper objectMapper = MystroObjectMapper.create();
-        ReadingInput input = new NativeListInputLoader().load(alias, objectMapper);
-        ReadingInputMapper.ResolvedBundle resolved = new ReadingInputMapper().resolve(input);
-        ReadingBundleReport report = new ReadingBundleCalculator().calculate(AppVersion.get(), resolved);
         String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(report) + System.lineSeparator();
 
-        Path outputPath = Path.of("output", alias, "reading_output.json");
+        Path outputPath = Path.of("output", subject.getId(), "reading_output.json");
         Files.createDirectories(outputPath.getParent());
         Files.writeString(outputPath, json);
         System.out.println("Wrote Mystro reading bundle to " + outputPath.toAbsolutePath());
-    }
-
-    private static String requireAlias(String value) {
-        if (value == null || value.isBlank()) {
-            printUsage();
-            throw new IllegalArgumentException("Native-list alias is required");
-        }
-        String alias = value.trim();
-        if (alias.contains("/") || alias.contains("\\") || ".".equals(alias) || "..".equals(alias)
-                || alias.toLowerCase(java.util.Locale.ROOT).endsWith(".json")) {
-            throw new IllegalArgumentException("Native-list alias must be a name, not a path: " + value);
-        }
-        return alias;
     }
 
     private static void printUsage() {

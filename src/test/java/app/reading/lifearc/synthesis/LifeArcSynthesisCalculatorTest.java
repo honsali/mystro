@@ -14,11 +14,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.data.Planet;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
-import app.reading.description.valens.ValensNatalDescriptionSpecialist;
+import app.reading.description.NatalChartCalculator;
 import app.reading.lifearc.distribution.DistributionThroughBoundsCalculator;
 import app.reading.lifearc.primarydirection.MundanePrimaryDirectionCalculator;
 import app.reading.lifearc.primarydirection.PrimaryDirectionCalculator;
@@ -31,7 +31,7 @@ class LifeArcSynthesisCalculatorTest {
     @Test
     void calculateGroupsActiveLifeArcEvidenceForInquiryDate() {
         Subject subject = subject();
-        NatalChart chart = new ValensNatalDescriptionSpecialist().calculate(subject, new BasicCalculator());
+        Chart chart = new NatalChartCalculator().calculate(subject, new ChartCalculator());
 
         LifeArcSynthesisTable table = calculator.calculate(subject, chart, LocalDate.of(2050, 6, 3));
 
@@ -114,7 +114,7 @@ class LifeArcSynthesisCalculatorTest {
     @Test
     void calculateIncludesLowerWeightedPrimaryDirectionVariantsWhenActive() {
         Subject subject = subject();
-        NatalChart chart = new ValensNatalDescriptionSpecialist().calculate(subject, new BasicCalculator());
+        Chart chart = new NatalChartCalculator().calculate(subject, new ChartCalculator());
 
         LocalDate converseInquiry = new PrimaryDirectionCalculator()
                 .calculateDirectConverseTable(subject, chart, null, 0, 100)
@@ -155,7 +155,7 @@ class LifeArcSynthesisCalculatorTest {
     @Test
     void calculateRejectsMissingOrPrebirthInquiryDate() {
         Subject subject = subject();
-        NatalChart chart = new ValensNatalDescriptionSpecialist().calculate(subject, new BasicCalculator());
+        Chart chart = new NatalChartCalculator().calculate(subject, new ChartCalculator());
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculate(subject, chart, null));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculate(subject, chart, LocalDate.of(1999, 12, 31)));

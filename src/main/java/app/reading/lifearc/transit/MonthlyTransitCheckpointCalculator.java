@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.TraditionalTables;
 import app.chart.data.AspectType;
@@ -19,7 +19,7 @@ import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -53,9 +53,9 @@ public final class MonthlyTransitCheckpointCalculator {
             Triplicity.DOROTHEAN
     );
 
-    private final BasicCalculator basicCalculator = new BasicCalculator();
+    private final ChartCalculator chartCalculator = new ChartCalculator();
 
-    public MonthlyTransitCheckpointTable calculateTable(Subject subject, NatalChart natalChart, LocalDate inquiryDate,
+    public MonthlyTransitCheckpointTable calculateTable(Subject subject, Chart natalChart, LocalDate inquiryDate,
                                                         int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");
@@ -89,7 +89,7 @@ public final class MonthlyTransitCheckpointCalculator {
         );
     }
 
-    private MonthlyTransitCheckpointRow row(Subject subject, NatalChart natalChart, List<NatalTarget> natalTargets,
+    private MonthlyTransitCheckpointRow row(Subject subject, Chart natalChart, List<NatalTarget> natalTargets,
                                             OffsetDateTime activeDateTime, int checkpointNumber,
                                             int ageYears, int monthIndex) {
         long totalMonths = ageYears * 12L + monthIndex;
@@ -104,7 +104,7 @@ public final class MonthlyTransitCheckpointCalculator {
         int monthlyProfectedHouse = houseForSign(natalChart, monthlyProfectedSign);
         Planet lordOfMonth = TraditionalTables.domicileRuler(monthlyProfectedSign);
 
-        NatalChart transitChart = transitChart(subject, checkpointDateTime, checkpointNumber);
+        Chart transitChart = transitChart(subject, checkpointDateTime, checkpointNumber);
         List<MonthlyTransitPointEntry> transitPoints = transitPoints(natalChart, transitChart);
         List<PointKey> transitPointsInAnnualProfectedSign = transitPoints.stream()
                 .filter(point -> point.sign() == annualProfectedSign)
@@ -155,7 +155,7 @@ public final class MonthlyTransitCheckpointCalculator {
         );
     }
 
-    private NatalChart transitChart(Subject subject, OffsetDateTime checkpointDateTime, int checkpointNumber) {
+    private Chart transitChart(Subject subject, OffsetDateTime checkpointDateTime, int checkpointNumber) {
         Subject checkpointSubject = new Subject(
                 subject.getId() + "-monthly-transit-checkpoint-" + checkpointNumber,
                 checkpointDateTime,
@@ -164,10 +164,10 @@ public final class MonthlyTransitCheckpointCalculator {
                 subject.getLongitude(),
                 subject.getElevationMeters()
         );
-        return basicCalculator.calculate(new CalculationContext(checkpointSubject, TRANSIT_CONVENTIONS));
+        return chartCalculator.calculate(new CalculationContext(checkpointSubject, TRANSIT_CONVENTIONS));
     }
 
-    private List<MonthlyTransitPointEntry> transitPoints(NatalChart natalChart, NatalChart transitChart) {
+    private List<MonthlyTransitPointEntry> transitPoints(Chart natalChart, Chart transitChart) {
         List<MonthlyTransitPointEntry> entries = new ArrayList<>();
         for (PointKey key : TRANSIT_POINT_ORDER) {
             PointEntry point = transitChart.getPoints().get(key);
@@ -360,7 +360,7 @@ public final class MonthlyTransitCheckpointCalculator {
         return reasons.size();
     }
 
-    private List<NatalTarget> natalTargets(NatalChart natalChart) {
+    private List<NatalTarget> natalTargets(Chart natalChart) {
         List<NatalTarget> targets = new ArrayList<>();
         for (var entry : natalChart.getPoints().entrySet()) {
             PointPlacement placement = placement(entry.getValue(), natalChart);
@@ -390,7 +390,7 @@ public final class MonthlyTransitCheckpointCalculator {
         return List.copyOf(targets);
     }
 
-    private PointPlacement placement(PointEntry point, NatalChart natalChart) {
+    private PointPlacement placement(PointEntry point, Chart natalChart) {
         if (point instanceof PlanetPointEntry planetPoint) {
             return new PointPlacement(
                     planetPoint.longitude(),
@@ -431,7 +431,7 @@ public final class MonthlyTransitCheckpointCalculator {
                 && activeDateTime.isBefore(endDateTime);
     }
 
-    private ZodiacSign signForHouse(NatalChart chart, int house) {
+    private ZodiacSign signForHouse(Chart chart, int house) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getHouse() == house)
                 .map(HousePosition::getSign)
@@ -439,7 +439,7 @@ public final class MonthlyTransitCheckpointCalculator {
                 .orElseThrow(() -> new IllegalArgumentException("Missing natal house " + house));
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

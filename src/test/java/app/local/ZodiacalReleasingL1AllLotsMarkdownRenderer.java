@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import app.chart.TraditionalTables;
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.lifearc.zodiacalreleasing.ZodiacalReleasingMarker;
 import app.reading.lifearc.zodiacalreleasing.ZodiacalReleasingPeriod;
@@ -19,7 +19,7 @@ final class ZodiacalReleasingL1AllLotsMarkdownRenderer {
     private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     String render(Subject subject,
-                  NatalChart chart,
+                  Chart chart,
                   List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> briefs,
                   OffsetDateTime activeDateTime) {
         StringBuilder out = new StringBuilder();
@@ -57,7 +57,7 @@ final class ZodiacalReleasingL1AllLotsMarkdownRenderer {
 
     private void appendRows(StringBuilder out,
                             Subject subject,
-                            NatalChart chart,
+                            Chart chart,
                             List<LifeArcAiBriefMarkdownRenderer.ZodiacalReleasingBrief> briefs,
                             OffsetDateTime activeDateTime) {
         out.append("## L1 periods by lot\n\n");
@@ -97,7 +97,7 @@ final class ZodiacalReleasingL1AllLotsMarkdownRenderer {
                 && activeDateTime.isBefore(period.endDateTimeExclusive());
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(house -> house.getSign() == sign)
                 .map(HousePosition::getHouse)

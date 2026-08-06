@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -132,7 +132,7 @@ final class TopicSynthesisMarkdownRenderer {
             )
     );
 
-    List<TopicPacket> packets(NatalChart chart, LifeArcSynthesisTable synthesis) {
+    List<TopicPacket> packets(Chart chart, LifeArcSynthesisTable synthesis) {
         return BUCKETS.stream()
                 .map(bucket -> packet(chart, synthesis, bucket))
                 .toList();
@@ -193,7 +193,7 @@ final class TopicSynthesisMarkdownRenderer {
         return out.toString();
     }
 
-    private TopicPacket packet(NatalChart chart, LifeArcSynthesisTable synthesis, TopicBucket bucket) {
+    private TopicPacket packet(Chart chart, LifeArcSynthesisTable synthesis, TopicBucket bucket) {
         List<TopicAssessmentEntry> assessments = chart.getTopicAssessments() == null
                 ? List.of()
                 : chart.getTopicAssessments().stream()
@@ -225,7 +225,7 @@ final class TopicSynthesisMarkdownRenderer {
         return new TopicPacket(bucket, assessments, evidenceRows, houses, lots, planets, activeEvidence, index.snapshot());
     }
 
-    private void addBucketCriteria(CriteriaIndex index, NatalChart chart, TopicBucket bucket) {
+    private void addBucketCriteria(CriteriaIndex index, Chart chart, TopicBucket bucket) {
         for (int house : bucket.houses()) {
             index.addHouse(house, "bucket house H" + house);
             houseRef(chart, house).ifPresent(ref -> {
@@ -445,7 +445,7 @@ final class TopicSynthesisMarkdownRenderer {
         out.append("\n");
     }
 
-    private List<HouseTopicRulerEntry> houseRefs(NatalChart chart, Set<String> houseKeys) {
+    private List<HouseTopicRulerEntry> houseRefs(Chart chart, Set<String> houseKeys) {
         if (chart.getHouseTopicRulers() == null || houseKeys.isEmpty()) {
             return List.of();
         }
@@ -455,7 +455,7 @@ final class TopicSynthesisMarkdownRenderer {
                 .toList();
     }
 
-    private List<LotEntry> lotRefs(NatalChart chart, Set<String> lotKeys) {
+    private List<LotEntry> lotRefs(Chart chart, Set<String> lotKeys) {
         if (chart.getLots() == null || lotKeys.isEmpty()) {
             return List.of();
         }
@@ -465,7 +465,7 @@ final class TopicSynthesisMarkdownRenderer {
                 .toList();
     }
 
-    private List<PlanetRef> planetRefs(NatalChart chart, Set<String> planetKeys, Set<String> pointKeys) {
+    private List<PlanetRef> planetRefs(Chart chart, Set<String> planetKeys, Set<String> pointKeys) {
         Set<Planet> planets = new LinkedHashSet<>();
         for (String key : planetKeys) {
             try {
@@ -488,7 +488,7 @@ final class TopicSynthesisMarkdownRenderer {
                 .toList();
     }
 
-    private java.util.Optional<HouseTopicRulerEntry> houseRef(NatalChart chart, int house) {
+    private java.util.Optional<HouseTopicRulerEntry> houseRef(Chart chart, int house) {
         if (chart.getHouseTopicRulers() == null) {
             return java.util.Optional.empty();
         }
@@ -497,7 +497,7 @@ final class TopicSynthesisMarkdownRenderer {
                 .findFirst();
     }
 
-    private java.util.Optional<LotEntry> lotRef(NatalChart chart, String lotName) {
+    private java.util.Optional<LotEntry> lotRef(Chart chart, String lotName) {
         if (chart.getLots() == null) {
             return java.util.Optional.empty();
         }
@@ -506,7 +506,7 @@ final class TopicSynthesisMarkdownRenderer {
                 .findFirst();
     }
 
-    private java.util.Optional<PlanetPointEntry> planetPoint(NatalChart chart, Planet planet) {
+    private java.util.Optional<PlanetPointEntry> planetPoint(Chart chart, Planet planet) {
         if (chart.getPoints() == null) {
             return java.util.Optional.empty();
         }
@@ -523,7 +523,7 @@ final class TopicSynthesisMarkdownRenderer {
         return java.util.Optional.empty();
     }
 
-    private java.util.Optional<PlanetRef> planetRef(NatalChart chart, Planet planet) {
+    private java.util.Optional<PlanetRef> planetRef(Chart chart, Planet planet) {
         return planetPoint(chart, planet)
                 .map(point -> new PlanetRef(planet, point.sign(), point.degreeInSign(), point.house(), point.retrograde()));
     }

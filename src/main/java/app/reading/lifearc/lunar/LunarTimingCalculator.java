@@ -17,7 +17,7 @@ import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
@@ -54,7 +54,7 @@ public final class LunarTimingCalculator {
     );
     private static final SyzygyEventSearch SYZYGY_EVENT_SEARCH = new SyzygyEventSearch();
 
-    public LunarTimingTable calculateTable(Subject subject, NatalChart natalChart, LocalDate inquiryDate,
+    public LunarTimingTable calculateTable(Subject subject, Chart natalChart, LocalDate inquiryDate,
                                            int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");
@@ -100,7 +100,7 @@ public final class LunarTimingCalculator {
         );
     }
 
-    private List<LunarReturnEntry> lunarReturns(Subject subject, NatalChart natalChart, CalculationContext ephemerisContext,
+    private List<LunarReturnEntry> lunarReturns(Subject subject, Chart natalChart, CalculationContext ephemerisContext,
                                                 PlanetPosition natalMoon, OffsetDateTime activeDateTime,
                                                 double coverageStartJulianDay, double coverageEndJulianDay) {
         double birthJulianDay = julianDayFromInstant(subject.getResolvedUtcInstant());
@@ -166,7 +166,7 @@ public final class LunarTimingCalculator {
         return difference > 180.0 ? difference - 360.0 : difference;
     }
 
-    private LunarReturnEntry lunarReturnEntry(int sequenceIndex, Subject subject, NatalChart natalChart,
+    private LunarReturnEntry lunarReturnEntry(int sequenceIndex, Subject subject, Chart natalChart,
                                               CalculationContext ephemerisContext, PlanetPosition natalMoon,
                                               OffsetDateTime activeDateTime, ReturnInstant start, ReturnInstant end) {
         double moonLongitude = ephemerisContext.longitudeFor(Planet.MOON, SweConst.SE_MOON, start.julianDay());
@@ -196,7 +196,7 @@ public final class LunarTimingCalculator {
         );
     }
 
-    private List<LunationEntry> lunations(Subject subject, NatalChart natalChart, CalculationContext ephemerisContext,
+    private List<LunationEntry> lunations(Subject subject, Chart natalChart, CalculationContext ephemerisContext,
                                           OffsetDateTime activeDateTime,
                                           double coverageStartJulianDay, double coverageEndJulianDay) {
         List<SyzygyEvent> instants = syzygyInstants(ephemerisContext, coverageStartJulianDay, coverageEndJulianDay);
@@ -229,7 +229,7 @@ public final class LunarTimingCalculator {
         return List.copyOf(instants);
     }
 
-    private LunationEntry lunationEntry(int sequenceIndex, Subject subject, NatalChart natalChart,
+    private LunationEntry lunationEntry(int sequenceIndex, Subject subject, Chart natalChart,
                                         CalculationContext ephemerisContext, OffsetDateTime activeDateTime,
                                         SyzygyEvent current, SyzygyEvent next) {
         double sunLongitude = ephemerisContext.longitudeFor(Planet.SUN, SweConst.SE_SUN, current.julianDay());
@@ -268,7 +268,7 @@ public final class LunarTimingCalculator {
         );
     }
 
-    private List<EclipseEvent> trueEclipseEvents(Subject subject, NatalChart natalChart, CalculationContext ephemerisContext,
+    private List<EclipseEvent> trueEclipseEvents(Subject subject, Chart natalChart, CalculationContext ephemerisContext,
                                                   double coverageStartJulianDay, double coverageEndJulianDay) {
         List<EclipseEvent> events = new ArrayList<>();
         events.addAll(solarEclipseEvents(subject, natalChart, ephemerisContext, coverageStartJulianDay, coverageEndJulianDay));
@@ -284,7 +284,7 @@ public final class LunarTimingCalculator {
         return List.copyOf(resequenced);
     }
 
-    private List<EclipseEvent> solarEclipseEvents(Subject subject, NatalChart natalChart,
+    private List<EclipseEvent> solarEclipseEvents(Subject subject, Chart natalChart,
                                                   CalculationContext ephemerisContext,
                                                   double coverageStartJulianDay, double coverageEndJulianDay) {
         List<EclipseEvent> events = new ArrayList<>();
@@ -314,7 +314,7 @@ public final class LunarTimingCalculator {
         return List.copyOf(events);
     }
 
-    private EclipseEvent solarEclipseEvent(int sequenceIndex, Subject subject, NatalChart natalChart,
+    private EclipseEvent solarEclipseEvent(int sequenceIndex, Subject subject, Chart natalChart,
                                            CalculationContext ephemerisContext, int result, double[] contacts,
                                            LocalEclipseSearchResult localVisibilitySearch) {
         double maximumJulianDay = contacts[0];
@@ -368,7 +368,7 @@ public final class LunarTimingCalculator {
         );
     }
 
-    private List<EclipseEvent> lunarEclipseEvents(Subject subject, NatalChart natalChart,
+    private List<EclipseEvent> lunarEclipseEvents(Subject subject, Chart natalChart,
                                                   CalculationContext ephemerisContext,
                                                   double coverageStartJulianDay, double coverageEndJulianDay) {
         List<EclipseEvent> events = new ArrayList<>();
@@ -398,7 +398,7 @@ public final class LunarTimingCalculator {
         return List.copyOf(events);
     }
 
-    private EclipseEvent lunarEclipseEvent(int sequenceIndex, Subject subject, NatalChart natalChart,
+    private EclipseEvent lunarEclipseEvent(int sequenceIndex, Subject subject, Chart natalChart,
                                            CalculationContext ephemerisContext, int result, double[] contacts,
                                            LocalEclipseSearchResult localVisibilitySearch) {
         double maximumJulianDay = contacts[0];
@@ -973,7 +973,7 @@ public final class LunarTimingCalculator {
         return SwissEphAdapter.julianDayUtToUtc(julianDay);
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

@@ -17,7 +17,7 @@ import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
 import app.chart.model.BasicSect;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.reading.CoreDoctrineInfo;
 import app.reading.description.common.calculator.LotCalculatorHouseFixture;
@@ -26,7 +26,7 @@ import app.reading.description.common.model.LotEntry;
 class ValensLotCalculatorTest {
     @Test
     void valensDiurnalReturnsValensAndSupplementalLotsWithExpectedNamesAndFormulaLogic() {
-        NatalChart chart = chart(100.0, 10.0, 40.0, Sect.DIURNAL);
+        Chart chart = chart(100.0, 10.0, 40.0, Sect.DIURNAL);
         CalculationContext ctx = LotCalculatorHouseFixture.ctx(new CoreDoctrineInfo("valens", "Vettius Valens", HouseSystem.WHOLE_SIGN, Terms.EGYPTIAN, Triplicity.DOROTHEAN));
         List<LotEntry> lots = new ValensLotCalculator().calculate(ctx, chart);
         assertEquals(List.of("FORTUNE", "SPIRIT", "EROS", "NECESSITY", "BASIS", "COURAGE", "VICTORY", "NEMESIS", "WEDDING", "CHILDREN", "FATHER", "MOTHER", "SIBLINGS"), lots.stream().map(LotEntry::name).toList());
@@ -52,8 +52,8 @@ class ValensLotCalculatorTest {
 
     @Test
     void valensNocturnalReversesFortuneSpiritAndDependentLots() {
-        NatalChart chart = chart(100.0, 10.0, 40.0, Sect.NOCTURNAL);
-        NatalChart dayChart = chart(100.0, 10.0, 40.0, Sect.DIURNAL);
+        Chart chart = chart(100.0, 10.0, 40.0, Sect.NOCTURNAL);
+        Chart dayChart = chart(100.0, 10.0, 40.0, Sect.DIURNAL);
         CalculationContext ctx = LotCalculatorHouseFixture.ctx(new CoreDoctrineInfo("valens", "Vettius Valens", HouseSystem.WHOLE_SIGN, Terms.EGYPTIAN, Triplicity.DOROTHEAN));
         ValensLotCalculator calculator = new ValensLotCalculator();
         List<LotEntry> lots = calculator.calculate(ctx, chart);
@@ -81,8 +81,8 @@ class ValensLotCalculatorTest {
         assertEquals("Asc + (Jupiter -> Saturn)", lots.get(12).formula());
     }
 
-    private NatalChart chart(double asc, double sun, double moon, Sect sectValue) {
-        NatalChart chart = new NatalChart();
+    private Chart chart(double asc, double sun, double moon, Sect sectValue) {
+        Chart chart = new Chart();
         chart.setAngles(List.of(new ChartAngle(AngleType.ASCENDANT, asc, ZodiacSign.CANCER, asc % 30.0)));
         chart.setPlanets(List.of(position(Planet.SUN, sun), position(Planet.MOON, moon), position(Planet.MERCURY, 20.0), position(Planet.VENUS, 50.0), position(Planet.MARS, 160.0), position(Planet.JUPITER, 190.0), position(Planet.SATURN, 250.0)));
         chart.setSect(new BasicSect(sectValue, Planet.SUN, Planet.MOON, Planet.JUPITER, Planet.VENUS, Planet.SATURN, Planet.MARS, sectValue == Sect.DIURNAL, sectValue != Sect.DIURNAL, 1.0, -1.0, java.util.Map.of()));

@@ -11,7 +11,7 @@ import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -33,7 +33,7 @@ public final class DorotheanMonthlyProfectionCalculator {
             AnnualProfectionReference.LOT_SPIRIT
     );
 
-    public MonthlyProfectionTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public MonthlyProfectionTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                  int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");
@@ -62,7 +62,7 @@ public final class DorotheanMonthlyProfectionCalculator {
         );
     }
 
-    private MonthlyProfectionTableRow tableRow(NatalChart chart, OffsetDateTime birthDateTime,
+    private MonthlyProfectionTableRow tableRow(Chart chart, OffsetDateTime birthDateTime,
                                                OffsetDateTime activeDateTime, int ageYears, int monthIndex) {
         long totalMonths = ageYears * 12L + monthIndex;
         OffsetDateTime startDateTime = birthDateTime.plusMonths(totalMonths);
@@ -88,7 +88,7 @@ public final class DorotheanMonthlyProfectionCalculator {
         );
     }
 
-    private MonthlyProfectionReferenceEntry referenceProfection(NatalChart chart, AnnualProfectionReference reference,
+    private MonthlyProfectionReferenceEntry referenceProfection(Chart chart, AnnualProfectionReference reference,
                                                                int ageYears, int signSteps) {
         ZodiacSign natalSign = natalSign(chart, reference);
         ZodiacSign annualSign = advanceSign(natalSign, ageYears);
@@ -125,7 +125,7 @@ public final class DorotheanMonthlyProfectionCalculator {
                 && activeDateTime.isBefore(endDateTime);
     }
 
-    private ZodiacSign natalSign(NatalChart chart, AnnualProfectionReference reference) {
+    private ZodiacSign natalSign(Chart chart, AnnualProfectionReference reference) {
         return switch (reference) {
             case ASCENDANT -> sign(point(chart, PointKey.ASCENDANT));
             case MIDHEAVEN -> sign(point(chart, PointKey.MIDHEAVEN));
@@ -136,7 +136,7 @@ public final class DorotheanMonthlyProfectionCalculator {
         };
     }
 
-    private PointEntry point(NatalChart chart, PointKey point) {
+    private PointEntry point(Chart chart, PointKey point) {
         PointEntry entry = chart.getPoints().get(point);
         if (entry == null) {
             throw new IllegalArgumentException("Missing natal point " + point);
@@ -144,7 +144,7 @@ public final class DorotheanMonthlyProfectionCalculator {
         return entry;
     }
 
-    private ZodiacSign lotSign(NatalChart chart, String lotName) {
+    private ZodiacSign lotSign(Chart chart, String lotName) {
         if (chart.getLots() == null) {
             throw new IllegalArgumentException("Missing natal lots");
         }
@@ -165,7 +165,7 @@ public final class DorotheanMonthlyProfectionCalculator {
         throw new IllegalArgumentException("Unsupported point entry " + point.getClass().getName());
     }
 
-    private Integer houseForSign(NatalChart chart, ZodiacSign sign) {
+    private Integer houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

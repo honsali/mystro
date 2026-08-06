@@ -11,7 +11,7 @@ import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.Sect;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -41,7 +41,7 @@ public final class DecennialCalculator {
             Planet.MERCURY
     );
 
-    public DecennialTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public DecennialTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                          int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");
@@ -108,7 +108,7 @@ public final class DecennialCalculator {
         );
     }
 
-    private List<DecennialSubperiod> subperiods(NatalChart chart, List<Planet> sequence, Planet ruler,
+    private List<DecennialSubperiod> subperiods(Chart chart, List<Planet> sequence, Planet ruler,
                                                 OffsetDateTime naturalPeriodStart,
                                                 OffsetDateTime naturalPeriodEnd,
                                                 OffsetDateTime emittedPeriodStart,
@@ -151,7 +151,7 @@ public final class DecennialCalculator {
         return List.copyOf(partners);
     }
 
-    private DecennialRulerCondition rulerCondition(NatalChart chart, Planet planet) {
+    private DecennialRulerCondition rulerCondition(Chart chart, Planet planet) {
         PointEntry point = chart.getPoints().get(PointKey.of(planet));
         if (!(point instanceof PlanetPointEntry planetPoint)) {
             throw new IllegalArgumentException("Missing natal planet point " + planet);
@@ -170,7 +170,7 @@ public final class DecennialCalculator {
         );
     }
 
-    private List<Integer> ruledNatalHouses(NatalChart chart, Planet ruler) {
+    private List<Integer> ruledNatalHouses(Chart chart, Planet ruler) {
         return chart.getHouses().stream()
                 .filter(house -> TraditionalTables.domicileRuler(house.getSign()) == ruler)
                 .map(HousePosition::getHouse)

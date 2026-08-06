@@ -22,7 +22,7 @@ import app.chart.data.PointType;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -78,7 +78,7 @@ class DorotheanMonthlyProfectionCalculatorTest {
     @Test
     void calculateTableRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart chart = chart();
+        Chart chart = chart();
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, LocalDate.of(1999, 12, 31), 0, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, null, -1, 1));
@@ -129,8 +129,8 @@ class DorotheanMonthlyProfectionCalculatorTest {
         return app.testing.SyntheticTestData.subject();
     }
 
-    private NatalChart chart() {
-        NatalChart chart = new NatalChart();
+    private Chart chart() {
+        Chart chart = new Chart();
         chart.setHouses(housesFromPiscesAscendant());
 
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
@@ -141,8 +141,8 @@ class DorotheanMonthlyProfectionCalculatorTest {
         chart.setPoints(points);
 
         chart.setLots(List.of(
-                new LotEntry("FORTUNE", "Lot of Fortune", "valens", 240.0, ZodiacSign.SAGITTARIUS, 0.0, 10, Planet.JUPITER, "fixture"),
-                new LotEntry("SPIRIT", "Lot of Spirit", "valens", 330.0, ZodiacSign.PISCES, 0.0, 1, Planet.JUPITER, "fixture")
+                new LotEntry("FORTUNE", "Lot of Fortune", "valens", 240.0, ZodiacSign.SAGITTARIUS, 0.0, 10, Planet.JUPITER, "fixture", List.of()),
+                new LotEntry("SPIRIT", "Lot of Spirit", "valens", 330.0, ZodiacSign.PISCES, 0.0, 1, Planet.JUPITER, "fixture", List.of())
         ));
         return chart;
     }

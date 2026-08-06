@@ -16,7 +16,7 @@ import app.chart.data.Sect;
 import app.chart.data.ZodiacSign;
 import app.chart.data.Triplicity;
 import app.chart.model.BasicSect;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PointEntry;
@@ -35,7 +35,7 @@ class ValensTriplicityLifePhaseCalculatorTest {
 
     @Test
     void usesReferenceTriplicityRulersForEarlyMiddleAndLateLife() {
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 100.0, ZodiacSign.CANCER, 4),
                 position(Planet.MOON, 190.0, ZodiacSign.LIBRA, 8),
@@ -50,7 +50,7 @@ class ValensTriplicityLifePhaseCalculatorTest {
                 PointKey.of(Planet.SATURN), point(SolarCondition.UNDER_BEAMS, List.of(), List.of(DignityType.DETRIMENT)),
                 PointKey.of(Planet.JUPITER), point(SolarCondition.FREE_OF_SUN, List.of(DignityType.TRIPLICITY), List.of())
         ));
-        chart.setLots(List.of(new LotEntry("FORTUNE", "Fortune", "valens", 250.0, ZodiacSign.SAGITTARIUS, 10.0, 10, Planet.JUPITER, "test")));
+        chart.setLots(List.of(new LotEntry("FORTUNE", "Fortune", "valens", 250.0, ZodiacSign.SAGITTARIUS, 10.0, 10, Planet.JUPITER, "test", List.of())));
         chart.setSect(new BasicSect(Sect.NOCTURNAL, Planet.MOON, Planet.SUN, Planet.VENUS, Planet.JUPITER, Planet.MARS, Planet.SATURN, false, true, -1.0, 1.0, Map.of()));
 
         List<TriplicityLifePhaseEntry> phases = calculator.calculate(chart);
@@ -68,7 +68,7 @@ class ValensTriplicityLifePhaseCalculatorTest {
 
     @Test
     void partitionsVitalityYearsIntoTriplicityPhaseAgeRanges() {
-        NatalChart chart = chartWithVitalityYears(90.0);
+        Chart chart = chartWithVitalityYears(90.0);
 
         List<TriplicityLifePhaseEntry> phases = calculator.calculate(chart);
 
@@ -94,8 +94,8 @@ class ValensTriplicityLifePhaseCalculatorTest {
         assertEquals(solarCondition, entry.rulerSolarCondition());
     }
 
-    private NatalChart chartWithVitalityYears(double indicatedYears) {
-        NatalChart chart = new NatalChart();
+    private Chart chartWithVitalityYears(double indicatedYears) {
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 100.0, ZodiacSign.CANCER, 4),
                 position(Planet.MOON, 190.0, ZodiacSign.LIBRA, 8),
@@ -110,7 +110,7 @@ class ValensTriplicityLifePhaseCalculatorTest {
                 PointKey.of(Planet.SATURN), point(SolarCondition.UNDER_BEAMS, List.of(), List.of(DignityType.DETRIMENT)),
                 PointKey.of(Planet.JUPITER), point(SolarCondition.FREE_OF_SUN, List.of(DignityType.TRIPLICITY), List.of())
         ));
-        chart.setLots(List.of(new LotEntry("FORTUNE", "Fortune", "valens", 250.0, ZodiacSign.SAGITTARIUS, 10.0, 10, Planet.JUPITER, "test")));
+        chart.setLots(List.of(new LotEntry("FORTUNE", "Fortune", "valens", 250.0, ZodiacSign.SAGITTARIUS, 10.0, 10, Planet.JUPITER, "test", List.of())));
         chart.setSect(new BasicSect(Sect.NOCTURNAL, Planet.MOON, Planet.SUN, Planet.VENUS, Planet.JUPITER, Planet.MARS, Planet.SATURN, false, true, -1.0, 1.0, Map.of()));
         chart.setPtolemaicHylegAlcocoden(new HylegAlcocodenEntry(
                 "ptolemaic",

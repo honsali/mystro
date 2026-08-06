@@ -10,14 +10,14 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 
@@ -35,7 +35,7 @@ class SolarReturnCalculatorTest {
     @Test
     void calculateTableProducesExactSolarReturnsForRequestedAgeRange() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         SolarReturnTable table = calculator.calculateTable(subject, natalChart, 0, 2);
 
@@ -58,7 +58,7 @@ class SolarReturnCalculatorTest {
     @Test
     void calculateTableRejectsInvalidRange() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, -1, 2));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, 3, 2));
@@ -71,7 +71,7 @@ class SolarReturnCalculatorTest {
                 OffsetDateTime.parse("2000-01-01T14:00:00+02:00"),
                 51.4769,
                 0.0);
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         SolarReturnTable table = calculator.calculateTable(subject, natalChart, 0, 1);
 

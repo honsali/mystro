@@ -12,7 +12,7 @@ import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -24,7 +24,7 @@ public final class SolarReturnNatalComparisonCalculator {
     private static final String NATAL_OVERLAY_METHOD = "SOLAR_RETURN_POINTS_OVER_NATAL_WHOLE_SIGN_HOUSES; ECLIPTIC_LONGITUDE_CONJUNCTIONS_WITHIN_3_DEGREES";
     private static final double CONJUNCTION_ORB_DEGREES = 3.0;
 
-    public SolarReturnNatalComparisonTable calculate(Subject subject, NatalChart natalChart,
+    public SolarReturnNatalComparisonTable calculate(Subject subject, Chart natalChart,
                                                      SolarReturnTable solarReturnTable, LocalDate inquiryDate) {
         OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
         List<NatalTarget> natalTargets = natalTargets(natalChart);
@@ -44,7 +44,7 @@ public final class SolarReturnNatalComparisonCalculator {
         );
     }
 
-    private SolarReturnNatalComparisonRow row(NatalChart natalChart, SolarReturnEntry solarReturn,
+    private SolarReturnNatalComparisonRow row(Chart natalChart, SolarReturnEntry solarReturn,
                                               List<NatalTarget> natalTargets, OffsetDateTime activeDateTime) {
         int profectedHouse = Math.floorMod(solarReturn.ageYears(), 12) + 1;
         ZodiacSign profectedSign = signForHouse(natalChart, profectedHouse);
@@ -79,7 +79,7 @@ public final class SolarReturnNatalComparisonCalculator {
         );
     }
 
-    private List<SolarReturnPointOverlay> pointOverlays(NatalChart natalChart, SolarReturnEntry solarReturn) {
+    private List<SolarReturnPointOverlay> pointOverlays(Chart natalChart, SolarReturnEntry solarReturn) {
         List<SolarReturnPointOverlay> entries = new ArrayList<>();
         for (SolarReturnPointEntry point : solarReturn.points()) {
             entries.add(new SolarReturnPointOverlay(
@@ -117,7 +117,7 @@ public final class SolarReturnNatalComparisonCalculator {
         return List.copyOf(entries);
     }
 
-    private List<NatalTarget> natalTargets(NatalChart natalChart) {
+    private List<NatalTarget> natalTargets(Chart natalChart) {
         List<NatalTarget> targets = new ArrayList<>();
         for (var entry : natalChart.getPoints().entrySet()) {
             PointPlacement placement = placement(entry.getValue(), natalChart);
@@ -145,7 +145,7 @@ public final class SolarReturnNatalComparisonCalculator {
         return List.copyOf(targets);
     }
 
-    private PointPlacement placement(PointEntry point, NatalChart natalChart) {
+    private PointPlacement placement(PointEntry point, Chart natalChart) {
         if (point instanceof PlanetPointEntry planetPoint) {
             return new PointPlacement(
                     planetPoint.longitude(),
@@ -186,7 +186,7 @@ public final class SolarReturnNatalComparisonCalculator {
                 && activeDateTime.isBefore(endDateTime);
     }
 
-    private ZodiacSign signForHouse(NatalChart chart, int house) {
+    private ZodiacSign signForHouse(Chart chart, int house) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getHouse() == house)
                 .map(HousePosition::getSign)
@@ -194,7 +194,7 @@ public final class SolarReturnNatalComparisonCalculator {
                 .orElseThrow(() -> new IllegalArgumentException("Missing natal house " + house));
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

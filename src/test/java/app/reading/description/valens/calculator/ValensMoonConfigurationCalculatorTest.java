@@ -23,7 +23,7 @@ import app.chart.data.SectCondition;
 import app.chart.data.SolarOrientation;
 import app.chart.data.ZodiacSign;
 import app.chart.model.MoonPhase;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
@@ -39,7 +39,7 @@ class ValensMoonConfigurationCalculatorTest {
 
     @Test
     void identifiesLastSeparationNextApplicationAndVoidFalse() {
-        NatalChart chart = chart(40.0, List.of(position(Planet.SUN, 180.0), position(Planet.MERCURY, 250.0), position(Planet.VENUS, 337.0), position(Planet.MARS, 120.0), position(Planet.JUPITER, 260.0), position(Planet.SATURN, 315.0)),
+        Chart chart = chart(40.0, List.of(position(Planet.SUN, 180.0), position(Planet.MERCURY, 250.0), position(Planet.VENUS, 337.0), position(Planet.MARS, 120.0), position(Planet.JUPITER, 260.0), position(Planet.SATURN, 315.0)),
                 List.of(relation(Planet.MOON, Planet.JUPITER, AspectType.TRINE, 4, 1.4, AspectMotion.APPLYING)));
 
         MoonConfigurationEntry entry = calculator.calculate(chart);
@@ -62,7 +62,7 @@ class ValensMoonConfigurationCalculatorTest {
 
     @Test
     void marksVoidOfCourseWhenNextApplicationFallsAfterSignChange() {
-        NatalChart chart = chart(58.0, List.of(position(Planet.SUN, 170.0), position(Planet.MERCURY, 250.0), position(Planet.VENUS, 140.0), position(Planet.MARS, 210.0), position(Planet.JUPITER, 260.0), position(Planet.SATURN, 335.0)), List.of());
+        Chart chart = chart(58.0, List.of(position(Planet.SUN, 170.0), position(Planet.MERCURY, 250.0), position(Planet.VENUS, 140.0), position(Planet.MARS, 210.0), position(Planet.JUPITER, 260.0), position(Planet.SATURN, 335.0)), List.of());
 
         MoonConfigurationEntry entry = calculator.calculate(chart);
 
@@ -74,7 +74,7 @@ class ValensMoonConfigurationCalculatorTest {
 
     @Test
     void lastAndNextApplicationScanFullZodiac() {
-        NatalChart chart = chart(10.0, List.of(position(Planet.SUN, 0.0), position(Planet.MERCURY, 0.0), position(Planet.VENUS, 0.0), position(Planet.MARS, 0.0), position(Planet.JUPITER, 0.0), position(Planet.SATURN, 0.0)), List.of());
+        Chart chart = chart(10.0, List.of(position(Planet.SUN, 0.0), position(Planet.MERCURY, 0.0), position(Planet.VENUS, 0.0), position(Planet.MARS, 0.0), position(Planet.JUPITER, 0.0), position(Planet.SATURN, 0.0)), List.of());
 
         MoonConfigurationEntry entry = calculator.calculate(chart);
 
@@ -88,7 +88,7 @@ class ValensMoonConfigurationCalculatorTest {
 
     @Test
     void partileApplicationHasZeroArc() {
-        NatalChart chart = chart(40.0, List.of(position(Planet.SUN, 180.0), position(Planet.MERCURY, 250.0), position(Planet.VENUS, 120.0), position(Planet.MARS, 210.0), position(Planet.JUPITER, 280.0), position(Planet.SATURN, 315.0)), List.of());
+        Chart chart = chart(40.0, List.of(position(Planet.SUN, 180.0), position(Planet.MERCURY, 250.0), position(Planet.VENUS, 120.0), position(Planet.MARS, 210.0), position(Planet.JUPITER, 280.0), position(Planet.SATURN, 315.0)), List.of());
 
         MoonConfigurationEntry entry = calculator.calculate(chart);
 
@@ -98,8 +98,8 @@ class ValensMoonConfigurationCalculatorTest {
         assertNull(entry.motion().state());
     }
 
-    private NatalChart chart(double moonLongitude, List<PlanetPosition> applicationPlanets, List<PairwiseRelation> relations) {
-        NatalChart chart = new NatalChart();
+    private Chart chart(double moonLongitude, List<PlanetPosition> applicationPlanets, List<PairwiseRelation> relations) {
+        Chart chart = new Chart();
         PlanetPointEntry moon = point(Planet.MOON, moonLongitude, 1.08, SolarCondition.FREE_OF_SUN, List.of(DignityType.EXALTATION), List.of());
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
         points.put(PointKey.MOON, moon);

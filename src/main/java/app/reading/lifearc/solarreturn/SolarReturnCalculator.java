@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.AngleType;
 import app.chart.data.HouseSystem;
@@ -18,7 +18,7 @@ import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PointEntry;
@@ -42,9 +42,9 @@ public final class SolarReturnCalculator {
             Triplicity.DOROTHEAN
     );
 
-    private final BasicCalculator basicCalculator = new BasicCalculator();
+    private final ChartCalculator chartCalculator = new ChartCalculator();
 
-    public SolarReturnTable calculateTable(Subject subject, NatalChart natalChart, int ageStartYears, int ageEndYearsInclusive) {
+    public SolarReturnTable calculateTable(Subject subject, Chart natalChart, int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");
         }
@@ -178,7 +178,7 @@ public final class SolarReturnCalculator {
                 subject.getLongitude(),
                 subject.getElevationMeters()
         );
-        NatalChart chart = basicCalculator.calculate(new CalculationContext(returnSubject, RETURN_CONVENTIONS));
+        Chart chart = chartCalculator.calculate(new CalculationContext(returnSubject, RETURN_CONVENTIONS));
         PlanetPosition sun = chart.requirePlanet(Planet.SUN);
         ChartAngle ascendant = chart.requireAngle(AngleType.ASCENDANT);
         ChartAngle midheaven = chart.requireAngle(AngleType.MIDHEAVEN);
@@ -202,7 +202,7 @@ public final class SolarReturnCalculator {
         );
     }
 
-    private List<SolarReturnPointEntry> pointEntries(NatalChart chart) {
+    private List<SolarReturnPointEntry> pointEntries(Chart chart) {
         List<SolarReturnPointEntry> entries = new ArrayList<>();
         for (Map.Entry<PointKey, PointEntry> point : chart.getPoints().entrySet()) {
             entries.add(pointEntry(point.getKey(), point.getValue()));

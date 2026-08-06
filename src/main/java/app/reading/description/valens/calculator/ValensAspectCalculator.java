@@ -2,7 +2,7 @@ package app.reading.description.valens.calculator;
 
 import java.util.ArrayList;
 import java.util.List;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.AstroMath;
 import app.chart.TraditionalTables;
@@ -10,7 +10,7 @@ import app.chart.data.AspectType;
 import app.reading.description.common.model.AspectEntry;
 
 public final class ValensAspectCalculator {
-    public List<AspectEntry> calculate(NatalChart chart) {
+    public List<AspectEntry> calculate(Chart chart) {
         List<PlanetPosition> planets = chart.getPlanets().stream().filter(planet -> TraditionalTables.isTraditionalPlanet(planet.getPlanet())).toList();
         List<AspectEntry> aspects = new ArrayList<>();
         for (int i = 0; i < planets.size(); i++) {

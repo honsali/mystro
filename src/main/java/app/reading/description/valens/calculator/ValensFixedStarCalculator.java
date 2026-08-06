@@ -8,7 +8,7 @@ import app.chart.CalculationContext;
 import app.chart.data.AngleType;
 import app.chart.data.Planet;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.reading.description.common.data.FixedStarCatalogue;
 import app.reading.description.common.data.FixedStarCatalogue.FixedStarDefinition;
@@ -67,7 +67,7 @@ public final class ValensFixedStarCalculator {
         this.positionResolver = positionResolver;
     }
 
-    public List<FixedStarEntry> calculate(CalculationContext ctx, NatalChart chart) {
+    public List<FixedStarEntry> calculate(CalculationContext ctx, Chart chart) {
         List<ConjunctionTarget> targets = conjunctionTargets(chart);
         if (targets.isEmpty()) {
             return List.of();
@@ -89,7 +89,7 @@ public final class ValensFixedStarCalculator {
         return hits.stream().map(FixedStarHit::entry).toList();
     }
 
-    private List<ConjunctionTarget> conjunctionTargets(NatalChart chart) {
+    private List<ConjunctionTarget> conjunctionTargets(Chart chart) {
         List<ConjunctionTarget> targets = new ArrayList<>();
         addAngles(chart, targets);
         addPlanets(chart, targets);
@@ -97,7 +97,7 @@ public final class ValensFixedStarCalculator {
         return targets;
     }
 
-    private void addAngles(NatalChart chart, List<ConjunctionTarget> targets) {
+    private void addAngles(Chart chart, List<ConjunctionTarget> targets) {
         if (chart.getAngles() == null) {
             return;
         }
@@ -111,7 +111,7 @@ public final class ValensFixedStarCalculator {
         }
     }
 
-    private void addPlanets(NatalChart chart, List<ConjunctionTarget> targets) {
+    private void addPlanets(Chart chart, List<ConjunctionTarget> targets) {
         if (chart.getPlanets() == null) {
             return;
         }
@@ -129,7 +129,7 @@ public final class ValensFixedStarCalculator {
         }
     }
 
-    private void addLots(NatalChart chart, List<ConjunctionTarget> targets) {
+    private void addLots(Chart chart, List<ConjunctionTarget> targets) {
         if (chart.getLots() == null) {
             return;
         }

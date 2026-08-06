@@ -20,7 +20,7 @@ import app.chart.data.SectCondition;
 import app.chart.data.SolarOrientation;
 import app.chart.data.ZodiacSign;
 import app.chart.model.BasicSect;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PlanetSectInfo;
@@ -35,7 +35,7 @@ class ValensDoryphoryCalculatorTest {
 
     @Test
     void findsOfSectPlanetsConfiguredToBothLuminariesByWholeSignAspect() {
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 130.0, ZodiacSign.LEO, 5),
                 position(Planet.MOON, 190.0, ZodiacSign.LIBRA, 8),
@@ -94,7 +94,7 @@ class ValensDoryphoryCalculatorTest {
 
     @Test
     void includesSameSignBodyguardUnlessTooCloseToSun() {
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 100.0, ZodiacSign.CANCER, 4),
                 position(Planet.MOON, 190.0, ZodiacSign.LIBRA, 8),
@@ -137,7 +137,7 @@ class ValensDoryphoryCalculatorTest {
 
     @Test
     void aggregatesOvercomingDignityPhaseAndConfigurationKinds() {
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 10.0, ZodiacSign.ARIES, 1),
                 position(Planet.MOON, 100.0, ZodiacSign.CANCER, 4),
@@ -185,7 +185,7 @@ class ValensDoryphoryCalculatorTest {
 
     @Test
     void excludesOutOfSectCandidatesEvenWhenOtherwiseQualified() {
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 10.0, ZodiacSign.ARIES, 1),
                 position(Planet.MOON, 100.0, ZodiacSign.CANCER, 4),

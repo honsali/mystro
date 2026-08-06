@@ -16,7 +16,6 @@ import app.reading.description.common.model.DerivedHouseFramesEntry;
 import app.reading.description.common.model.FixedStarEntry;
 import app.reading.description.common.model.HouseTopicRulerEntry;
 import app.reading.description.common.model.HylegAlcocodenEntry;
-import app.reading.description.common.model.LotAssessmentEntry;
 import app.reading.description.common.model.LotEntry;
 import app.reading.description.common.model.MercuryConfigurationEntry;
 import app.reading.description.common.model.MoonConfigurationEntry;
@@ -27,7 +26,7 @@ import app.reading.description.common.model.TopicAssessmentEntry;
 import app.reading.description.common.model.TriplicityLifePhaseEntry;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class NatalChart {
+public class Chart {
 
     private Instant resolvedUtcInstant;
     private double julianDayUt;
@@ -51,7 +50,6 @@ public class NatalChart {
     private PrenatalSyzygyEntry syzygy;
     private List<HouseTopicRulerEntry> houseTopicRulers;
     private List<LotEntry> lots;
-    private List<LotAssessmentEntry> lotAssessments;
     private DerivedHouseFramesEntry derivedHouseFrames;
     private List<TopicAssessmentEntry> topicAssessments;
     private List<DoryphoryEntry> doryphories;
@@ -273,14 +271,6 @@ public class NatalChart {
 
     public void setLots(List<LotEntry> lots) {
         this.lots = lots;
-    }
-
-    public List<LotAssessmentEntry> getLotAssessments() {
-        return lotAssessments;
-    }
-
-    public void setLotAssessments(List<LotAssessmentEntry> lotAssessments) {
-        this.lotAssessments = lotAssessments;
     }
 
     public DerivedHouseFramesEntry getDerivedHouseFrames() {

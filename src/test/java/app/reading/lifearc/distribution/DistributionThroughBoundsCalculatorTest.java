@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.TraditionalTables;
 import app.chart.data.AngleType;
@@ -16,7 +16,7 @@ import app.chart.data.HouseSystem;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 
@@ -34,7 +34,7 @@ class DistributionThroughBoundsCalculatorTest {
     @Test
     void calculateTableDistributesAscendantThroughEgyptianBoundsAndMarksActivePeriod() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
         ChartAngle ascendant = natalChart.requireAngle(AngleType.ASCENDANT);
 
         DistributionThroughBoundsTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2050, 6, 3), 0, 100);
@@ -72,7 +72,7 @@ class DistributionThroughBoundsCalculatorTest {
     @Test
     void calculateTableIncludesPlanetBodiesAndRaysAsContacts() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         DistributionThroughBoundsTable table = calculator.calculateTable(subject, natalChart, null, 0, 20);
 
@@ -85,7 +85,7 @@ class DistributionThroughBoundsCalculatorTest {
     @Test
     void calculateTableSupportsClippedAgeRanges() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         DistributionThroughBoundsTable table = calculator.calculateTable(subject, natalChart, null, 50, 50);
 
@@ -97,7 +97,7 @@ class DistributionThroughBoundsCalculatorTest {
     @Test
     void calculateTableRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, 2, 1));

@@ -24,13 +24,14 @@ output/<alias>/reading_output.json
 
 ```text
 app.Main
-  -> NativeListInputLoader
-  -> ReadingInput
-  -> ReadingInputMapper
-  -> Subject + optional inquiry date
+  -> NatalInputLoader
+  -> NatalInput
+  -> SubjectFactory
+  -> Subject
   -> ReadingBundleCalculator
   -> NatalDescriptionReadingCalculator
-  -> ValensNatalDescriptionSpecialist
+  -> ChartCalculator
+  -> NatalChartCalculator
   -> ReadingBundleReport
   -> MystroObjectMapper
 ```
@@ -41,16 +42,18 @@ research tooling and are specified separately in
 
 ## Input contract
 
-`NativeListInputLoader` maps the external snake-case fields shown in the
-[README](../README.md) to `ReadingInput`. Normalization and validation rules:
+`NatalInputLoader` maps the external snake-case fields shown in the
+[README](../README.md) to `NatalInput` without interpreting them. `SubjectFactory` validates the
+birth data and creates the immutable `Subject`. Input rules:
 
-- dates enter as `dd/MM/yyyy` and are normalized to ISO dates;
-- birth time accepts `HH:mm` or `HH:mm:ss` and is normalized to `HH:mm:ss`;
+- dates use `dd/MM/yyyy`;
+- birth time accepts `HH:mm` or `HH:mm:ss`;
 - UTC offset is mandatory user input;
 - latitude must be finite and strictly between `-90` and `90` degrees;
 - longitude must be finite and between `-180` and `180` degrees inclusive;
 - elevation defaults to `0.0` metres and must be finite;
-- inquiry date is optional and falls on or after the canonical UTC birth date.
+- inquiry date is optional; local timing reports resolve it separately and require it to fall on or
+  after the canonical UTC birth date.
 
 The original offset date-time is retained as input metadata. Once resolved, every downstream
 calendar and astronomical calculation uses the same canonical UTC instant.
@@ -60,7 +63,7 @@ calendar and astronomical calculation uses the same canonical UTC instant.
 `CalculationContext` owns the subject, doctrine conventions, Julian day UT, house cusps, `ascmc`,
 ARMC, and the adapter to Swiss Ephemeris.
 
-`BasicCalculator` builds the mechanical natal chart in dependency order:
+`ChartCalculator` builds a chart for any calculation instant in dependency order:
 
 ```text
 metadata and time scales
@@ -69,12 +72,13 @@ metadata and time scales
   -> sect
   -> calculated points
   -> pairwise relations
-  -> solar conditions
+  -> solar phases
   -> planet sect metadata
   -> Moon phase
 ```
 
-`ValensNatalDescriptionSpecialist` then adds doctrine-owned material, including the prenatal
+`NatalChartCalculator` uses `ChartCalculator` for the birth instant, then adds doctrine-owned
+material, including the prenatal
 syzygy, lots, aspects, dignities, topic rulers and assessments, doryphories, dodecatemoria,
 triplicity phases, fixed stars, and the Ptolemaic hyleg/alcocoden annex.
 
@@ -134,7 +138,7 @@ The top-level production JSON has this shape:
 }
 ```
 
-`NatalChart` contains mechanical chart data and Valens-led enrichments. `lots` and
+The `natalChart` property contains a `Chart` with mechanical data and Valens-led enrichments. `lots` and
 `pairwiseRelations` are filtered arrays. Optional sections follow the available input and selected
 doctrine.
 

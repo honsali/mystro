@@ -10,16 +10,16 @@ import app.chart.data.Sect;
 import app.chart.data.SectCondition;
 import app.chart.data.SolarOrientation;
 import app.chart.model.BasicSect;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PlanetSectInfo;
 
 public class SectCalculator implements Calculator {
 
-    public void calculate(NatalChart natalChart, CalculationContext ctx) {
-        PlanetPosition sun = natalChart.requirePlanet(Planet.SUN);
-        PlanetPosition moon = natalChart.requirePlanet(Planet.MOON);
-        PlanetPosition mercury = natalChart.requirePlanet(Planet.MERCURY);
+    public void calculate(Chart chart, CalculationContext ctx) {
+        PlanetPosition sun = chart.requirePlanet(Planet.SUN);
+        PlanetPosition moon = chart.requirePlanet(Planet.MOON);
+        PlanetPosition mercury = chart.requirePlanet(Planet.MERCURY);
         double sunAltitude = sun.getAltitude();
         double moonAltitude = moon.getAltitude();
         boolean sunAboveHorizon = sun.getAboveHorizon();
@@ -27,7 +27,7 @@ public class SectCalculator implements Calculator {
         boolean diurnal = sunAboveHorizon;
         BasicSect data = new BasicSect(diurnal ? Sect.DIURNAL : Sect.NOCTURNAL, diurnal ? Planet.SUN : Planet.MOON, diurnal ? Planet.MOON : Planet.SUN, diurnal ? Planet.JUPITER : Planet.VENUS, diurnal ? Planet.VENUS : Planet.JUPITER, diurnal ? Planet.SATURN : Planet.MARS,
                 diurnal ? Planet.MARS : Planet.SATURN, sunAboveHorizon, moonAboveHorizon, sunAltitude, moonAltitude, planetSects(diurnal, mercury, sun));
-        natalChart.setSect(data);
+        chart.setSect(data);
     }
 
     private Map<Planet, PlanetSectInfo> planetSects(boolean chartDiurnal, PlanetPosition mercury, PlanetPosition sun) {

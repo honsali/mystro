@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.data.AspectType;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
@@ -21,7 +21,7 @@ import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 
@@ -39,7 +39,7 @@ class MonthlyTransitCheckpointCalculatorTest {
     @Test
     void calculateTableUsesMonthlyBirthDateTimeCheckpointsAndMarksActivePeriod() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         MonthlyTransitCheckpointTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2000, 3, 20), 0, 0);
 
@@ -85,7 +85,7 @@ class MonthlyTransitCheckpointCalculatorTest {
                 51.5,
                 0.0
         );
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         MonthlyTransitCheckpointTable table = calculator.calculateTable(subject, natalChart, null, 0, 0);
 
@@ -96,7 +96,7 @@ class MonthlyTransitCheckpointCalculatorTest {
     @Test
     void calculateTableRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, 2, 1));

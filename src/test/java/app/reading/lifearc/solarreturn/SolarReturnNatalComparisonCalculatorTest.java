@@ -21,7 +21,7 @@ import app.chart.data.PointType;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -89,8 +89,8 @@ class SolarReturnNatalComparisonCalculatorTest {
         );
     }
 
-    private NatalChart natalChart() {
-        NatalChart chart = new NatalChart();
+    private Chart natalChart() {
+        Chart chart = new Chart();
         chart.setHouses(housesFromPiscesAscendant());
         Map<PointKey, PointEntry> points = new LinkedHashMap<>();
         points.put(PointKey.SUN, planetPoint(ZodiacSign.CANCER, 10.0, 5));
@@ -106,7 +106,8 @@ class SolarReturnNatalComparisonCalculatorTest {
                 22.0,
                 3,
                 Planet.VENUS,
-                "fixture"
+                "fixture",
+                List.of()
         )));
         return chart;
     }

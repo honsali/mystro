@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import app.chart.TraditionalTables;
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.description.common.model.LotEntry;
 import app.reading.lifearc.zodiacalreleasing.ZodiacalReleasingMarker;
@@ -22,7 +22,7 @@ final class ZodiacalReleasingActiveMarkdownRenderer {
     private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm xxx");
 
     String render(Subject subject,
-                  NatalChart chart,
+                  Chart chart,
                   OffsetDateTime focusDateTime,
                   OffsetDateTime windowStart,
                   OffsetDateTime windowEnd,
@@ -38,7 +38,7 @@ final class ZodiacalReleasingActiveMarkdownRenderer {
         return out.toString();
     }
 
-    private void appendActiveChains(StringBuilder out, NatalChart chart, OffsetDateTime focusDateTime, List<LotTimeline> lotTimelines) {
+    private void appendActiveChains(StringBuilder out, Chart chart, OffsetDateTime focusDateTime, List<LotTimeline> lotTimelines) {
         out.append("## Active chains at focus date\n\n");
         if (lotTimelines == null || lotTimelines.isEmpty()) {
             out.append("No Zodiacal Releasing lots were available.\n\n");
@@ -67,7 +67,7 @@ final class ZodiacalReleasingActiveMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendWindowBoundaries(StringBuilder out, NatalChart chart, OffsetDateTime windowStart, OffsetDateTime windowEnd, List<LotTimeline> lotTimelines) {
+    private void appendWindowBoundaries(StringBuilder out, Chart chart, OffsetDateTime windowStart, OffsetDateTime windowEnd, List<LotTimeline> lotTimelines) {
         out.append("## Period boundaries inside the focus window\n\n");
         List<Boundary> boundaries = new ArrayList<>();
         if (lotTimelines != null) {
@@ -141,7 +141,7 @@ final class ZodiacalReleasingActiveMarkdownRenderer {
                 && activeDateTime.isBefore(period.endDateTimeExclusive());
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(house -> house.getSign() == sign)
                 .map(HousePosition::getHouse)

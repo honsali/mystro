@@ -11,7 +11,7 @@ import app.chart.data.Sect;
 import app.chart.data.SectCondition;
 import app.chart.data.SolarOrientation;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PlanetSectInfo;
 
@@ -19,7 +19,7 @@ class SectCalculatorTest {
 
     @Test
     void exactMercurySolarPhaseDoesNotAssignMercurySect() {
-        NatalChart chart = chart(10.0, 10.0, true);
+        Chart chart = chart(10.0, 10.0, true);
 
         new SectCalculator().calculate(chart, null);
 
@@ -31,8 +31,8 @@ class SectCalculatorTest {
 
     @Test
     void nonBoundaryMercurySolarPhaseStillAssignsMercurySect() {
-        NatalChart oriental = chart(10.0, 350.0, true);
-        NatalChart occidental = chart(10.0, 30.0, true);
+        Chart oriental = chart(10.0, 350.0, true);
+        Chart occidental = chart(10.0, 30.0, true);
 
         SectCalculator calculator = new SectCalculator();
         calculator.calculate(oriental, null);
@@ -49,8 +49,8 @@ class SectCalculatorTest {
         assertEquals(SolarOrientation.OCCIDENTAL, occidentalMercury.getPhaseRelativeToSun());
     }
 
-    private NatalChart chart(double sunLongitude, double mercuryLongitude, boolean sunAboveHorizon) {
-        NatalChart chart = new NatalChart();
+    private Chart chart(double sunLongitude, double mercuryLongitude, boolean sunAboveHorizon) {
+        Chart chart = new Chart();
         chart.setPlanets(List.of(position(Planet.SUN, sunLongitude, sunAboveHorizon ? 1.0 : -1.0), position(Planet.MOON, 100.0, sunAboveHorizon ? -1.0 : 1.0), position(Planet.MERCURY, mercuryLongitude, 1.0)));
         return chart;
     }

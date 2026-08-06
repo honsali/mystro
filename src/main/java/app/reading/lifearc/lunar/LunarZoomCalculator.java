@@ -14,7 +14,7 @@ import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.ephemeris.SweConst;
@@ -34,7 +34,7 @@ public final class LunarZoomCalculator {
             Triplicity.DOROTHEAN
     );
 
-    public LunarZoomTable calculate(Subject subject, NatalChart natalChart, OffsetDateTime windowStart, OffsetDateTime windowEnd) {
+    public LunarZoomTable calculate(Subject subject, Chart natalChart, OffsetDateTime windowStart, OffsetDateTime windowEnd) {
         if (subject == null) {
             throw new IllegalArgumentException("subject is required");
         }
@@ -56,7 +56,7 @@ public final class LunarZoomCalculator {
         );
     }
 
-    private List<LunarSignIngressEntry> signIngresses(CalculationContext ctx, NatalChart natalChart,
+    private List<LunarSignIngressEntry> signIngresses(CalculationContext ctx, Chart natalChart,
                                                        OffsetDateTime windowStart, OffsetDateTime windowEnd) {
         List<LunarSignIngressEntry> entries = new ArrayList<>();
         Instant previousInstant = windowStart.toInstant();
@@ -141,7 +141,7 @@ public final class LunarZoomCalculator {
         return start.plusNanos(Duration.between(start, end).toNanos() / 2L);
     }
 
-    private int houseForSign(NatalChart natalChart, ZodiacSign sign) {
+    private int houseForSign(Chart natalChart, ZodiacSign sign) {
         return natalChart.getHouses().stream()
                 .filter(house -> house.getSign() == sign)
                 .map(HousePosition::getHouse)

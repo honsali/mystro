@@ -13,6 +13,6 @@ public record ActivatedLotEntry(
         ZodiacSign sign,
         int house,
         Planet ruler,
-        String lotAssessmentRef
+        String lotRef
 ) {
 }

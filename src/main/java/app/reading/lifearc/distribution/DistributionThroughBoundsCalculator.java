@@ -17,7 +17,7 @@ import app.chart.data.PointKey;
 import app.chart.data.Terms;
 import app.chart.data.ZodiacSign;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PointEntry;
@@ -27,7 +27,7 @@ import app.reading.description.common.model.HylegAlcocodenEntry;
 /**
  * Local/research distributions-through-bounds calculator.
  *
- * <p>The public {@link #calculateTable(Subject, NatalChart, LocalDate, int, int)} method keeps the
+ * <p>The public {@link #calculateTable(Subject, Chart, LocalDate, int, int)} method keeps the
  * existing Ascendant-only output and method id unchanged. Session 11 adds a separate extended table
  * builder for the first non-Ascendant slice declared by {@link DistributionDirectedPoint}: selected
  * hyleg, Midheaven, Valens Fortune, Valens Spirit, Sun, and Moon.</p>
@@ -68,7 +68,7 @@ public final class DistributionThroughBoundsCalculator {
             new RaySpec(DistributionContactType.RAY, AspectType.OPPOSITION, 180.0, "OPPOSITION")
     );
 
-    public DistributionThroughBoundsTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public DistributionThroughBoundsTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                           int ageStartYears, int ageEndYearsInclusive) {
         validateAgeRange(ageStartYears, ageEndYearsInclusive);
 
@@ -88,7 +88,7 @@ public final class DistributionThroughBoundsCalculator {
         return calculateTable(subject, chart, inquiryDate, ageStartYears, ageEndYearsInclusive, METHOD_ID, directedPoint);
     }
 
-    public List<DistributionThroughBoundsTable> calculateExtendedTables(Subject subject, NatalChart chart,
+    public List<DistributionThroughBoundsTable> calculateExtendedTables(Subject subject, Chart chart,
                                                                          LocalDate inquiryDate, int ageStartYears,
                                                                          int ageEndYearsInclusive) {
         validateAgeRange(ageStartYears, ageEndYearsInclusive);
@@ -101,7 +101,7 @@ public final class DistributionThroughBoundsCalculator {
         return List.copyOf(tables);
     }
 
-    private DistributionThroughBoundsTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private DistributionThroughBoundsTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                           int ageStartYears, int ageEndYearsInclusive, String methodId,
                                                           DirectedPointSpec directedPoint) {
         OffsetDateTime activeDateTime = activeDateTime(subject, inquiryDate);
@@ -133,7 +133,7 @@ public final class DistributionThroughBoundsCalculator {
         );
     }
 
-    private List<DirectedPointSpec> extendedDirectedPoints(NatalChart chart) {
+    private List<DirectedPointSpec> extendedDirectedPoints(Chart chart) {
         List<DirectedPointSpec> specs = new ArrayList<>();
         for (DistributionDirectedPoint directedPoint : DistributionDirectedPoint.firstExtendedSlicePoints()) {
             directedPointSpec(chart, directedPoint).ifPresent(specs::add);
@@ -141,7 +141,7 @@ public final class DistributionThroughBoundsCalculator {
         return List.copyOf(specs);
     }
 
-    private Optional<DirectedPointSpec> directedPointSpec(NatalChart chart, DistributionDirectedPoint directedPoint) {
+    private Optional<DirectedPointSpec> directedPointSpec(Chart chart, DistributionDirectedPoint directedPoint) {
         return switch (directedPoint) {
             case SELECTED_HYLEG -> selectedHylegSpec(chart);
             case MIDHEAVEN -> Optional.of(angleSpec(chart, directedPoint, AngleType.MIDHEAVEN, "MIDHEAVEN"));
@@ -153,7 +153,7 @@ public final class DistributionThroughBoundsCalculator {
         };
     }
 
-    private Optional<DirectedPointSpec> selectedHylegSpec(NatalChart chart) {
+    private Optional<DirectedPointSpec> selectedHylegSpec(Chart chart) {
         HylegAlcocodenEntry entry = chart.getPtolemaicHylegAlcocoden();
         if (entry == null || entry.hyleg() == null) {
             return Optional.empty();
@@ -176,7 +176,7 @@ public final class DistributionThroughBoundsCalculator {
         ));
     }
 
-    private DirectedPointSpec angleSpec(NatalChart chart, DistributionDirectedPoint directedPoint, AngleType angleType,
+    private DirectedPointSpec angleSpec(Chart chart, DistributionDirectedPoint directedPoint, AngleType angleType,
                                         String sourcePoint) {
         ChartAngle angle = chart.requireAngle(angleType);
         return spec(
@@ -192,7 +192,7 @@ public final class DistributionThroughBoundsCalculator {
         );
     }
 
-    private Optional<DirectedPointSpec> lotSpec(NatalChart chart, DistributionDirectedPoint directedPoint, String lotName) {
+    private Optional<DirectedPointSpec> lotSpec(Chart chart, DistributionDirectedPoint directedPoint, String lotName) {
         if (chart.getLots() == null) {
             return Optional.empty();
         }
@@ -212,7 +212,7 @@ public final class DistributionThroughBoundsCalculator {
                 ));
     }
 
-    private DirectedPointSpec planetSpec(NatalChart chart, DistributionDirectedPoint directedPoint, Planet planet) {
+    private DirectedPointSpec planetSpec(Chart chart, DistributionDirectedPoint directedPoint, Planet planet) {
         PlanetPosition position = chart.requirePlanet(planet);
         return spec(
                 directedPoint,
@@ -263,7 +263,7 @@ public final class DistributionThroughBoundsCalculator {
                 : DistributionCoordinateMethod.OBLIQUE_ASCENSION_AT_BIRTH_LATITUDE;
     }
 
-    private List<DistributionThroughBoundsPeriod> periods(Subject subject, NatalChart chart, double startLongitude,
+    private List<DistributionThroughBoundsPeriod> periods(Subject subject, Chart chart, double startLongitude,
                                                           double coverageStartAgeYears, double coverageEndAgeYears,
                                                           OffsetDateTime activeDateTime,
                                                           List<DistributionThroughBoundsContact> contacts,
@@ -343,7 +343,7 @@ public final class DistributionThroughBoundsCalculator {
         return List.copyOf(periods);
     }
 
-    private List<DistributionThroughBoundsContact> contacts(Subject subject, NatalChart chart, double startLongitude,
+    private List<DistributionThroughBoundsContact> contacts(Subject subject, Chart chart, double startLongitude,
                                                             double coverageEndAgeYears,
                                                             DistributionCoordinateMethod coordinateMethod) {
         double startLongitudeAbs = AstroMath.normalize(startLongitude);
@@ -514,7 +514,7 @@ public final class DistributionThroughBoundsCalculator {
         throw new IllegalArgumentException("Could not identify Egyptian bound for longitude " + longitude);
     }
 
-    private PlanetPointEntry planetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry planetPoint(Chart chart, Planet planet) {
         PointEntry point = chart.getPoints().get(PointKey.of(planet));
         if (!(point instanceof PlanetPointEntry planetPoint)) {
             throw new IllegalArgumentException("Missing natal planet point " + planet);
@@ -522,7 +522,7 @@ public final class DistributionThroughBoundsCalculator {
         return planetPoint;
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(candidate -> candidate.getHouse())

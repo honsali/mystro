@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.MoonPhaseName;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
 import app.chart.model.MoonPhase;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.reading.CoreDoctrineInfo;
 import app.testing.SyntheticTestData;
 
@@ -31,7 +31,7 @@ class MoonPhaseCalculatorTest {
                 SyntheticTestData.subject(),
                 CONVENTIONS);
 
-        NatalChart chart = new BasicCalculator().calculate(context);
+        Chart chart = new ChartCalculator().calculate(context);
         MoonPhase moonPhase = chart.getMoonPhase();
 
         assertEquals(0.230087, moonPhase.getIlluminationFraction(), 1.0e-6);

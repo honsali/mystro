@@ -12,7 +12,7 @@ import app.chart.data.AngleType;
 import app.chart.data.Planet;
 import app.chart.data.ZodiacSign;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.reading.description.common.model.HylegAlcocodenEntry;
@@ -51,7 +51,7 @@ public final class MundanePrimaryDirectionCalculator {
             Planet.SATURN
     );
 
-    public MundanePrimaryDirectionTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public MundanePrimaryDirectionTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                                        int ageStartYears, int ageEndYearsInclusive) {
         validateAgeRange(ageStartYears, ageEndYearsInclusive);
 
@@ -84,7 +84,7 @@ public final class MundanePrimaryDirectionCalculator {
         );
     }
 
-    private List<MundanePrimaryDirectionSignificator> significators(Subject subject, NatalChart chart) {
+    private List<MundanePrimaryDirectionSignificator> significators(Subject subject, Chart chart) {
         List<SignificatorSpec> specs = new ArrayList<>();
         HylegAlcocodenEntry.HylegPoint hyleg = chart.getPtolemaicHylegAlcocoden() == null
                 ? null
@@ -106,7 +106,7 @@ public final class MundanePrimaryDirectionCalculator {
                 .toList();
     }
 
-    private SignificatorSpec hylegSpec(NatalChart chart, HylegAlcocodenEntry.HylegPoint hyleg) {
+    private SignificatorSpec hylegSpec(Chart chart, HylegAlcocodenEntry.HylegPoint hyleg) {
         if ("ASCENDANT".equals(hyleg.point())) {
             return angleSpec(chart, "HYLEG", "ASCENDANT", true, AngleType.ASCENDANT, 0.0, 1);
         }
@@ -142,7 +142,7 @@ public final class MundanePrimaryDirectionCalculator {
         );
     }
 
-    private SignificatorSpec angleSpec(NatalChart chart, String role, String point, boolean selectedHyleg,
+    private SignificatorSpec angleSpec(Chart chart, String role, String point, boolean selectedHyleg,
                                        AngleType angleType, double fixedMundanePositionDegrees, int house) {
         ChartAngle angle = chart.requireAngle(angleType);
         return new SignificatorSpec(
@@ -158,7 +158,7 @@ public final class MundanePrimaryDirectionCalculator {
         );
     }
 
-    private MundanePrimaryDirectionSignificator significator(Subject subject, NatalChart chart, SignificatorSpec spec) {
+    private MundanePrimaryDirectionSignificator significator(Subject subject, Chart chart, SignificatorSpec spec) {
         EquatorialPosition equatorial = equatorial(spec.longitude(), spec.eclipticLatitude(), chart.getTrueObliquity());
         SemiArcGeometry geometry = semiArcGeometry(equatorial.declination(), subject.getLatitude());
         MundanePosition position = spec.fixedMundanePositionDegrees() == null
@@ -183,7 +183,7 @@ public final class MundanePrimaryDirectionCalculator {
         );
     }
 
-    private List<MundanePrimaryDirectionEvent> events(Subject subject, NatalChart chart,
+    private List<MundanePrimaryDirectionEvent> events(Subject subject, Chart chart,
                                                       List<MundanePrimaryDirectionSignificator> significators,
                                                       ActiveWindow activeWindow,
                                                       double coverageStartAgeYears,
@@ -382,7 +382,7 @@ public final class MundanePrimaryDirectionCalculator {
         }
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(candidate -> candidate.getHouse())

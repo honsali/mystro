@@ -13,7 +13,7 @@ import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -38,7 +38,7 @@ public final class DorotheanDailyProfectionCalculator {
             AnnualProfectionReference.LOT_SPIRIT
     );
 
-    public DailyProfectionTable calculateWindow(Subject subject, NatalChart chart, LocalDate focusDate, int radiusDays) {
+    public DailyProfectionTable calculateWindow(Subject subject, Chart chart, LocalDate focusDate, int radiusDays) {
         if (subject == null) {
             throw new IllegalArgumentException("subject is required");
         }
@@ -76,7 +76,7 @@ public final class DorotheanDailyProfectionCalculator {
         );
     }
 
-    private DailyProfectionTableRow row(Subject subject, NatalChart chart, LocalDate focusDate, LocalDate date) {
+    private DailyProfectionTableRow row(Subject subject, Chart chart, LocalDate focusDate, LocalDate date) {
         OffsetDateTime startDateTime = OffsetDateTime.of(
                 date,
                 subject.getUtcBirthDateTime().toLocalTime(),
@@ -136,7 +136,7 @@ public final class DorotheanDailyProfectionCalculator {
         return new MonthlyPosition(ageYears, monthIndex, monthStartDateTime);
     }
 
-    private DailyProfectionReferenceEntry referenceProfection(NatalChart chart,
+    private DailyProfectionReferenceEntry referenceProfection(Chart chart,
                                                               AnnualProfectionReference reference,
                                                               int ageYears,
                                                               int monthIndex,
@@ -163,7 +163,7 @@ public final class DorotheanDailyProfectionCalculator {
         );
     }
 
-    private List<DailyProfectionActivatedPoint> activatedPoints(NatalChart chart, ZodiacSign sign, Integer house) {
+    private List<DailyProfectionActivatedPoint> activatedPoints(Chart chart, ZodiacSign sign, Integer house) {
         List<DailyProfectionActivatedPoint> entries = new ArrayList<>();
         for (Map.Entry<PointKey, PointEntry> entry : chart.getPoints().entrySet()) {
             PointPlacement placement = pointPlacement(chart, entry.getValue());
@@ -179,7 +179,7 @@ public final class DorotheanDailyProfectionCalculator {
         return List.copyOf(entries);
     }
 
-    private List<DailyProfectionActivatedLot> activatedLots(NatalChart chart, ZodiacSign sign, Integer house) {
+    private List<DailyProfectionActivatedLot> activatedLots(Chart chart, ZodiacSign sign, Integer house) {
         if (chart.getLots() == null) {
             return List.of();
         }
@@ -198,7 +198,7 @@ public final class DorotheanDailyProfectionCalculator {
         return List.copyOf(entries);
     }
 
-    private ZodiacSign natalSign(NatalChart chart, AnnualProfectionReference reference) {
+    private ZodiacSign natalSign(Chart chart, AnnualProfectionReference reference) {
         return switch (reference) {
             case ASCENDANT -> sign(point(chart, PointKey.ASCENDANT));
             case MIDHEAVEN -> sign(point(chart, PointKey.MIDHEAVEN));
@@ -209,7 +209,7 @@ public final class DorotheanDailyProfectionCalculator {
         };
     }
 
-    private PointEntry point(NatalChart chart, PointKey point) {
+    private PointEntry point(Chart chart, PointKey point) {
         PointEntry entry = chart.getPoints().get(point);
         if (entry == null) {
             throw new IllegalArgumentException("Missing natal point " + point);
@@ -217,7 +217,7 @@ public final class DorotheanDailyProfectionCalculator {
         return entry;
     }
 
-    private ZodiacSign lotSign(NatalChart chart, String lotName) {
+    private ZodiacSign lotSign(Chart chart, String lotName) {
         if (chart.getLots() == null) {
             throw new IllegalArgumentException("Missing natal lots");
         }
@@ -238,7 +238,7 @@ public final class DorotheanDailyProfectionCalculator {
         throw new IllegalArgumentException("Unsupported point entry " + point.getClass().getName());
     }
 
-    private PointPlacement pointPlacement(NatalChart chart, PointEntry point) {
+    private PointPlacement pointPlacement(Chart chart, PointEntry point) {
         if (point instanceof PlanetPointEntry planetPoint) {
             return new PointPlacement(planetPoint.sign(), planetPoint.house());
         }
@@ -248,7 +248,7 @@ public final class DorotheanDailyProfectionCalculator {
         throw new IllegalArgumentException("Unsupported point entry " + point.getClass().getName());
     }
 
-    private Integer houseForSign(NatalChart chart, ZodiacSign sign) {
+    private Integer houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

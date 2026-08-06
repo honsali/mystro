@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import app.chart.data.Angularity;
 import app.chart.data.Planet;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.reading.description.common.data.SolarCondition;
 import app.reading.description.common.model.SolarConditionEntry;
@@ -21,7 +21,7 @@ class ValensSolarConditionCalculatorTest {
 
     @Test
     void distinguishesCazimiCombustUnderBeamsAndFreeOfSun() {
-        NatalChart chart = new NatalChart();
+        Chart chart = new Chart();
         chart.setPlanets(List.of(
                 position(Planet.SUN, 0.0),
                 position(Planet.MERCURY, 0.2),

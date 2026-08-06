@@ -7,7 +7,7 @@ import app.chart.TraditionalTables;
 import app.chart.data.AngleType;
 import app.chart.data.Planet;
 import app.chart.data.Sect;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.reading.description.common.calculator.DoctrineLotMath;
 import app.reading.description.common.model.LotEntry;
@@ -15,7 +15,7 @@ import app.reading.description.common.model.LotEntry;
 public final class ValensLotCalculator {
         private final DoctrineLotMath lotMath = new DoctrineLotMath();
 
-        public List<LotEntry> calculate(CalculationContext ctx, NatalChart chart) {
+        public List<LotEntry> calculate(CalculationContext ctx, Chart chart) {
                 double asc = chart.requireAngle(AngleType.ASCENDANT).getLongitude();
                 PlanetPosition sun = chart.requirePlanet(Planet.SUN);
                 PlanetPosition moon = chart.requirePlanet(Planet.MOON);
@@ -52,8 +52,8 @@ public final class ValensLotCalculator {
                                 lot("MOTHER", "Mother", "dorothean", mother, ctx, chart, diurnal ? "Asc + (Moon -> Venus)" : "Asc + (Venus -> Moon)"), lot("SIBLINGS", "Siblings", "dorothean", siblings, ctx, chart, diurnal ? "Asc + (Saturn -> Jupiter)" : "Asc + (Jupiter -> Saturn)"));
         }
 
-        private LotEntry lot(String name, String displayName, String doctrine, double longitude, CalculationContext ctx, NatalChart chart, String formula) {
-                return new LotEntry(name, displayName, doctrine, longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude), ctx.houseOf(longitude, chart.requireAngle(AngleType.ASCENDANT).getLongitude()), TraditionalTables.domicileRuler(AstroMath.signOf(longitude)), formula);
+        private LotEntry lot(String name, String displayName, String doctrine, double longitude, CalculationContext ctx, Chart chart, String formula) {
+                return new LotEntry(name, displayName, doctrine, longitude, AstroMath.signOf(longitude), AstroMath.degreeInSign(longitude), ctx.houseOf(longitude, chart.requireAngle(AngleType.ASCENDANT).getLongitude()), TraditionalTables.domicileRuler(AstroMath.signOf(longitude)), formula, List.of());
         }
 
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 import app.chart.data.Planet;
 import app.chart.data.Sect;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 
 public final class FirdariaCalculator {
@@ -47,7 +47,7 @@ public final class FirdariaCalculator {
             Planet.MARS
     );
 
-    public FirdariaTable calculateTable(Subject subject, NatalChart chart, LocalDate inquiryDate,
+    public FirdariaTable calculateTable(Subject subject, Chart chart, LocalDate inquiryDate,
                                         int ageStartYears, int ageEndYearsInclusive) {
         if (ageStartYears < 0) {
             throw new IllegalArgumentException("ageStartYears must be zero or greater");

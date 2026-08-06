@@ -10,13 +10,13 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.Planet;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.chart.data.SyzygyType;
@@ -35,7 +35,7 @@ class LunarTimingCalculatorTest {
     @Test
     void calculateTableProducesExactLunarReturnsAndLunations() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         LunarTimingTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2000, 7, 15), 0, 1);
 
@@ -70,7 +70,7 @@ class LunarTimingCalculatorTest {
     @Test
     void calculateTableMarksActiveReturnAndLunationPeriods() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         LunarTimingTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2050, 6, 3), 50, 50);
 
@@ -87,7 +87,7 @@ class LunarTimingCalculatorTest {
     @Test
     void calculateTableClassifiesEclipseCandidatesBySyzygyTypeAndNodeOrb() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         LunarTimingTable table = calculator.calculateTable(subject, natalChart, null, 0, 5);
 
@@ -105,7 +105,7 @@ class LunarTimingCalculatorTest {
     @Test
     void calculateTableIncludesSwissTrueSolarAndLunarEclipsesWithMagnitudeContactsAndNodeReference() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         LunarTimingTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2050, 6, 3), 50, 50);
 
@@ -160,7 +160,7 @@ class LunarTimingCalculatorTest {
     @Test
     void calculateTableRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, 2, 1));

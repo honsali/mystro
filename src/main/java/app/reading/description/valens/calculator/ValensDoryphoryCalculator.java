@@ -11,7 +11,7 @@ import app.chart.data.PointKey;
 import app.chart.data.SectCondition;
 import app.chart.data.SolarOrientation;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PlanetSectInfo;
@@ -28,7 +28,7 @@ public final class ValensDoryphoryCalculator {
     private static final List<Planet> INFERIOR_PLANETS = List.of(Planet.MERCURY, Planet.VENUS);
     private static final List<DignityType> DORYPHORY_DIGNITIES = List.of(DignityType.DOMICILE, DignityType.EXALTATION, DignityType.TRIPLICITY, DignityType.TERM);
 
-    public List<DoryphoryEntry> calculate(NatalChart chart) {
+    public List<DoryphoryEntry> calculate(Chart chart) {
         if (chart.getSect() == null || chart.getPlanets() == null) {
             return List.of();
         }
@@ -63,7 +63,7 @@ public final class ValensDoryphoryCalculator {
         return List.copyOf(doryphories);
     }
 
-    private List<DoryphoryKind> kinds(NatalChart chart, Planet light, boolean lightOfSect, Planet candidate, int signDistance, DoryphoryDirection direction, List<DignityType> qualifyingDignities) {
+    private List<DoryphoryKind> kinds(Chart chart, Planet light, boolean lightOfSect, Planet candidate, int signDistance, DoryphoryDirection direction, List<DignityType> qualifyingDignities) {
         List<DoryphoryKind> kinds = new ArrayList<>();
         if (signDistance == 9) {
             kinds.add(DoryphoryKind.BY_OVERCOMING);
@@ -78,7 +78,7 @@ public final class ValensDoryphoryCalculator {
         return List.copyOf(kinds);
     }
 
-    private boolean properPhase(NatalChart chart, Planet light, boolean lightOfSect, Planet candidate, DoryphoryDirection direction) {
+    private boolean properPhase(Chart chart, Planet light, boolean lightOfSect, Planet candidate, DoryphoryDirection direction) {
         if (!lightOfSect) {
             return false;
         }
@@ -97,7 +97,7 @@ public final class ValensDoryphoryCalculator {
         return false;
     }
 
-    private SolarOrientation solarOrientation(NatalChart chart, Planet candidate) {
+    private SolarOrientation solarOrientation(Chart chart, Planet candidate) {
         PlanetPointEntry point = planetPoint(chart, candidate);
         if (point != null && point.solarPhase() != null) {
             return point.solarPhase();
@@ -105,7 +105,7 @@ public final class ValensDoryphoryCalculator {
         return AstroMath.orientationToSun(chart.requirePlanet(candidate).getLongitude(), chart.requirePlanet(Planet.SUN).getLongitude());
     }
 
-    private List<DignityType> qualifyingDignities(NatalChart chart, Planet candidate) {
+    private List<DignityType> qualifyingDignities(Chart chart, Planet candidate) {
         PlanetPointEntry point = planetPoint(chart, candidate);
         if (point == null || point.dignities() == null) {
             return List.of();
@@ -113,7 +113,7 @@ public final class ValensDoryphoryCalculator {
         return DORYPHORY_DIGNITIES.stream().filter(point.dignities()::contains).toList();
     }
 
-    private PlanetPointEntry planetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry planetPoint(Chart chart, Planet planet) {
         if (chart.getPoints() == null) {
             return null;
         }

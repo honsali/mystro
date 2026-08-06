@@ -7,13 +7,13 @@ import java.time.OffsetDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.Planet;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.ephemeris.SweConst;
@@ -37,7 +37,7 @@ class PlanetCalculatorTopocentricAltitudeTest {
                 0.0);
         CalculationContext context = new CalculationContext(subject, CONVENTIONS);
 
-        NatalChart chart = new BasicCalculator().calculate(context);
+        Chart chart = new ChartCalculator().calculate(context);
         PlanetPosition moon = chart.requirePlanet(Planet.MOON);
         double geocentricAltitude = context.horizontalAltitude(
                 moon.getLongitude(),

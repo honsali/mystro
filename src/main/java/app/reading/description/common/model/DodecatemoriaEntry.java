@@ -6,12 +6,7 @@ import app.chart.data.ZodiacSign;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record DodecatemoriaEntry(
-        String sourceName,
-        String sourceType,
-        String sourceDoctrine,
-        double sourceLongitude,
-        ZodiacSign sourceSign,
-        double sourceDegreeInSign,
+        String sourceRef,
         int twelfthPart,
         double longitude,
         ZodiacSign sign,

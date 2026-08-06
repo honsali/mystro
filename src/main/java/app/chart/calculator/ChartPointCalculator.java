@@ -15,7 +15,7 @@ import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.ChartAngle;
 import app.chart.model.ChartPoint;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
@@ -24,16 +24,16 @@ import app.reading.description.common.data.DignityType;
 
 public class ChartPointCalculator implements Calculator {
 
-    public void calculate(NatalChart natalChart, CalculationContext ctx) {
+    public void calculate(Chart chart, CalculationContext ctx) {
         List<ChartPoint> chartPoints = new ArrayList<>();
-        for (PlanetPosition planet : natalChart.getPlanets()) {
+        for (PlanetPosition planet : chart.getPlanets()) {
             chartPoints.add(new ChartPoint(PointKey.of(planet.getPlanet()), planet.getLongitude(), planet.getSign(), planet.getDegreeInSign(), planet.getHouse()));
         }
-        for (ChartAngle angle : natalChart.getAngles()) {
+        for (ChartAngle angle : chart.getAngles()) {
             chartPoints.add(new ChartPoint(PointKey.of(angle.getName()), angle.getLongitude(), angle.getSign(), angle.getDegreeInSign(), null));
         }
 
-        natalChart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, natalChart.getPlanets(), natalChart.getPoints()));
+        chart.setPairwiseRelations(calculatePairwiseRelations(chartPoints, chart.getPlanets(), chart.getPoints()));
     }
 
     boolean isInformativeForTest(PairwiseRelation relation) {

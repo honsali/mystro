@@ -16,7 +16,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.AspectMotion;
 import app.chart.data.AspectType;
@@ -24,7 +24,7 @@ import app.chart.data.HouseSystem;
 import app.chart.data.PointKey;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.ephemeris.SweConst;
@@ -121,7 +121,7 @@ class ExactTransitSearchCalculatorTest {
     }
 
     private List<TransitSearchWindow> generatedWindows(Subject subject, LocalDate inquiryDate, int ageYears, int maxWindows) {
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
         MonthlyTransitCheckpointTable checkpointTable = checkpointCalculator.calculateTable(subject, natalChart, inquiryDate, ageYears, ageYears);
         return windowCalculator.calculateWindows(checkpointTable, TransitSearchWindowCalculator.DEFAULT_WINDOW_RADIUS, maxWindows);
     }

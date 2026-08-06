@@ -13,7 +13,7 @@ import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.description.common.model.LotEntry;
 import app.reading.lifearc.decennial.DecennialCalculator;
@@ -140,7 +140,7 @@ public final class LifeArcSynthesisCalculator {
         private static final EvidenceWeight TRUE_ECLIPSE_NOT_VISIBLE = EvidenceWeight.of(LifeArcEvidenceWeightClass.LUNAR_ECLIPSE, 2);
     }
 
-    public LifeArcSynthesisTable calculate(Subject subject, NatalChart chart, LocalDate inquiryDate) {
+    public LifeArcSynthesisTable calculate(Subject subject, Chart chart, LocalDate inquiryDate) {
         if (inquiryDate == null) {
             throw new IllegalArgumentException("inquiryDate is required for life-arc synthesis");
         }
@@ -183,7 +183,7 @@ public final class LifeArcSynthesisCalculator {
         );
     }
 
-    private void addProfectionEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addProfectionEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                        int completedAgeYears) {
         AnnualProfectionTable annualTable = new DorotheanAnnualProfectionCalculator().calculateTable(
                 subject,
@@ -228,7 +228,7 @@ public final class LifeArcSynthesisCalculator {
         evidence.planet("MONTHLY_PROFECTION", monthlyTable.methodId(), "Lord of the Month", monthly.periodStartDateTime(), monthly.periodEndDateTimeExclusive(), monthlyAsc.lord(), ChronocratorWeights.LORD_OF_MONTH, monthlyDetail);
     }
 
-    private void addFirdariaEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addFirdariaEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                      int completedAgeYears) {
         FirdariaTable table = new FirdariaCalculator().calculateTable(subject, chart, inquiryDate, completedAgeYears, completedAgeYears);
         FirdariaPeriod active = table.periods().stream().filter(FirdariaPeriod::activeForInquiry).findFirst().orElse(null);
@@ -243,7 +243,7 @@ public final class LifeArcSynthesisCalculator {
                 .ifPresent(sub -> evidence.planet("FIRDARIA", table.methodId(), "Firdaria subperiod", sub.startDateTime(), sub.endDateTimeExclusive(), sub.partner(), ChronocratorWeights.PARTNER_PERIOD_RULER, "Active firdaria partner is " + sub.partner() + "."));
     }
 
-    private void addDecennialEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addDecennialEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                       int completedAgeYears) {
         DecennialTable table = new DecennialCalculator().calculateTable(subject, chart, inquiryDate, completedAgeYears, completedAgeYears);
         DecennialPeriod active = table.periods().stream().filter(DecennialPeriod::activeForInquiry).findFirst().orElse(null);
@@ -258,7 +258,7 @@ public final class LifeArcSynthesisCalculator {
                 .ifPresent(sub -> evidence.planet("DECENNIAL", table.methodId(), "Decennial subperiod", sub.startDateTime(), sub.endDateTimeExclusive(), sub.partner(), ChronocratorWeights.PARTNER_PERIOD_RULER, "Active decennial partner is " + sub.partner() + "."));
     }
 
-    private void addZodiacalReleasingEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart,
+    private void addZodiacalReleasingEvidence(EvidenceBuilder evidence, Subject subject, Chart chart,
                                               OffsetDateTime inquiryDateTime) {
         if (chart.getLots() == null) {
             return;
@@ -297,7 +297,7 @@ public final class LifeArcSynthesisCalculator {
         return List.of();
     }
 
-    private void addDistributionEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addDistributionEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                          int completedAgeYears) {
         DistributionThroughBoundsCalculator calculator = new DistributionThroughBoundsCalculator();
         DistributionThroughBoundsTable ascendantTable = calculator.calculateTable(subject, chart, inquiryDate, completedAgeYears, completedAgeYears);
@@ -307,7 +307,7 @@ public final class LifeArcSynthesisCalculator {
         }
     }
 
-    private void addDistributionTableEvidence(EvidenceBuilder evidence, NatalChart chart,
+    private void addDistributionTableEvidence(EvidenceBuilder evidence, Chart chart,
                                               DistributionThroughBoundsTable table, String sourceTechnique) {
         DistributionThroughBoundsPeriod active = table.periods().stream()
                 .filter(DistributionThroughBoundsPeriod::activeForInquiry)
@@ -327,7 +327,7 @@ public final class LifeArcSynthesisCalculator {
         }
     }
 
-    private void addPrimaryDirectionEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addPrimaryDirectionEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                              int completedAgeYears) {
         PrimaryDirectionCalculator calculator = new PrimaryDirectionCalculator();
         PrimaryDirectionTable directTable = calculator.calculateTable(subject, chart, inquiryDate, completedAgeYears, completedAgeYears);
@@ -380,7 +380,7 @@ public final class LifeArcSynthesisCalculator {
         }
     }
 
-    private void addZodiacalPrimaryDirectionEvent(EvidenceBuilder evidence, NatalChart chart, String methodId,
+    private void addZodiacalPrimaryDirectionEvent(EvidenceBuilder evidence, Chart chart, String methodId,
                                                   String sourceTechnique, String timingLabel, String targetLabel,
                                                   EvidenceWeight promissorWeight, EvidenceWeight targetWeight,
                                                   EvidenceWeight aspectWeight, PrimaryDirectionEvent event,
@@ -391,7 +391,7 @@ public final class LifeArcSynthesisCalculator {
         evidence.aspect(sourceTechnique, methodId, timingLabel, event.dateTime(), event.dateTime(), event.aspect(), aspectWeight, detail);
     }
 
-    private void addSolarReturnEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addSolarReturnEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                         int completedAgeYears) {
         SolarReturnTable solarReturnTable = new SolarReturnCalculator().calculateTable(subject, chart, completedAgeYears, completedAgeYears);
         SolarReturnNatalComparisonTable comparisonTable = new SolarReturnNatalComparisonCalculator().calculate(subject, chart, solarReturnTable, inquiryDate);
@@ -414,7 +414,7 @@ public final class LifeArcSynthesisCalculator {
         }
     }
 
-    private void addLunarTimingEvidence(EvidenceBuilder evidence, Subject subject, NatalChart chart, LocalDate inquiryDate,
+    private void addLunarTimingEvidence(EvidenceBuilder evidence, Subject subject, Chart chart, LocalDate inquiryDate,
                                         int completedAgeYears, OffsetDateTime activeYearStart, OffsetDateTime activeYearEnd) {
         LunarTimingTable table = new LunarTimingCalculator().calculateTable(subject, chart, inquiryDate, completedAgeYears, completedAgeYears);
         table.lunarReturns().stream()
@@ -500,7 +500,7 @@ public final class LifeArcSynthesisCalculator {
         return years;
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

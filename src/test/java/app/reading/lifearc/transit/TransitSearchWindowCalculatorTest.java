@@ -12,13 +12,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.AspectMotion;
 import app.chart.data.HouseSystem;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 
@@ -163,7 +163,7 @@ class TransitSearchWindowCalculatorTest {
 
     private MonthlyTransitCheckpointTable checkpointTable(LocalDate inquiryDate) {
         Subject subject = subject();
-        NatalChart natalChart = new BasicCalculator().calculate(new CalculationContext(subject, CORE));
+        Chart natalChart = new ChartCalculator().calculate(new CalculationContext(subject, CORE));
         return checkpointCalculator.calculateTable(subject, natalChart, inquiryDate, 0, 0);
     }
 

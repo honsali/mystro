@@ -10,7 +10,7 @@ import app.chart.data.AspectType;
 import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.model.MoonPhase;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
@@ -36,7 +36,7 @@ public final class ValensMoonConfigurationCalculator {
 
     private static final String METHOD = "Hellenistic lunar configuration: last separation, next application, and void-of-course using classical planets held at natal longitudes (Ptolemy III.13; Lilly CA I).";
 
-    public MoonConfigurationEntry calculate(NatalChart chart) {
+    public MoonConfigurationEntry calculate(Chart chart) {
         PlanetPointEntry moon = requirePlanetPoint(chart, Planet.MOON);
         MoonPhase moonPhase = chart.getMoonPhase();
 
@@ -53,7 +53,7 @@ public final class ValensMoonConfigurationCalculator {
         return speedRatio > 1.0 ? RelativeSpeed.SWIFT : RelativeSpeed.SLOW;
     }
 
-    private LunarAspectEventEntry lunarEvent(NatalChart chart, PlanetPointEntry moon, EventDirection direction) {
+    private LunarAspectEventEntry lunarEvent(Chart chart, PlanetPointEntry moon, EventDirection direction) {
         List<LunarAspectCandidate> candidates =
                 lunarAspectCandidates(chart, moon.longitude(), FULL_ZODIAC_SCAN_DEGREES, true).stream().filter(candidate -> direction == EventDirection.NEXT_APPLICATION ? candidate.forwardArc() <= FULL_ZODIAC_SCAN_DEGREES : candidate.backwardArc() <= FULL_ZODIAC_SCAN_DEGREES)
                         .filter(candidate -> direction == EventDirection.NEXT_APPLICATION ? candidate.forwardArc() >= 0.0 : candidate.backwardArc() >= 0.0).toList();
@@ -62,12 +62,12 @@ public final class ValensMoonConfigurationCalculator {
         return candidates.stream().min(comparator).map(candidate -> new LunarAspectEventEntry(candidate.planet(), candidate.aspect(), direction == EventDirection.NEXT_APPLICATION ? candidate.forwardArc() : candidate.backwardArc())).orElse(null);
     }
 
-    private boolean voidOfCourse(NatalChart chart, PlanetPointEntry moon) {
+    private boolean voidOfCourse(Chart chart, PlanetPointEntry moon) {
         double arcToSignEnd = 30.0 - moon.degreeInSign();
         return lunarAspectCandidates(chart, moon.longitude(), arcToSignEnd, false).stream().noneMatch(candidate -> candidate.forwardArc() > EXACT_TOLERANCE_DEGREES && candidate.forwardArc() < arcToSignEnd);
     }
 
-    private List<LunarAspectCandidate> lunarAspectCandidates(NatalChart chart, double moonLongitude, double maximumArc, boolean includeExactCurrent) {
+    private List<LunarAspectCandidate> lunarAspectCandidates(Chart chart, double moonLongitude, double maximumArc, boolean includeExactCurrent) {
         List<LunarAspectCandidate> result = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (Planet planet : APPLICATION_PLANETS) {
@@ -106,12 +106,12 @@ public final class ValensMoonConfigurationCalculator {
         return arc <= EXACT_TOLERANCE_DEGREES ? 0.0 : arc;
     }
 
-    private List<ConfiguredPlanetEntry> configuredPlanets(NatalChart chart) {
+    private List<ConfiguredPlanetEntry> configuredPlanets(Chart chart) {
         return CONFIGURED_PLANET_ORDER.stream().map(planet -> configuredPlanet(chart, planet)).filter(entry -> entry != null)
                 .sorted(Comparator.comparingInt((ConfiguredPlanetEntry entry) -> CONFIGURED_PLANET_ORDER.indexOf(entry.planet())).thenComparingDouble(entry -> entry.byDegreeOrb() == null ? Double.POSITIVE_INFINITY : entry.byDegreeOrb())).toList();
     }
 
-    private ConfiguredPlanetEntry configuredPlanet(NatalChart chart, Planet planet) {
+    private ConfiguredPlanetEntry configuredPlanet(Chart chart, Planet planet) {
         PairwiseRelation relation = relation(chart, Planet.MOON, planet);
         if (relation == null || relation.getAspectBySign() == null) {
             return null;
@@ -121,13 +121,13 @@ public final class ValensMoonConfigurationCalculator {
         return new ConfiguredPlanetEntry(planet, bySign.getAspect(), bySign.getSignDistance(), byDegree == null ? null : byDegree.getOrbFromExact(), byDegree == null ? null : byDegree.getAspectMotion(), relation.getMutualReception());
     }
 
-    private PairwiseRelation relation(NatalChart chart, Planet first, Planet second) {
+    private PairwiseRelation relation(Chart chart, Planet first, Planet second) {
         PointKey firstKey = PointKey.of(first);
         PointKey secondKey = PointKey.of(second);
         return chart.getPairwiseRelations().stream().filter(relation -> (relation.getPointAName() == firstKey && relation.getPointBName() == secondKey) || (relation.getPointAName() == secondKey && relation.getPointBName() == firstKey)).findFirst().orElse(null);
     }
 
-    private PlanetPointEntry requirePlanetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry requirePlanetPoint(Chart chart, Planet planet) {
         PointKey pointKey = PointKey.of(planet);
         if (chart.getPoints().get(pointKey) instanceof PlanetPointEntry planetPoint) {
             return planetPoint;

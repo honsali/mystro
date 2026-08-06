@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 
 class LunarZoomCalculatorTest {
@@ -44,7 +44,7 @@ class LunarZoomCalculatorTest {
     @Test
     void rejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart chart = chart();
+        Chart chart = chart();
         OffsetDateTime start = OffsetDateTime.of(2022, 6, 29, 22, 55, 0, 0, ZoneOffset.ofHours(1));
         OffsetDateTime end = OffsetDateTime.of(2022, 7, 29, 22, 55, 0, 0, ZoneOffset.ofHours(1));
 
@@ -57,8 +57,8 @@ class LunarZoomCalculatorTest {
         return app.testing.SyntheticTestData.subject();
     }
 
-    private NatalChart chart() {
-        NatalChart chart = new NatalChart();
+    private Chart chart() {
+        Chart chart = new Chart();
         chart.setHouses(List.of(
                 house(1, ZodiacSign.PISCES),
                 house(2, ZodiacSign.ARIES),

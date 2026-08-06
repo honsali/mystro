@@ -12,14 +12,14 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.data.AngleType;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.description.common.model.HylegAlcocodenEntry;
 import app.reading.description.common.model.LotEntry;
-import app.reading.description.valens.ValensNatalDescriptionSpecialist;
+import app.reading.description.NatalChartCalculator;
 
 class ExtendedDistributionThroughBoundsCalculatorTest {
     private final DistributionThroughBoundsCalculator calculator = new DistributionThroughBoundsCalculator();
@@ -27,7 +27,7 @@ class ExtendedDistributionThroughBoundsCalculatorTest {
     @Test
     void calculateExtendedTablesBuildsHylegMcFortuneSpiritAndFirstSliceTables() {
         Subject subject = subject();
-        NatalChart natalChart = valensChart(subject);
+        Chart natalChart = valensChart(subject);
         HylegAlcocodenEntry.HylegPoint hyleg = natalChart.getPtolemaicHylegAlcocoden().hyleg();
 
         List<DistributionThroughBoundsTable> tables = calculator.calculateExtendedTables(
@@ -77,7 +77,7 @@ class ExtendedDistributionThroughBoundsCalculatorTest {
     @Test
     void calculateExtendedTablesIncludesPlanetBodyAndRayContacts() {
         Subject subject = subject();
-        NatalChart natalChart = valensChart(subject);
+        Chart natalChart = valensChart(subject);
 
         List<DistributionThroughBoundsTable> tables = calculator.calculateExtendedTables(subject, natalChart, null, 0, 360);
 
@@ -97,7 +97,7 @@ class ExtendedDistributionThroughBoundsCalculatorTest {
     @Test
     void calculateExtendedTablesRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart natalChart = valensChart(subject);
+        Chart natalChart = valensChart(subject);
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateExtendedTables(subject, natalChart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateExtendedTables(subject, natalChart, null, 2, 1));
@@ -123,15 +123,15 @@ class ExtendedDistributionThroughBoundsCalculatorTest {
                 .orElseThrow(() -> new AssertionError("Missing table " + directedPoint));
     }
 
-    private LotEntry lot(NatalChart chart, String name) {
+    private LotEntry lot(Chart chart, String name) {
         return chart.getLots().stream()
                 .filter(lot -> name.equals(lot.name()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Missing lot " + name));
     }
 
-    private NatalChart valensChart(Subject subject) {
-        return new ValensNatalDescriptionSpecialist().calculate(subject, new BasicCalculator());
+    private Chart valensChart(Subject subject) {
+        return new NatalChartCalculator().calculate(subject, new ChartCalculator());
     }
 
     private Subject subject() {

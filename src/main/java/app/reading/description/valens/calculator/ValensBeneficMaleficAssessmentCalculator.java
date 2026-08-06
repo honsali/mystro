@@ -15,7 +15,7 @@ import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.SectCondition;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PairwiseRelation;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
@@ -41,7 +41,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
 
     private static final double EXACT_TOLERANCE_DEGREES = 1.0e-7;
 
-    public Map<Planet, List<BeneficMaleficAssessmentEntry>> calculate(NatalChart chart) {
+    public Map<Planet, List<BeneficMaleficAssessmentEntry>> calculate(Chart chart) {
         Map<Planet, List<BeneficMaleficAssessmentEntry>> result = new LinkedHashMap<>();
         for (Planet target : TRADITIONAL_PLANETS) {
             List<BeneficMaleficAssessmentEntry> entries = new ArrayList<>();
@@ -67,7 +67,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return result;
     }
 
-    private void addBeneficAspect(List<BeneficMaleficAssessmentEntry> entries, NatalChart chart, Planet target, Planet agent) {
+    private void addBeneficAspect(List<BeneficMaleficAssessmentEntry> entries, Chart chart, Planet target, Planet agent) {
         PairwiseRelation relation = relation(chart, target, agent);
         if (relation == null || relation.getAspectBySign() == null) {
             return;
@@ -78,7 +78,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         }
     }
 
-    private void addMaleficAspect(List<BeneficMaleficAssessmentEntry> entries, NatalChart chart, Planet target, Planet agent) {
+    private void addMaleficAspect(List<BeneficMaleficAssessmentEntry> entries, Chart chart, Planet target, Planet agent) {
         PairwiseRelation relation = relation(chart, target, agent);
         if (relation == null || relation.getAspectBySign() == null) {
             return;
@@ -93,7 +93,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         }
     }
 
-    private void addAdherence(List<BeneficMaleficAssessmentEntry> entries, NatalChart chart, Planet target, Planet agent, ConditionAssessment assessment) {
+    private void addAdherence(List<BeneficMaleficAssessmentEntry> entries, Chart chart, Planet target, Planet agent, ConditionAssessment assessment) {
         PlanetPosition targetPosition = chart.requirePlanet(target);
         PlanetPosition agentPosition = chart.requirePlanet(agent);
         if (targetPosition.getSign() != agentPosition.getSign()) {
@@ -106,7 +106,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         entries.add(new BeneficMaleficAssessmentEntry(assessment, BeneficMaleficCondition.ADHERENCE, agent, null, AspectType.CONJUNCTION, null, 0, null, orb, null, agentOfSect(chart, agent), null, null));
     }
 
-    private void addEnclosureBySign(List<BeneficMaleficAssessmentEntry> entries, NatalChart chart, Planet target, ConditionAssessment assessment, List<Planet> enclosingPlanets, List<Planet> blockerPlanets) {
+    private void addEnclosureBySign(List<BeneficMaleficAssessmentEntry> entries, Chart chart, Planet target, ConditionAssessment assessment, List<Planet> enclosingPlanets, List<Planet> blockerPlanets) {
         ZodiacSign targetSign = chart.requirePlanet(target).getSign();
         ZodiacSign previousSign = sign(targetSign.ordinal() - 1);
         ZodiacSign nextSign = sign(targetSign.ordinal() + 1);
@@ -122,7 +122,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
                 agentOfSect(chart, nextAgent), null));
     }
 
-    private void addBesiegement(List<BeneficMaleficAssessmentEntry> entries, NatalChart chart, Planet target, ConditionAssessment assessment, List<Planet> enclosingPlanets, List<Planet> blockerPlanets) {
+    private void addBesiegement(List<BeneficMaleficAssessmentEntry> entries, Chart chart, Planet target, ConditionAssessment assessment, List<Planet> enclosingPlanets, List<Planet> blockerPlanets) {
         List<Ray> enclosingRays = rays(chart, enclosingPlanets, target);
         List<Ray> blockerRays = rays(chart, blockerPlanets, target);
         double targetLongitude = chart.requirePlanet(target).getLongitude();
@@ -157,7 +157,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
                 orientedSignDistance(chart, target, best.ahead().planet()), best.backwardArc(), best.forwardArc(), agentOfSect(chart, best.behind().planet()), agentOfSect(chart, best.ahead().planet()), null));
     }
 
-    private void addMaltreatmentByRulership(List<BeneficMaleficAssessmentEntry> entries, NatalChart chart, Planet target) {
+    private void addMaltreatmentByRulership(List<BeneficMaleficAssessmentEntry> entries, Chart chart, Planet target) {
         Planet ruler = TraditionalTables.domicileRuler(chart.requirePlanet(target).getSign());
         if (ruler == target || !MALEFICS.contains(ruler)) {
             return;
@@ -169,7 +169,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         entries.add(new BeneficMaleficAssessmentEntry(ConditionAssessment.MALTREATMENT, BeneficMaleficCondition.BY_RULERSHIP, ruler, null, null, null, orientedSignDistance(chart, target, ruler), null, null, null, agentOfSect(chart, ruler), null, afflictions));
     }
 
-    private List<RulerAffliction> rulerAfflictions(NatalChart chart, Planet ruler) {
+    private List<RulerAffliction> rulerAfflictions(Chart chart, Planet ruler) {
         List<RulerAffliction> afflictions = new ArrayList<>();
         PlanetPosition position = chart.requirePlanet(ruler);
         if (position.getRetrograde()) {
@@ -185,7 +185,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return afflictions;
     }
 
-    private List<Ray> rays(NatalChart chart, List<Planet> planets, Planet excludedTarget) {
+    private List<Ray> rays(Chart chart, List<Planet> planets, Planet excludedTarget) {
         List<Ray> result = new ArrayList<>();
         Set<String> seen = new HashSet<>();
         for (Planet planet : planets) {
@@ -219,7 +219,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return false;
     }
 
-    private PairwiseRelation relation(NatalChart chart, Planet target, Planet agent) {
+    private PairwiseRelation relation(Chart chart, Planet target, Planet agent) {
         if (chart.getPairwiseRelations() == null) {
             return null;
         }
@@ -228,13 +228,13 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return chart.getPairwiseRelations().stream().filter(relation -> (relation.getPointAName() == targetKey && relation.getPointBName() == agentKey) || (relation.getPointAName() == agentKey && relation.getPointBName() == targetKey)).findFirst().orElse(null);
     }
 
-    private int orientedSignDistance(NatalChart chart, Planet target, Planet agent) {
+    private int orientedSignDistance(Chart chart, Planet target, Planet agent) {
         int targetSign = chart.requirePlanet(target).getSign().ordinal();
         int agentSign = chart.requirePlanet(agent).getSign().ordinal();
         return Math.floorMod(agentSign - targetSign, 12);
     }
 
-    private boolean agentOfSect(NatalChart chart, Planet agent) {
+    private boolean agentOfSect(Chart chart, Planet agent) {
         if (chart.getSect() == null || chart.getSect().getPlanetSects() == null || chart.getSect().getPlanetSects().get(agent) == null) {
             return false;
         }
@@ -242,7 +242,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return sect.getCondition() == SectCondition.OF_SECT;
     }
 
-    private PlanetPointEntry planetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry planetPoint(Chart chart, Planet planet) {
         if (chart.getPoints() == null) {
             return null;
         }
@@ -252,7 +252,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return null;
     }
 
-    private Planet firstPlanetInSign(NatalChart chart, List<Planet> planets, ZodiacSign sign) {
+    private Planet firstPlanetInSign(Chart chart, List<Planet> planets, ZodiacSign sign) {
         for (Planet planet : planets) {
             if (chart.requirePlanet(planet).getSign() == sign) {
                 return planet;
@@ -261,7 +261,7 @@ public final class ValensBeneficMaleficAssessmentCalculator {
         return null;
     }
 
-    private boolean anyPlanetInSign(NatalChart chart, List<Planet> planets, ZodiacSign sign) {
+    private boolean anyPlanetInSign(Chart chart, List<Planet> planets, ZodiacSign sign) {
         return firstPlanetInSign(chart, planets, sign) != null;
     }
 

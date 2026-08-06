@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
 import app.reading.description.valens.calculator.ValensPtolemaicHylegAlcocodenCalculator;
@@ -38,7 +38,7 @@ class PrimaryDirectionCalculatorTest {
     @Test
     void calculateTableBuildsHylegAndAnglePrimaryDirections() {
         Subject subject = subject();
-        NatalChart natalChart = natalChart(subject);
+        Chart natalChart = natalChart(subject);
 
         PrimaryDirectionTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2050, 6, 3), 0, 100);
 
@@ -72,7 +72,7 @@ class PrimaryDirectionCalculatorTest {
     @Test
     void calculateTableMarksInquiryBirthdayYearWindow() {
         Subject subject = subject();
-        NatalChart natalChart = natalChart(subject);
+        Chart natalChart = natalChart(subject);
 
         PrimaryDirectionTable table = calculator.calculateTable(subject, natalChart, LocalDate.of(2050, 6, 3), 0, 100);
 
@@ -87,7 +87,7 @@ class PrimaryDirectionCalculatorTest {
     @Test
     void calculateDirectConverseTableLabelsRowsAndKeepsDirectRowsStable() {
         Subject subject = subject();
-        NatalChart natalChart = natalChart(subject);
+        Chart natalChart = natalChart(subject);
 
         PrimaryDirectionTable direct = calculator.calculateTable(subject, natalChart, LocalDate.of(2050, 6, 3), 0, 100);
         PrimaryDirectionTable expanded = calculator.calculateDirectConverseTable(subject, natalChart, LocalDate.of(2050, 6, 3), 0, 100);
@@ -110,7 +110,7 @@ class PrimaryDirectionCalculatorTest {
     @Test
     void calculateTableSupportsClippedAgeRanges() {
         Subject subject = subject();
-        NatalChart natalChart = natalChart(subject);
+        Chart natalChart = natalChart(subject);
 
         PrimaryDirectionTable table = calculator.calculateTable(subject, natalChart, null, 50, 50);
 
@@ -121,7 +121,7 @@ class PrimaryDirectionCalculatorTest {
     @Test
     void calculateTableRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart natalChart = natalChart(subject);
+        Chart natalChart = natalChart(subject);
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, natalChart, null, 2, 1));
@@ -176,9 +176,9 @@ class PrimaryDirectionCalculatorTest {
                 .toList();
     }
 
-    private NatalChart natalChart(Subject subject) {
+    private Chart natalChart(Subject subject) {
         CalculationContext ctx = new CalculationContext(subject, CORE);
-        NatalChart chart = new BasicCalculator().calculate(ctx);
+        Chart chart = new ChartCalculator().calculate(ctx);
         chart.setPtolemaicHylegAlcocoden(new ValensPtolemaicHylegAlcocodenCalculator().calculate(ctx, chart));
         return chart;
     }

@@ -20,13 +20,13 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.HouseSystem;
 import app.chart.data.Planet;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPosition;
 import app.chart.model.Subject;
 import app.reading.CoreDoctrineInfo;
@@ -45,7 +45,7 @@ class SwissEphemerisOracleRegressionTest {
     Stream<DynamicTest> matchesOfficialSwissEphemerisOracle() throws IOException {
         List<OracleRow> rows = readOracleRows();
         Map<CaseKey, CalculationContext> contexts = new ConcurrentHashMap<>();
-        Map<CaseKey, NatalChart> charts = new ConcurrentHashMap<>();
+        Map<CaseKey, Chart> charts = new ConcurrentHashMap<>();
 
         return rows.stream().map(row -> dynamicTest(row.displayName(), () -> {
             CalculationContext context = contexts.computeIfAbsent(row.key(), ignored -> createContext(row));
@@ -58,11 +58,11 @@ class SwissEphemerisOracleRegressionTest {
         }));
     }
 
-    private static NatalChart chartFor(
+    private static Chart chartFor(
             OracleRow row,
             CalculationContext context,
-            Map<CaseKey, NatalChart> charts) {
-        return charts.computeIfAbsent(row.key(), ignored -> new BasicCalculator().calculate(context));
+            Map<CaseKey, Chart> charts) {
+        return charts.computeIfAbsent(row.key(), ignored -> new ChartCalculator().calculate(context));
     }
 
     private static CalculationContext createContext(OracleRow row) {
@@ -83,7 +83,7 @@ class SwissEphemerisOracleRegressionTest {
         return new CalculationContext(subject, conventions);
     }
 
-    private static void assertPlanet(OracleRow row, NatalChart chart) {
+    private static void assertPlanet(OracleRow row, Chart chart) {
         Planet planet = planetFor(row.objectId());
         PlanetPosition actual = chart.requirePlanet(planet);
         String prefix = row.caseId() + " " + planet;
@@ -110,7 +110,7 @@ class SwissEphemerisOracleRegressionTest {
         assertPrintedValue(row.value(14), context.getArmc(), row.caseId() + " ARMC");
     }
 
-    private static void assertMoonPhenomena(OracleRow row, NatalChart chart) {
+    private static void assertMoonPhenomena(OracleRow row, Chart chart) {
         assertEquals(
                 row.value(0),
                 chart.getMoonPhase().getIlluminationFraction(),

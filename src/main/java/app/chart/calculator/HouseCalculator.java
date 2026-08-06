@@ -6,11 +6,11 @@ import app.chart.AstroMath;
 import app.chart.CalculationContext;
 import app.chart.Calculator;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 
 public class HouseCalculator implements Calculator {
 
-    public void calculate(NatalChart natalChart, CalculationContext ctx) {
+    public void calculate(Chart chart, CalculationContext ctx) {
 
         List<HousePosition> houses = new ArrayList<>();
 
@@ -18,6 +18,6 @@ public class HouseCalculator implements Calculator {
             double cuspLongitude = AstroMath.normalize(ctx.getCusps()[house]);
             houses.add(new HousePosition(house, cuspLongitude, AstroMath.signOf(cuspLongitude)));
         }
-        natalChart.setHouses(houses);
+        chart.setHouses(houses);
     }
 }

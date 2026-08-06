@@ -7,7 +7,7 @@ import app.chart.TraditionalTables;
 import app.chart.data.AngleType;
 import app.chart.data.Planet;
 import app.chart.model.ChartAngle;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.reading.description.common.model.HouseTopicRulerEntry;
@@ -30,7 +30,7 @@ public final class ValensTopicAssessmentCalculator {
             Planet.SATURN
     );
 
-    public List<TopicAssessmentEntry> calculate(NatalChart chart) {
+    public List<TopicAssessmentEntry> calculate(Chart chart) {
         List<TopicAssessmentEntry> topics = new ArrayList<>();
         topics.add(bodyTemperament(chart));
         topics.add(characterSoulQuality(chart));
@@ -47,7 +47,7 @@ public final class ValensTopicAssessmentCalculator {
         return List.copyOf(topics);
     }
 
-    private TopicAssessmentEntry bodyTemperament(NatalChart chart) {
+    private TopicAssessmentEntry bodyTemperament(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 1, "ASCENDANT_PLACE", PTOLEMAIC));
         evidence.add(angle(chart, AngleType.ASCENDANT, "HOROSKOPOS", PTOLEMAIC));
@@ -59,7 +59,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("BODY_TEMPERAMENT", PTOLEMAIC, List.of(VALENS), "PTOLEMAIC_BODY_V1", evidence);
     }
 
-    private TopicAssessmentEntry characterSoulQuality(NatalChart chart) {
+    private TopicAssessmentEntry characterSoulQuality(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(planet(chart, Planet.MOON, "SOUL_HABIT_SIGNIFICATOR", PTOLEMAIC));
         evidence.add(planet(chart, Planet.MERCURY, "RATIONAL_SOUL_SIGNIFICATOR", PTOLEMAIC));
@@ -69,7 +69,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("CHARACTER_SOUL_QUALITY", PTOLEMAIC, List.of(VALENS), "PTOLEMAIC_SOUL_QUALITY_V1", evidence);
     }
 
-    private TopicAssessmentEntry mindSpeech(NatalChart chart) {
+    private TopicAssessmentEntry mindSpeech(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(planet(chart, Planet.MERCURY, "INTELLECT_SPEECH_SIGNIFICATOR", PTOLEMAIC));
         evidence.add(planet(chart, Planet.MOON, "MOON_RELATION_TO_MERCURY", PTOLEMAIC));
@@ -78,7 +78,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("MIND_SPEECH", PTOLEMAIC, List.of(VALENS), "PTOLEMAIC_MIND_SPEECH_V1", evidence);
     }
 
-    private TopicAssessmentEntry fortuneMaterialCondition(NatalChart chart) {
+    private TopicAssessmentEntry fortuneMaterialCondition(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 2, "POSSESSIONS_PLACE", VALENS));
         addLot(evidence, chart, "FORTUNE", "FORTUNE_LOT", VALENS);
@@ -88,7 +88,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("FORTUNE_MATERIAL_CONDITION", VALENS, List.of(PTOLEMAIC), "VALENS_FORTUNE_MATERIAL_V1", evidence);
     }
 
-    private TopicAssessmentEntry vocationAction(NatalChart chart) {
+    private TopicAssessmentEntry vocationAction(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 10, "ACTION_RANK_PLACE", PTOLEMAIC));
         evidence.add(angle(chart, AngleType.MIDHEAVEN, "MIDHEAVEN", PTOLEMAIC));
@@ -102,7 +102,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("VOCATION_ACTION", PTOLEMAIC, List.of(VALENS, DOROTHEAN), "PTOLEMAIC_PROFESSION_V1", evidence);
     }
 
-    private TopicAssessmentEntry marriageUnions(NatalChart chart) {
+    private TopicAssessmentEntry marriageUnions(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 7, "UNIONS_PLACE", DOROTHEAN));
         evidence.add(planet(chart, Planet.VENUS, "NATURAL_UNIONS_SIGNIFICATOR", PTOLEMAIC));
@@ -111,7 +111,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("MARRIAGE_UNIONS", DOROTHEAN, List.of(PTOLEMAIC, VALENS), "DOROTHEAN_MARRIAGE_V1", evidence);
     }
 
-    private TopicAssessmentEntry children(NatalChart chart) {
+    private TopicAssessmentEntry children(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 5, "CHILDREN_PLACE", DOROTHEAN));
         evidence.add(planet(chart, Planet.JUPITER, "NATURAL_CHILDREN_SIGNIFICATOR", PTOLEMAIC));
@@ -120,7 +120,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("CHILDREN", DOROTHEAN, List.of(PTOLEMAIC), "DOROTHEAN_CHILDREN_V1", evidence);
     }
 
-    private TopicAssessmentEntry father(NatalChart chart) {
+    private TopicAssessmentEntry father(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 4, "PARENTS_FATHER_PLACE", DOROTHEAN));
         evidence.add(planet(chart, Planet.SUN, "FATHER_LUMINARY_SIGNIFICATOR", PTOLEMAIC));
@@ -130,7 +130,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("FATHER", DOROTHEAN, List.of(PTOLEMAIC), "DOROTHEAN_FATHER_V1", evidence);
     }
 
-    private TopicAssessmentEntry mother(NatalChart chart) {
+    private TopicAssessmentEntry mother(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 10, "PARENTS_MOTHER_PLACE", DOROTHEAN));
         evidence.add(planet(chart, Planet.MOON, "MOTHER_LUMINARY_SIGNIFICATOR", PTOLEMAIC));
@@ -140,7 +140,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("MOTHER", DOROTHEAN, List.of(PTOLEMAIC), "DOROTHEAN_MOTHER_V1", evidence);
     }
 
-    private TopicAssessmentEntry siblings(NatalChart chart) {
+    private TopicAssessmentEntry siblings(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 3, "SIBLINGS_PLACE", DOROTHEAN));
         addLot(evidence, chart, "SIBLINGS", "DOROTHEAN_SIBLINGS_LOT", DOROTHEAN);
@@ -148,7 +148,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("SIBLINGS", DOROTHEAN, List.of(VALENS), "DOROTHEAN_SIBLINGS_V1", evidence);
     }
 
-    private TopicAssessmentEntry eminenceRank(NatalChart chart) {
+    private TopicAssessmentEntry eminenceRank(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 10, "RANK_ACTION_PLACE", VALENS));
         evidence.add(angle(chart, AngleType.MIDHEAVEN, "MIDHEAVEN", PTOLEMAIC));
@@ -162,7 +162,7 @@ public final class ValensTopicAssessmentCalculator {
         return topic("EMINENCE_RANK", VALENS, List.of(PTOLEMAIC), "VALENS_EMINENCE_RANK_V1", evidence);
     }
 
-    private TopicAssessmentEntry vulnerabilityIndicators(NatalChart chart) {
+    private TopicAssessmentEntry vulnerabilityIndicators(Chart chart) {
         List<TopicEvidenceEntry> evidence = new ArrayList<>();
         evidence.add(house(chart, 6, "ILLNESS_LABOR_PLACE", PTOLEMAIC));
         evidence.add(house(chart, 8, "MORTALITY_ANXIETY_PLACE", HELLENISTIC));
@@ -182,7 +182,7 @@ public final class ValensTopicAssessmentCalculator {
         return new TopicAssessmentEntry(topic, primaryDoctrine, supportingDoctrines, methodId, evidence);
     }
 
-    private TopicEvidenceEntry house(NatalChart chart, int house, String role, String sourceDoctrine) {
+    private TopicEvidenceEntry house(Chart chart, int house, String role, String sourceDoctrine) {
         HouseTopicRulerEntry entry = chart.getHouseTopicRulers().stream()
                 .filter(candidate -> candidate.house() == house)
                 .findFirst()
@@ -190,20 +190,20 @@ public final class ValensTopicAssessmentCalculator {
         return new TopicEvidenceEntry(role, sourceDoctrine, "HOUSE", Integer.toString(house), house, entry.sign(), entry.ruler(), "houseTopicRulers.house=" + house);
     }
 
-    private TopicEvidenceEntry angle(NatalChart chart, AngleType angle, String role, String sourceDoctrine) {
+    private TopicEvidenceEntry angle(Chart chart, AngleType angle, String role, String sourceDoctrine) {
         ChartAngle entry = chart.requireAngle(angle);
         return new TopicEvidenceEntry(role, sourceDoctrine, "ANGLE", angle.name(), null, entry.getSign(), TraditionalTables.domicileRuler(entry.getSign()), null);
     }
 
-    private TopicEvidenceEntry planet(NatalChart chart, Planet planet, String role, String sourceDoctrine) {
+    private TopicEvidenceEntry planet(Chart chart, Planet planet, String role, String sourceDoctrine) {
         PlanetPointEntry point = requirePlanetPoint(chart, planet);
         return new TopicEvidenceEntry(role, sourceDoctrine, "PLANET", planet.name(), point.house(), point.sign(), null, planet.name());
     }
 
-    private void addLot(List<TopicEvidenceEntry> evidence, NatalChart chart, String lotName, String role, String sourceDoctrine) {
+    private void addLot(List<TopicEvidenceEntry> evidence, Chart chart, String lotName, String role, String sourceDoctrine) {
         LotEntry lot = lot(chart, lotName);
         if (lot != null) {
-            evidence.add(new TopicEvidenceEntry(role, sourceDoctrine, "LOT", lot.name(), lot.house(), lot.sign(), lot.ruler(), "lotAssessments.lot=" + lot.name()));
+            evidence.add(new TopicEvidenceEntry(role, sourceDoctrine, "LOT", lot.name(), lot.house(), lot.sign(), lot.ruler(), "lots.name=" + lot.name()));
         }
     }
 
@@ -219,7 +219,7 @@ public final class ValensTopicAssessmentCalculator {
         }
     }
 
-    private void addPlanetsInHouse(List<TopicEvidenceEntry> evidence, NatalChart chart, int house, String role, String sourceDoctrine) {
+    private void addPlanetsInHouse(List<TopicEvidenceEntry> evidence, Chart chart, int house, String role, String sourceDoctrine) {
         for (Planet planet : TRADITIONAL_PLANETS) {
             PlanetPointEntry point = requirePlanetPoint(chart, planet);
             if (point.house() == house) {
@@ -228,7 +228,7 @@ public final class ValensTopicAssessmentCalculator {
         }
     }
 
-    private LotEntry lot(NatalChart chart, String name) {
+    private LotEntry lot(Chart chart, String name) {
         if (chart.getLots() == null) {
             return null;
         }
@@ -238,7 +238,7 @@ public final class ValensTopicAssessmentCalculator {
                 .orElse(null);
     }
 
-    private PlanetPointEntry requirePlanetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry requirePlanetPoint(Chart chart, Planet planet) {
         PointEntry point = chart.getPoints().get(app.chart.data.PointKey.of(planet));
         if (point instanceof PlanetPointEntry planetPoint) {
             return planetPoint;

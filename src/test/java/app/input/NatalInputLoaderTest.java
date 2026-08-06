@@ -9,22 +9,21 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import app.io.MystroObjectMapper;
 import app.testing.SyntheticTestData;
 
-class NativeListInputLoaderTest {
+class NatalInputLoaderTest {
 
-    private final NativeListInputLoader loader = new NativeListInputLoader();
+    private final NatalInputLoader loader = new NatalInputLoader();
 
     @TempDir
     Path tempDir;
 
     @Test
-    void loadsAliasFromNativeListAndNormalizesFields() throws Exception {
+    void loadsAliasFromNativeListWithoutInterpretingFields() throws Exception {
         Path nativeList = writeNativeList("""
                 [
                   {
-                    "name": "synthetic-j2000-greenwich",
+                    "name": " synthetic-j2000-greenwich ",
                     "birth_date": "01/01/2000",
                     "birth_time": "12:00",
                     "latitude": 51.4769,
@@ -36,16 +35,16 @@ class NativeListInputLoaderTest {
                 ]
                 """);
 
-        ReadingInput input = loader.load(nativeList, "SYNTHETIC-J2000-GREENWICH", MystroObjectMapper.create());
+        NatalInput input = loader.load(nativeList, "SYNTHETIC-J2000-GREENWICH");
 
-        assertEquals(SyntheticTestData.SUBJECT_ID, input.getId());
-        assertEquals("2000-01-01", input.getBirthDate());
-        assertEquals("12:00:00", input.getBirthTime());
-        assertEquals(SyntheticTestData.LATITUDE, input.getLatitude());
-        assertEquals(SyntheticTestData.LONGITUDE, input.getLongitude());
-        assertEquals(46.0, input.getElevationMeters());
-        assertEquals("+00:00", input.getUtcOffset());
-        assertEquals("2025-01-15", input.getInquiryDate());
+        assertEquals(" synthetic-j2000-greenwich ", input.id());
+        assertEquals("01/01/2000", input.birthDate());
+        assertEquals("12:00", input.birthTime());
+        assertEquals(SyntheticTestData.LATITUDE, input.latitude());
+        assertEquals(SyntheticTestData.LONGITUDE, input.longitude());
+        assertEquals(46.0, input.elevationMeters());
+        assertEquals("+00:00", input.utcOffset());
+        assertEquals("15/01/2025", input.inquiryDate());
     }
 
     @Test
@@ -64,9 +63,9 @@ class NativeListInputLoaderTest {
                 """);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> loader.load(nativeList, "missing", MystroObjectMapper.create()));
+                () -> loader.load(nativeList, "missing"));
 
-        assertEquals("No native-list.json entry found for alias: missing (available aliases: synthetic-j2000-greenwich)", ex.getMessage());
+        assertEquals("No native-list.json entry found for alias: missing", ex.getMessage());
     }
 
     private Path writeNativeList(String json) throws Exception {

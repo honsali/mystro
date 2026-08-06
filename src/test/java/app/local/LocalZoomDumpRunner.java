@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import app.chart.AstroMath;
-import app.chart.BasicCalculator;
+import app.chart.ChartCalculator;
 import app.chart.CalculationContext;
 import app.chart.data.AspectType;
 import app.chart.data.HouseSystem;
@@ -36,13 +36,13 @@ import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
-import app.input.NativeListInputLoader;
-import app.input.ReadingInput;
-import app.input.ReadingInputMapper;
+import app.input.NatalInput;
+import app.input.NatalInputLoader;
+import app.input.SubjectFactory;
 import app.io.MystroObjectMapper;
 import app.planetaryhours.PlanetaryHoursCalculation;
 import app.planetaryhours.PlanetaryHoursCalculator;
@@ -51,7 +51,7 @@ import app.reading.CoreDoctrineInfo;
 import app.reading.description.NatalDescriptionReadingCalculator;
 import app.reading.description.NatalDescriptionReadingReport;
 import app.reading.description.common.model.LotEntry;
-import app.reading.description.valens.ValensNatalDescriptionSpecialist;
+import app.reading.description.NatalChartCalculator;
 import app.reading.lifearc.decennial.DecennialPeriod;
 import app.reading.lifearc.decennial.DecennialSubperiod;
 import app.reading.lifearc.decennial.DecennialTable;
@@ -164,18 +164,14 @@ public final class LocalZoomDumpRunner {
         Path transitsOutput = outputDir.resolve("transits_30d.md");
 
         ObjectMapper objectMapper = MystroObjectMapper.create();
-        ReadingInput request = new NativeListInputLoader().load(alias, objectMapper);
-        request.setInquiryDate(focusDate.toString());
-
-        ReadingInputMapper mapper = new ReadingInputMapper();
-        ReadingInputMapper.ResolvedBundle resolved = mapper.resolve(request);
-        Subject subject = resolved.subject();
+        NatalInput request = new NatalInputLoader().load(alias);
+        Subject subject = new SubjectFactory().create(request);
         NatalDescriptionReadingCalculator natalDescriptionReadingCalculator = new NatalDescriptionReadingCalculator(
-                new BasicCalculator(),
-                new ValensNatalDescriptionSpecialist()
+                new ChartCalculator(),
+                new NatalChartCalculator()
         );
         NatalDescriptionReadingReport natalDescription = natalDescriptionReadingCalculator.calculate(subject);
-        NatalChart chart = natalDescription.getNatalChart();
+        Chart chart = natalDescription.getNatalChart();
 
         OffsetDateTime focusDateTime = OffsetDateTime.of(
                 focusDate,
@@ -390,7 +386,7 @@ public final class LocalZoomDumpRunner {
         return focusDate.isBefore(birthdayThisYear) ? ageYears - 1 : ageYears;
     }
 
-    private List<ZodiacalReleasingActiveMarkdownRenderer.LotTimeline> zodiacalReleasingTimelines(Subject subject, NatalChart chart) {
+    private List<ZodiacalReleasingActiveMarkdownRenderer.LotTimeline> zodiacalReleasingTimelines(Subject subject, Chart chart) {
         if (chart.getLots() == null || chart.getLots().isEmpty()) {
             return List.of();
         }
@@ -405,7 +401,7 @@ public final class LocalZoomDumpRunner {
     }
 
     private List<TransitSearchWindow> buildLunarTransitWindowsFromDailyProfections(Subject subject,
-                                                                                   NatalChart chart,
+                                                                                   Chart chart,
                                                                                    OffsetDateTime focusDateTime,
                                                                                    OffsetDateTime windowStart,
                                                                                    OffsetDateTime windowEnd,
@@ -448,7 +444,7 @@ public final class LocalZoomDumpRunner {
         return List.copyOf(windows);
     }
 
-    private List<LunarNatalTarget> dailyActivatedTargets(NatalChart chart, DailyProfectionTable dailyProfections) {
+    private List<LunarNatalTarget> dailyActivatedTargets(Chart chart, DailyProfectionTable dailyProfections) {
         Map<String, LunarNatalTarget> targets = new LinkedHashMap<>();
         for (DailyProfectionTableRow row : dailyProfections.rows()) {
             row.activatedNatalPoints().forEach(point -> {
@@ -487,7 +483,7 @@ public final class LocalZoomDumpRunner {
     }
 
     private List<TransitSearchWindow> buildZoomTransitWindows(Subject subject,
-                                                              NatalChart chart,
+                                                              Chart chart,
                                                               OffsetDateTime focusDateTime,
                                                               OffsetDateTime windowStart,
                                                               OffsetDateTime windowEnd,
@@ -588,7 +584,7 @@ public final class LocalZoomDumpRunner {
         return List.copyOf(windows);
     }
 
-    private List<ZoomNatalTarget> selectedTargets(NatalChart chart,
+    private List<ZoomNatalTarget> selectedTargets(Chart chart,
                                                   AnnualProfectionReferenceEntry annualAsc,
                                                   MonthlyProfectionReferenceEntry monthlyAsc,
                                                   Set<PointKey> requiredPointTargets) {
@@ -691,7 +687,7 @@ public final class LocalZoomDumpRunner {
         return new ArrayList<>(new LinkedHashSet<>(reasons));
     }
 
-    private PointPlacement pointPlacement(NatalChart chart, PointKey key, PointEntry entry) {
+    private PointPlacement pointPlacement(Chart chart, PointKey key, PointEntry entry) {
         if (entry instanceof PlanetPointEntry planetPoint) {
             return new PointPlacement(
                     planetPoint.longitude(),
@@ -777,7 +773,7 @@ public final class LocalZoomDumpRunner {
                 subject.getLongitude(),
                 subject.getElevationMeters()
         );
-        NatalChart transitChart = new BasicCalculator().calculate(new CalculationContext(transitSubject, ZOOM_CONVENTIONS));
+        Chart transitChart = new ChartCalculator().calculate(new CalculationContext(transitSubject, ZOOM_CONVENTIONS));
         Map<PointKey, Double> longitudes = new EnumMap<>(PointKey.class);
         for (PointKey point : TRANSIT_POINT_ORDER) {
             PointEntry entry = transitChart.getPoints().get(point);
@@ -823,7 +819,7 @@ public final class LocalZoomDumpRunner {
                 .orElseThrow(() -> new IllegalArgumentException("Missing monthly profection reference " + reference));
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(house -> house.getSign() == sign)
                 .map(HousePosition::getHouse)

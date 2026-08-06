@@ -10,12 +10,12 @@ import app.chart.calculator.PointCalculator;
 import app.chart.calculator.SectCalculator;
 import app.chart.calculator.SimpleCalculator;
 import app.chart.calculator.SolarPhaseCalculator;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 
-public final class BasicCalculator {
+public final class ChartCalculator {
 
-    public NatalChart calculate(CalculationContext ctx) {
-        NatalChart natalChart = new NatalChart();
+    public Chart calculate(CalculationContext ctx) {
+        Chart chart = new Chart();
 
         // Ordering is intentional and dependency-bearing:
         // Simple -> chart metadata/JD; Planet -> planet positions; House -> cusps; Angle -> angles.
@@ -23,17 +23,17 @@ public final class BasicCalculator {
         // Pairwise and solar phase require populated points/positions. Planet sect injection requires
         // points + sect.
         // Moon phase requires Sun/Moon positions.
-        (new SimpleCalculator()).calculate(natalChart, ctx);
-        (new PlanetCalculator()).calculate(natalChart, ctx);
-        (new HouseCalculator()).calculate(natalChart, ctx);
-        (new AngleCalculator()).calculate(natalChart, ctx);
-        (new SectCalculator()).calculate(natalChart, ctx);
-        (new PointCalculator()).calculate(natalChart, ctx);
-        (new ChartPointCalculator()).calculate(natalChart, ctx);
-        (new SolarPhaseCalculator()).calculate(natalChart, ctx);
-        (new PlanetSectInjectionCalculator()).calculate(natalChart, ctx);
-        (new MoonPhaseCalculator()).calculate(natalChart, ctx);
+        (new SimpleCalculator()).calculate(chart, ctx);
+        (new PlanetCalculator()).calculate(chart, ctx);
+        (new HouseCalculator()).calculate(chart, ctx);
+        (new AngleCalculator()).calculate(chart, ctx);
+        (new SectCalculator()).calculate(chart, ctx);
+        (new PointCalculator()).calculate(chart, ctx);
+        (new ChartPointCalculator()).calculate(chart, ctx);
+        (new SolarPhaseCalculator()).calculate(chart, ctx);
+        (new PlanetSectInjectionCalculator()).calculate(chart, ctx);
+        (new MoonPhaseCalculator()).calculate(chart, ctx);
 
-        return natalChart;
+        return chart;
     }
 }

@@ -8,7 +8,7 @@ import app.chart.data.PointKey;
 import app.chart.data.Sect;
 import app.chart.data.Triplicity;
 import app.chart.data.ZodiacSign;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PlanetPosition;
 import app.chart.model.PointEntry;
@@ -28,7 +28,7 @@ public final class ValensTriplicityLifePhaseCalculator {
         this.triplicity = triplicity;
     }
 
-    public List<TriplicityLifePhaseEntry> calculate(NatalChart chart) {
+    public List<TriplicityLifePhaseEntry> calculate(Chart chart) {
         if (chart.getSect() == null || chart.getPlanets() == null) {
             return List.of();
         }
@@ -41,19 +41,19 @@ public final class ValensTriplicityLifePhaseCalculator {
         return List.copyOf(phases);
     }
 
-    private void addPlanetReference(List<TriplicityLifePhaseEntry> phases, NatalChart chart, Double indicatedYears, TriplicityLifeReference reference, Planet planet) {
+    private void addPlanetReference(List<TriplicityLifePhaseEntry> phases, Chart chart, Double indicatedYears, TriplicityLifeReference reference, Planet planet) {
         PlanetPosition position = chart.requirePlanet(planet);
         addReference(phases, chart, indicatedYears, reference, planet.name(), position.getSign(), position.getHouse());
     }
 
-    private void addFortuneReference(List<TriplicityLifePhaseEntry> phases, NatalChart chart, Double indicatedYears) {
+    private void addFortuneReference(List<TriplicityLifePhaseEntry> phases, Chart chart, Double indicatedYears) {
         if (chart.getLots() == null) {
             return;
         }
         chart.getLots().stream().filter(lot -> "FORTUNE".equals(lot.name())).findFirst().ifPresent(lot -> addReference(phases, chart, indicatedYears, TriplicityLifeReference.LOT_FORTUNE, lot.name(), lot.sign(), lot.house()));
     }
 
-    private void addReference(List<TriplicityLifePhaseEntry> phases, NatalChart chart, Double indicatedYears, TriplicityLifeReference reference, String referenceName, ZodiacSign referenceSign, Integer referenceHouse) {
+    private void addReference(List<TriplicityLifePhaseEntry> phases, Chart chart, Double indicatedYears, TriplicityLifeReference reference, String referenceName, ZodiacSign referenceSign, Integer referenceHouse) {
         TriplicityRulers rulers = TraditionalTables.triplicityRulers(referenceSign, triplicity);
         boolean diurnal = chart.getSect().getSect() == Sect.DIURNAL;
         addPhase(phases, chart, indicatedYears, reference, referenceName, referenceSign, referenceHouse, TriplicityLifePhase.EARLY_LIFE, TriplicityRulerRole.PRIMARY_RULER, diurnal ? rulers.day() : rulers.night());
@@ -61,7 +61,7 @@ public final class ValensTriplicityLifePhaseCalculator {
         addPhase(phases, chart, indicatedYears, reference, referenceName, referenceSign, referenceHouse, TriplicityLifePhase.LATE_LIFE, TriplicityRulerRole.PARTICIPATING_RULER, rulers.participating());
     }
 
-    private void addPhase(List<TriplicityLifePhaseEntry> phases, NatalChart chart, Double indicatedYears, TriplicityLifeReference reference, String referenceName, ZodiacSign referenceSign, Integer referenceHouse, TriplicityLifePhase phase, TriplicityRulerRole role, Planet ruler) {
+    private void addPhase(List<TriplicityLifePhaseEntry> phases, Chart chart, Double indicatedYears, TriplicityLifeReference reference, String referenceName, ZodiacSign referenceSign, Integer referenceHouse, TriplicityLifePhase phase, TriplicityRulerRole role, Planet ruler) {
         if (ruler == null) {
             return;
         }
@@ -84,14 +84,14 @@ public final class ValensTriplicityLifePhaseCalculator {
         };
     }
 
-    private Double indicatedVitalityYears(NatalChart chart) {
+    private Double indicatedVitalityYears(Chart chart) {
         if (chart.getPtolemaicHylegAlcocoden() == null || chart.getPtolemaicHylegAlcocoden().vitalityYears() == null) {
             return null;
         }
         return chart.getPtolemaicHylegAlcocoden().vitalityYears().indicatedYears();
     }
 
-    private PlanetPointEntry planetPoint(NatalChart chart, Planet planet) {
+    private PlanetPointEntry planetPoint(Chart chart, Planet planet) {
         if (chart.getPoints() == null) {
             return null;
         }

@@ -15,7 +15,7 @@ import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.AnglePointEntry;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.PlanetPointEntry;
 import app.chart.model.PointEntry;
 import app.chart.model.Subject;
@@ -30,7 +30,7 @@ final class ZodiacalReleasingMarkdownRenderer {
 
     private final ZodiacalReleasingCalculator calculator = new ZodiacalReleasingCalculator();
 
-    String render(Subject subject, NatalChart chart, LotEntry lot, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
+    String render(Subject subject, Chart chart, LotEntry lot, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
         StringBuilder out = new StringBuilder();
         out.append("# Zodiacal Releasing from ").append(lot.displayName()).append("\n\n");
         appendSummary(out, subject, lot, timeline, activeDateTime);
@@ -88,7 +88,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendNatalSignContext(StringBuilder out, NatalChart chart) {
+    private void appendNatalSignContext(StringBuilder out, Chart chart) {
         out.append("## Natal sign context\n\n");
         out.append("| Sign | Natal house | Ruler | Natal points | Emitted lots |\n");
         out.append("|---|---:|---|---|---|\n");
@@ -105,7 +105,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendActiveChain(StringBuilder out, NatalChart chart, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
+    private void appendActiveChain(StringBuilder out, Chart chart, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
         if (activeDateTime == null || activeDateTime.isBefore(timeline.startDateTime()) || !activeDateTime.isBefore(timeline.endDateTimeExclusive())) {
             return;
         }
@@ -122,7 +122,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendL1Overview(StringBuilder out, NatalChart chart, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
+    private void appendL1Overview(StringBuilder out, Chart chart, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
         out.append("## L1 overview\n\n");
         out.append("| Active | L1 | Sign | Start | End | Duration | Natal house | Ruler | Markers |\n");
         out.append("|---|---:|---|---|---|---:|---:|---|---|\n");
@@ -141,7 +141,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendDetailedTimeline(StringBuilder out, NatalChart chart, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
+    private void appendDetailedTimeline(StringBuilder out, Chart chart, ZodiacalReleasingTimeline timeline, OffsetDateTime activeDateTime) {
         out.append("## Detailed nested timeline\n\n");
         for (ZodiacalReleasingPeriod l1 : timeline.periods()) {
             out.append("### L1 ").append(l1.sign()).append(" — ").append(format(l1.startDateTime()))
@@ -185,7 +185,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         }
     }
 
-    private void appendLevelTable(StringBuilder out, NatalChart chart, List<ZodiacalReleasingPeriod> periods,
+    private void appendLevelTable(StringBuilder out, Chart chart, List<ZodiacalReleasingPeriod> periods,
                                   OffsetDateTime activeDateTime, String caption) {
         out.append(caption).append("\n\n");
         out.append("| Active | # | Level | Sign | Start | End | Duration | Natal house | Ruler | Markers |\n");
@@ -206,7 +206,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendPeriodRow(StringBuilder out, NatalChart chart, ZodiacalReleasingPeriod period,
+    private void appendPeriodRow(StringBuilder out, Chart chart, ZodiacalReleasingPeriod period,
                                  OffsetDateTime activeDateTime, boolean includeActive) {
         out.append("| L").append(period.level())
                 .append(" | ").append(period.sign())
@@ -249,7 +249,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         };
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(house -> house.getSign() == sign)
                 .map(HousePosition::getHouse)
@@ -257,7 +257,7 @@ final class ZodiacalReleasingMarkdownRenderer {
                 .orElseThrow(() -> new IllegalArgumentException("Missing house for sign " + sign));
     }
 
-    private Map<ZodiacSign, List<String>> pointsBySign(NatalChart chart) {
+    private Map<ZodiacSign, List<String>> pointsBySign(Chart chart) {
         return chart.getPoints().entrySet().stream()
                 .map(entry -> pointLabel(entry.getKey(), entry.getValue()))
                 .filter(Objects::nonNull)
@@ -275,7 +275,7 @@ final class ZodiacalReleasingMarkdownRenderer {
         return null;
     }
 
-    private Map<ZodiacSign, List<String>> lotsBySign(NatalChart chart) {
+    private Map<ZodiacSign, List<String>> lotsBySign(Chart chart) {
         if (chart.getLots() == null) {
             return Map.of();
         }

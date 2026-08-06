@@ -15,7 +15,7 @@ import app.chart.data.Planet;
 import app.chart.data.PointKey;
 import app.chart.data.ZodiacSign;
 import app.chart.model.HousePosition;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 import app.chart.data.SyzygyType;
 import app.reading.description.common.model.LotEntry;
@@ -68,7 +68,7 @@ final class LifeArcAiBriefMarkdownRenderer {
     private static final int DETAIL_LIMIT = 10;
 
     String render(Subject subject,
-                  NatalChart chart,
+                  Chart chart,
                   LocalDate inquiryDate,
                   Path briefOutput,
                   List<FileReference> fileReferences,
@@ -303,7 +303,7 @@ final class LifeArcAiBriefMarkdownRenderer {
     }
 
     private void appendZodiacalReleasing(StringBuilder out,
-                                         NatalChart chart,
+                                         Chart chart,
                                          List<ZodiacalReleasingBrief> briefs,
                                          OffsetDateTime activeDateTime,
                                          Path briefOutput) {
@@ -326,7 +326,7 @@ final class LifeArcAiBriefMarkdownRenderer {
         out.append("\n");
     }
 
-    private void appendDistributions(StringBuilder out, NatalChart chart, DistributionThroughBoundsTable table,
+    private void appendDistributions(StringBuilder out, Chart chart, DistributionThroughBoundsTable table,
                                      List<DistributionThroughBoundsTable> extendedTables) {
         out.append("## Active distributions through bounds\n\n");
         if (table == null) {
@@ -358,7 +358,7 @@ final class LifeArcAiBriefMarkdownRenderer {
         appendDistributionContacts(out, "Top extended active-bound contacts", topContacts);
     }
 
-    private void appendDistributionActiveTable(StringBuilder out, NatalChart chart, List<DistributionThroughBoundsTable> tables) {
+    private void appendDistributionActiveTable(StringBuilder out, Chart chart, List<DistributionThroughBoundsTable> tables) {
         out.append("| Directed point | Active bound | Natal house | Window | Directed span | Contacts |\n");
         out.append("|---|---|---:|---|---|---:|\n");
         for (DistributionThroughBoundsTable table : tables) {
@@ -655,7 +655,7 @@ final class LifeArcAiBriefMarkdownRenderer {
         return List.of();
     }
 
-    private String releasingChain(NatalChart chart, List<ZodiacalReleasingPeriod> chain) {
+    private String releasingChain(Chart chart, List<ZodiacalReleasingPeriod> chain) {
         if (chain == null || chain.isEmpty()) {
             return "—";
         }
@@ -696,7 +696,7 @@ final class LifeArcAiBriefMarkdownRenderer {
                 && activeDateTime.isBefore(end);
     }
 
-    private int houseForSign(NatalChart chart, ZodiacSign sign) {
+    private int houseForSign(Chart chart, ZodiacSign sign) {
         return chart.getHouses().stream()
                 .filter(candidate -> candidate.getSign() == sign)
                 .map(HousePosition::getHouse)

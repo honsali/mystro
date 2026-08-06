@@ -3,16 +3,16 @@ package app.reading.description;
 import app.chart.data.HouseSystem;
 import app.chart.data.Terms;
 import app.chart.data.Triplicity;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.reading.CoreDoctrineInfo;
 
 public final class NatalDescriptionReadingReport {
     private final String id;
     private final String coreDoctrine;
     private final CoreConventions coreConventions;
-    private final NatalChart natalChart;
+    private final Chart natalChart;
 
-    public NatalDescriptionReadingReport(CoreDoctrineInfo coreDoctrineInfo, NatalChart natalChart) {
+    public NatalDescriptionReadingReport(CoreDoctrineInfo coreDoctrineInfo, Chart natalChart) {
         this.id = "NATAL_DESCRIPTION";
         this.coreDoctrine = coreDoctrineInfo.getId().toUpperCase();
         this.coreConventions = new CoreConventions(
@@ -35,7 +35,7 @@ public final class NatalDescriptionReadingReport {
         return coreConventions;
     }
 
-    public NatalChart getNatalChart() {
+    public Chart getNatalChart() {
         return natalChart;
     }
 

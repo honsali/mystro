@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import app.chart.data.Planet;
 import app.chart.data.Sect;
 import app.chart.model.BasicSect;
-import app.chart.model.NatalChart;
+import app.chart.model.Chart;
 import app.chart.model.Subject;
 
 class FirdariaCalculatorTest {
@@ -103,12 +103,12 @@ class FirdariaCalculatorTest {
     @Test
     void calculateTableRejectsInvalidInputs() {
         Subject subject = subject();
-        NatalChart chart = chart(Sect.NOCTURNAL);
+        Chart chart = chart(Sect.NOCTURNAL);
 
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, null, -1, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, null, 2, 1));
         assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, chart, LocalDate.of(1999, 12, 31), 0, 1));
-        assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, new NatalChart(), null, 0, 1));
+        assertThrows(IllegalArgumentException.class, () -> calculator.calculateTable(subject, new Chart(), null, 0, 1));
     }
 
     private Subject subject() {
@@ -120,8 +120,8 @@ class FirdariaCalculatorTest {
         );
     }
 
-    private NatalChart chart(Sect sect) {
-        NatalChart chart = new NatalChart();
+    private Chart chart(Sect sect) {
+        Chart chart = new Chart();
         chart.setSect(new BasicSect(
                 sect,
                 sect == Sect.DIURNAL ? Planet.SUN : Planet.MOON,
